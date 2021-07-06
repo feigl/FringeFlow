@@ -3,6 +3,10 @@
 
 # set up paths inside container
 
+# configure environment 
+source /opt/isce2/isce_env.sh
+export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
+
 export MINTPY_HOME=/home/ops/MintPy
 export PATH=${PATH}:${MINTPY_HOME}/mintpy
 export PATH=${PATH}:${HOME}/FringeFlow/sh

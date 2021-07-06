@@ -41,6 +41,8 @@ fi
 
 if [[ -f $HOME/gmtsar-aux/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/gmtsar-aux/site_dims.txt
+elif [[ -f $HOME/FringeFlow/gmtsar-aux/site_dims.txt ]]; then
+    export SITE_TABLE=$HOME/FringeFlow/gmtsar-aux/site_dims.txt
 elif [[ -f $HOME/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/site_dims.txt
 else

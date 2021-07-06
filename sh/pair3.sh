@@ -7,7 +7,7 @@ if [ "$#" -ne 5 ]; then
     bname=`basename $0`
     echo "$bname will calculate an interferometric pair "
     echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
-    echo "example: $bname S1 T53 SANEM 20190110  20190122"
+    echo "example: $bname S1 144 SANEM 20190110  20190122"
 
     exit -1
 fi
@@ -74,8 +74,10 @@ pwd
 
 echo "Copying input SLC files from askja"
 mkdir -p SLC
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t0}*.zip" SLC
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t1}*.zip" SLC
+# rsync -av -e "ssh -l feigl" askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t0}*.zip" SLC
+# rsync -av -e "ssh -l feigl" askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t1}*.zip" SLC
+get_slc_from_askja.sh ${sat} ${trk} ${sit} ${t0}
+get_slc_from_askja.sh ${sat} ${trk} ${sit} ${t1}
 
 echo "Copying input ORBIT files from askja"
 mkdir -p ORBITS

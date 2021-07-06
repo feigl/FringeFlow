@@ -3,17 +3,52 @@
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
 
+if [ "$#" -ne 5 && "$#" -ne 3]; then
+    bname=`basename $0`
+    echo "$bname will add ingredients to a folder and then start docker"
+    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+
+    exit -1
+fi
+
+
+echo "Starting script named $0"
+echo PWD is ${PWD}
+echo HOME is ${HOME} 
+
+# export sat='S1'
+# export site='SANEM'
+# export trk=144
+# export t0=20190110
+# export t1=20190122
+export sat=$1
+export trk=$2
+export sit=$3
+if [ "$#" -eq 5 ]; then
+echo "Arguments are $1 $2 $3 $4 $5"
+
+  export t0=$4
+  export t1=$5
+else
+  echo "Arguments are $1 $2 $3"
+  export t0='';
+  export t1='';
+fi
+
+echo sat is $sat
+echo trk is $trk
+echo sit is $sit
+echo t0 is $t0
+echo t1 is $t1
+
 #dirname=/s12/insar/SANEM/SENTINEL/
-dirname=/System/Volumes/Data/mnt/t31/insar/SANEM/S1
+#dirname=/System/Volumes/Data/mnt/t31/insar/SANEM/S1
+dirname=/System/Volumes/Data/mnt/t31/insar/$sit/$sat
 mkdir -p $dirname
 cd $dirname
 #runname=`basename $dirname`
-export sat='S1'
-export site='SANEM'
-export trk=144
-export t0=20190110
-export t1=20190122
-export runname="${sat}_${trk}_${site}_${t0}_${t1}"
+export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
 echo runname is $runname
 
 # if [ -d $runname ]; then
@@ -23,31 +58,29 @@ mkdir -p $runname
 cd $runname
 
 ## copy keys here
-cp -v $HOME/.netrc . 
-cp -v $HOME/.model.cfg .
-cp $HOME/SSARA-master/password_config.py .
+# cp -v $HOME/.netrc . 
+# cp -v $HOME/.model.cfg .
+# cp -v $HOME/SSARA-master/password_config.py .
+# cp -v $HOME/site_dims.txt .
+cp -v $HOME/magic.tgz .
 
 # copy input files
 #cp /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv .
 #cp -r ../TEMPLATE/* .
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/SANEM/S1/ISCE/"dem*" ISCE
+rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/$sit/S1/ISCE/"dem*" ISCE
 # make a copy of executable scripts
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
-# pull scripts
-cd $HOME/FringeFlow
-git pull 
-cd $dirname
-
-cd $runname
-
-tar -C $HOME -czvf FringeFlow.tgz FringeFlow
+## pull scripts and make a tar file
+cd $HOME
+#git pull 
+tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
+mv -v FringeFlow.tgz $dirname/$runname
 
 
 # make a tar file
 #tar -czvf ../${runname}.tgz .
 
-cd ..
 
 # pull container from DockerHub
 docker pull docker.io/nbearson/isce_chtc2
@@ -55,10 +88,14 @@ docker pull docker.io/nbearson/isce_chtc2
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
 
-# arrange permissions
+
+## arrange permissions
+# go directory above container
+cd $dirname
 if [[ $HOST == askja.ssec.wisc.edu ]]; then
   podman unshare chown -R 1000:1000 $runname
 fi
+# go into container
 cd $runname
 
 # run script in container
@@ -70,7 +107,8 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD nbearson/isce_mintpy:latest 
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD isce/isce2:latest
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
- docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
+#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
+docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
 
 # change permissions back again
 cd ..

@@ -1,0 +1,70 @@
+berin ALOS T250 F1200
+brady ALOS T215
+brady ALOS T216
+brady ERS1 T256
+brady ERS1 T27
+brady ERS1 T485
+brady ERS2 T256
+brady ERS2 T485
+brady S1A T144 F2
+brady S1A T64 F2
+brady TDX T167 strip_014R
+brady TDX T53 strip_008R
+brady TDX T91 strip_006R
+brady TSX T167 strip_014R
+brady TSX T53 strip_008R
+brady TSX T91 strip_006R
+colum ALOS T256
+colum ALOS T262
+cosoc S1A T64 F2
+dcamp S1A F2
+dcamp TDX T144 
+dcamp TSX T144 
+dixie S1A T144 F1
+dixie S1A T64 F3
+dixie S1A T71 F3
+dixie TDX T53 strip_005R 
+dixie TDX T91 strip_010R
+dixie TSX T53 strip_005R 
+dixie TSX T91 strip_010R
+emesa TDX T68 strip_005
+emesa TSX T68 strip_005
+forge TDX T30 strip_004
+forge TSX T30 strip_004
+fuego S1A T136 F2
+fuego S1B T26 F2
+malas ALOS T244 F1190
+malas ALOS T245 F1190 
+maule ALOS T112 F6450
+maule ALOS T113 F6450
+maule S1A T18 F1
+maule S1A T83
+maule S1B T18 F1
+maule S1B T83
+maule TDX T111 
+maule TDX T119
+maule TDX T28 
+maule TSX T111 
+maule TSX T119
+maule TSX T28 
+mcgin S1A T71 F2
+mcgin S1B T166 F2 
+mcgin TDX T15 strip_006
+mcgin TSX T15 strip_006
+peter ALOS T61 F1620
+peter ALOS T62 F1620
+peter ALOS T63 F1620
+punah TDX T24 strip_006
+punah TDX T32 strip_009
+punah TSX T24 strip_006
+punah TSX T32 strip_009
+tians ALOS T501 F850
+tungs TDX T167 strip_018R
+tungs TSX T167 strip_018R
+tusca TDX T144 strip_007R
+tusca TSX T144 strip_007R
+sanem ENVI T120 801
+sanem ENVI T27 2799
+sanem ERS1 T27 2799
+sanem ERS2 T27 2799
+cosoc ENVI T349 

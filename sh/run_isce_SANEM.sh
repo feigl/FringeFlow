@@ -8,11 +8,23 @@ export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
 # very clean start
 #rm -rf orbits ORBITS isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 # clean start
-rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
+rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference run_files
 
+# root@f30b02a871a4:/System/Volumes/Data/mnt/t31/insar/SANEM/S1/S1_144_SANEM_20190110_20190122# get_site_dims.sh sanem -1
+#  W =      -119.4600000000
+#  E =      -119.3750000000
+#  S =        40.3480000000
+#  N =        40.4490000000
+#-b '40.348 40.449 -119.46 -119.375' 
+# '*****************************************
+# The overlap region among all dates (based on the preview kml files):
+#  South   North   East  West 
+# 38.193027 40.266251 -120.327538 -117.039459
 # Carry only a small subset of orbits
+# -n 3
 stackSentinel.py -w ./ -s ../SLC/ -a aux/ -o ../ORBITS \
--n 3 -z 2 -r 6 -c 5 -C geometry  -b '40.348 40.449 -119.46 -119.375' \
+-z 2 -r 6 -c all -C geometry -W slc \
+-b '38.193027 40.266251 -120.327538 -117.039459' \
 -d demLat_N40_N41_Lon_W120_W119.dem.wgs84   
 
 #--start ${YYYYMMDD1} --stop ${YYYYMMDD2}

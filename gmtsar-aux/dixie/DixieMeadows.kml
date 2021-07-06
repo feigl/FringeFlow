@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>DixieMeadows.kml</name>
+	<Style id="sh_triangle">
+		<IconStyle>
+			<color>ff0000ff</color>
+			<scale>1.4</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sh_ylw-pushpin">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>3.1</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl5</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_triangle">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_triangle</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_triangle</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin_hl5">
+		<IconStyle>
+			<Icon>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="msn_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>3.1</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin1">
+		<IconStyle>
+			<Icon>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_triangle">
+		<IconStyle>
+			<color>ff0000ff</color>
+			<scale>1.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Folder>
+		<name>Dixie Meadows, Nevada</name>
+		<open>1</open>
+		<LookAt>
+			<longitude>-118.0636475539641</longitude>
+			<latitude>39.79663656482431</latitude>
+			<altitude>0</altitude>
+			<heading>0.01085083272638263</heading>
+			<tilt>0</tilt>
+			<range>3907.037670236396</range>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</LookAt>
+		<Placemark>
+			<name>Dixie Meadows View</name>
+			<LookAt>
+				<longitude>-118.075623</longitude>
+				<latitude>39.79029805546003</latitude>
+				<altitude>0</altitude>
+				<heading>0.003184468213194246</heading>
+				<tilt>0</tilt>
+				<range>14518.39668144886</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin1</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-118.0756336194017,39.79029747547916,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Dixie Meadows Well 23A-8</name>
+			<description>407890.8
+4405290</description>
+			<LookAt>
+				<longitude>-118.0806865160576</longitude>
+				<latitude>39.68769521208132</latitude>
+				<altitude>0</altitude>
+				<heading>5.363129545528946e-08</heading>
+				<tilt>0</tilt>
+				<range>20851.46933221932</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_triangle</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-118.0758210730717,39.79258423632456,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Dixie Meadows 24-8</name>
+			<description>407734.2
+4404988</description>
+			<LookAt>
+				<longitude>-118.0636475779072</longitude>
+				<latitude>39.79663658680965</latitude>
+				<altitude>0</altitude>
+				<heading>0.01085081737520618</heading>
+				<tilt>0</tilt>
+				<range>1719.427629406317</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_triangle</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-118.077600354781,39.78984675548076,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Dixie Meadows Well 75-4</name>
+			<description>410549.1
+4406437</description>
+			<LookAt>
+				<longitude>-118.0636475539641</longitude>
+				<latitude>39.79663656482431</latitude>
+				<altitude>0</altitude>
+				<heading>0.01085083272638263</heading>
+				<tilt>0</tilt>
+				<range>3907.037670236396</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#msn_triangle</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-118.0449259494432,39.80320085661972,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>DixieValleyPolygonCounterClockwise</name>
+			<styleUrl>#msn_ylw-pushpin0</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-118.118534890868,39.767899803796,0 -117.9858028265828,39.76721289952838,0 -117.9882691882609,39.83130753569694,0 -118.1194221609051,39.83199107700046,0 -118.118534890868,39.767899803796,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

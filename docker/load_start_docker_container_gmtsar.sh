@@ -3,14 +3,11 @@
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
 
-if [[ (( "$#" -ne 1 ) && ]]; then
+if [[ ( "$#" -ne 1 ) ]]; then
     bname=`basename $0`
     echo "$bname will add ingredients to a folder and then start docker for GMTSAR v6"
-    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
-    echo "example: $bname S1 144 SANEM 20190110 20190122"
-    echo "example: $bname S1 144 SANEM 20190110 20190122"
-    echo "example: $bname S1 144 SANEM 20190110 20190122"
-    echo "example: $bname /s22/insar/FORGE/S1"
+    echo "usage:   $bname folder"
+     echo "example: $bname /s22/insar/FORGE/S1"
     exit -1
 fi
 
@@ -19,10 +16,8 @@ echo "Starting script named $0"
 echo PWD is ${PWD}
 echo HOME is ${HOME} 
 
- export dirname=$1
-  export runname=$dirname
-
-
+export dirname=$1
+export runname=$dirname
 
 echo "directory name dirname is $dirname"
 mkdir -p $dirname
@@ -36,7 +31,10 @@ echo runname is $runname
 mkdir -p $runname
 cd $runname
 
-#
+# get important files
+cp $HOME/PAIRSmake.txt .
+cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
+
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
 docker pull docker.io/nbearson/gmtsar
@@ -48,7 +46,7 @@ docker pull docker.io/nbearson/gmtsar
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ $HOST == askja.ssec.wisc.edu ]]; then
+if [[ (( "$HOST" -eq "askja.ssec.wisc.edu") || ( "$HOST" -eq "maule.ssec.wisc.edu")) ]]; then
   podman unshare chown -R 1000:1000 $runname
 fi
 # go into container
@@ -65,12 +63,18 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
-docker run -it --rm -v "$PWD":"$PWD" -v "/home/feigl/FringeFlow":/root/FringeFlow -v /home/batzli/bin-htcondor:/root/bin-htcondor -w $PWD docker.io/nbearson/gmtsar
+docker run -it --rm -v "$PWD":"$PWD" \
+-v /home/feigl/FringeFlow:/root/FringeFlow \
+-v /home/batzli/bin_htcondor:/root/bin_htcondor \
+-v /s12/insar:/root/insar \
+-w $PWD docker.io/nbearson/gmtsar
 
 # change permissions back again
 cd ..
-if [[ (( $HOST -eq askja.ssec.wisc.edu ) || ( $HOST -eq maule.ssec.wisc.edu )) ]]; then
-   sudo chown -R ${USER}:'domain users' $runname 
+
+# https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
+if [[ $(hostname) = "askja.ssec.wisc.edu" ]] || [[ $(hostname) = "maule.ssec.wisc.edu" ]]; then
+    sudo chown -R ${USER}:'domain users' $runname 
 fi
 
 

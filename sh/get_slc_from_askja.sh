@@ -41,7 +41,7 @@ nfiles=${#slcfiles[@]}
 echo "number of existing SLC files already here is $nfiles"
 
 if ( test $nfiles -lt 1 ); then
-    sync -rav -e "ssh -l feigl" feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/${sat}'*'V_${t0}'*'.zip SLC
+    rsync -rav -e "ssh -l feigl" feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/${sat}'*'V_${t0}'*'.zip SLC
 fi
 
 exit 0

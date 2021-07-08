@@ -62,9 +62,9 @@ xmin=${9}
 xmax=${10}
 ymin=${11}
 ymax=${12}
-site=${13}
+#site=${13}
+site=`echo ${13} | awk '{ print toupper($1) }'`
 unwrap=${14}
-SITE=`echo $site | awk '{ print toupper($1) }'`
 
 # set remote user on chtc
 if [[ ${user} = "batzli" ]]; then

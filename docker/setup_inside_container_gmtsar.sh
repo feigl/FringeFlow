@@ -8,6 +8,6 @@
 export PATH=${HOME}/FringeFlow/sh:${PATH}
 export PATH=${HOME}/FringeFlow/docker:${PATH}
 export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
-export PATH=${HOME}/gmtsar-aux:${PATH}
-export PATH=${HOME}/bin_htcondor:${PATH}
+export PATH=${HOME}/FringeFlow/gmtsar6/gmtsar-aux:${PATH}
+#export PATH=${HOME}/bin_htcondor:${PATH}
 

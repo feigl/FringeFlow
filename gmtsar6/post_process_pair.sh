@@ -2,10 +2,10 @@
 
 # move output from DOY_DOY folder into InYYYYMDD_YYYMMDD
 if [[ ! $# -eq 3 ]] ; then
-    bname=`basename $1`
-    echo ""
-    echo "Usage: $bname site5 "
-    echo "$bname forge"
+    bname=`basename ${0}`
+    echo "${bname} will move GMTSAR output from DOY_DOY folder into InYYYYMDD_YYYMMDD"
+    echo "Usage: $bname site5 ref sec"
+    echo "$bname forge 20200415 20210505"
     exit -1
  else
     site=${1}

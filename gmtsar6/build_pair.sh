@@ -64,6 +64,16 @@ ymin=${11}
 ymax=${12}
 site=${13}
 unwrap=${14}
+SITE=`echo $site | awk '{ print toupper($1) }'`
+
+# set data directory
+if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+    export DATADIR=/s12
+else
+    export DATADIR=${HOME}
+fi
+echo "DATADIR is $DATADIR"
+
 
 # set up ssh transfer (for HTCONDOR only, [missing destination dir?] move up to conditional)
 
@@ -81,22 +91,23 @@ fi
 # transfer cut grid file to job server (for moving to submit-2)
 # scp $askja:${HOME}/insar/condor/feigl/insar/dem/cut_$demf dem/$demf
 # copy cut grid for current use
-cp ${HOME}/insar/dem/cut_$demf dem/$demf
+cp ${DATADIR}/insar/dem/cut_$demf dem/$demf
 
 # get data from askja
 cd RAW
 ## get reference data to working directory
 swath=`echo $satparam | awk '{print substr($1,7,3)}'`
 echo "swath is $swath"
-longfilename1=`grep ${site} ${HOME}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+#longfilename1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+longfilename1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
 echo "longfilename1 is $longfilename1"
 cp -r $longfilename1 .
-
 
 ## get secondary data to working directory
 swath=`echo $satparam | awk '{print substr($1,7,3)}'`
 echo "swath is $swath"
-longfilename2=`grep ${site} ${HOME}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+#longfilename2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+longfilename2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
 echo "longfilename2 is $longfilename2"
 cp -r $longfilename2 .
 
@@ -106,21 +117,31 @@ echo "in $0 working directory is now $PWD"
 pwd
 
 # run a script to write a script (run.sh)
-write_run.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
+write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
 
-# change directory 
-cd In"${ref}"_"${sec}" 
+# make the run script e
+chmod a+x In${ref}_${sec}/run.sh
 
-# make executable and actually run the script run.sh 
-#chmod +x run.sh
-echo
-echo
-echo "Now we are in pwd $PWD Starting run.sh, logging in $PWD/run.log"
-pwd
-ls 
-# copy standard error and standard out to screen and log file
+# make a tar file
+tgzfile=In${ref}_${sec}_in.tgz
+tar -czvf $tgzfile In${ref}_${sec}
 
-exit -1
-
-
-
+# transfer the tar file
+if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+    mkdir -p /s12/insar/${SITE}/TSX
+    cp -v  $tgzfile /s12/insar/${SITE}/TSX
+    ssh transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar/TSX
+    time rsync --progress -rav $tgzfile transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/TSX
+    # clean up after pair is transferred
+    # rm -fv In${ref}_${sec}.tgz
+elif [[ -d /staging/groups/geoscience/insar/TSX ]]; then
+    mkdir -p /staging/groups/insar/${SITE}/TSX
+    cp -v  $tgzfile /staging/groups/insar/${SITE}/TSX
+    # clean up after pair is transferred
+    #rm -fv $tgzfile
+else
+    echo "Cannot find a place to transfer tar file named $tgzfile"
+    # clean up 
+    # rm -rf In${ref}_${sec}
+fi
+exit 0

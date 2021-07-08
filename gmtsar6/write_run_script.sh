@@ -61,7 +61,9 @@ if [ $# -gt 3 ] ; then
   case "$sat" in 
   TSX)
     # should already be in container
-    #cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
+	if [[ -f /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt ]]; then
+       cp -v /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
+	fi
     cnf=$homedir/config.tsx.txt
     ;;
    *)
@@ -148,11 +150,13 @@ if [ "$sat" == "TSX" ] ; then
 	touch ${ref}.LED
 	touch ${sec}.LED
 
-	longdirname1=`grep ${site} ${HOME}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+	#longdirname1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+    longdirname1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref}  | awk '{print $12}'`
 	echo "longdirname1 is $longdirname1"
 	longbasename1=`basename $longdirname1`
 	echo "longbasename is $longbasename1"
-	longdirname2=`grep ${site} ${HOME}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+	#longdirname2=`grep ${site} ${DATDIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
+	longdirname2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec}  | awk '{print $12}'`
 	echo "longdirname2 is $longdirname2"
 	longbasename2=`basename $longdirname2`
 	echo "longbasename2 is $longbasename2"

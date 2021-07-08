@@ -45,6 +45,14 @@ fi
 # set user
 user=`echo $HOME | awk -F/ '{print $(NF)}'`
 
+# set data directory
+if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+    export DATADIR=/s12
+else
+    export DATADIR=${HOME}
+fi
+echo "DATADIR is $DATADIR"
+
 # set filter wavelength
 filter_wv=`tail -1 $1 | awk '{print $19}'`
 

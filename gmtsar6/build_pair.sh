@@ -66,6 +66,13 @@ site=${13}
 unwrap=${14}
 SITE=`echo $site | awk '{ print toupper($1) }'`
 
+# set remote user on chtc
+if [[ ${user} = "batzli" ]]; then
+   ruser="sabatzli"
+else
+   ruser=${user}
+fi
+
 # set data directory
 if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
     export DATADIR=/s12
@@ -119,7 +126,7 @@ pwd
 # run a script to write a script (run.sh)
 write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
 
-# make the run script e
+# make the run script executable
 chmod a+x In${ref}_${sec}/run.sh
 
 # make a tar file
@@ -130,8 +137,8 @@ tar -czvf $tgzfile In${ref}_${sec}
 if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
     mkdir -p /s12/insar/${SITE}/TSX
     cp -v  $tgzfile /s12/insar/${SITE}/TSX
-    ssh transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar/TSX
-    time rsync --progress -rav $tgzfile transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/TSX
+    ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar/TSX
+    time rsync --progress -rav $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/TSX
     # clean up after pair is transferred
     # rm -fv In${ref}_${sec}.tgz
 elif [[ -d /staging/groups/geoscience/insar/TSX ]]; then

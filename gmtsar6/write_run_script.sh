@@ -122,7 +122,8 @@ mkdir raw intf SLC topo
 # is this broken?
 cd topo
 #ln -s ../$demgrd dem.grd #attempted fix for below broke the processing.  Needs to be fixed in the move.
-ln -s ../../$demgrd dem.grd #this broke when moving files up and out $DOY directory -- SAB 06/30/21
+#ln -s ../../$demgrd dem.grd #this broke when moving files up and out $DOY directory -- SAB 06/30/21
+cp -v ../../$demgrd dem.grd # copy, do not link
 cd ..
 
 # set up links to RAW 

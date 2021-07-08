@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash -vx
 #!/usr/bin/env -S bash -x
 # 	switches in line above after "bash"
 # 	-x  Print commands and their arguments as they are executed.
@@ -45,6 +45,14 @@ fi
 # set user
 user=`echo $HOME | awk -F/ '{print $(NF)}'`
 
+# set remote user on chtc
+if [[ ${user} = "batzli" ]]; then
+   ruser="sabatzli"
+else
+   ruser=${user}
+fi
+
+
 # set data directory
 if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
     export DATADIR=/s12
@@ -68,7 +76,7 @@ ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
    #echo ASKJA = $askja
    # get DEM from input file
    demf=`grep dem $1 | tail -1 | awk '{print $18}'`
-   echo "demf is $demf"
+   #echo "demf is $demf"
 
    #since we are on askja, don't need to ssh to it but just run it. also should current user's bin_htcondor directory -- batzli 20210211 
    #ssh -Y $askja "/home/batzli/bin_htcondor/prepDEMforCondorJob.sh $demf $xmin $xmax $ymin $ymax"  # 20200106 change location to groups folder
@@ -81,16 +89,16 @@ ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
    #I believe next will be: 
    #~/bin_htcondor/run_pair_gmtsarv60.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site
    # but some variables are missing: ($satparam) need to find source
-   echo "Currently defined Variables:"
-   echo "sat=$sat track=$track ref=$ref sec=$sec"
-   echo "user=$user" 
-   echo "satparam=$satparam"
-   echo "dem=$demf"
-   echo "filter_wv=$filter_wv"
-   echo "xmin=$xmin xmax=$xmax ymin=$ymin ymax=$ymax"
-   echo "site=$site"
-   echo "unwrap=${unwrap}"
-   echo "missing some so lets keep going..."
+   # echo "Currently defined Variables:"
+   # echo "sat=$sat track=$track ref=$ref sec=$sec"
+   # echo "user=$user" 
+   # echo "satparam=$satparam"
+   # echo "dem=$demf"
+   # echo "filter_wv=$filter_wv"
+   # echo "xmin=$xmin xmax=$xmax ymin=$ymin ymax=$ymax"
+   # echo "site=$site"
+   # echo "unwrap=${unwrap}"
+   # echo "missing some so lets keep going..."
 
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair
@@ -102,23 +110,22 @@ ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
 
 while read -r a b c d e f g h i j k l m n o p q r s; do
 # ignore commented lines
-    [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
+  [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
 ref=$a
 sec=$b
 track=$i
 filter_wv=$s #added by Kurt and Sam 2021/07/02
 sat=$q
-if [[ "$sat" == "TDX" ]]
-then
-  sat="TSX"
+if [[ "$sat" == "TDX" ]]; then
+   sat="TSX"
 fi
 satparam=$k
-echo "ref=$ref"
-echo "sec=$sec"
-echo "track=$track"
-echo "sat=$sat"
-echo "satparam=$satparam"
-echo "unwrap=${unwrap}"
+# echo "ref=$ref"
+# echo "sec=$sec"
+# echo "track=$track"
+# echo "sat=$sat"
+# echo "satparam=$satparam"
+# echo "unwrap=${unwrap}"
 
 build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
 

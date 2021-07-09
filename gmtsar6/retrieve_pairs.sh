@@ -35,7 +35,7 @@ else
 fi
 echo "DATADIR is $DATADIR"
 
-rsync --remove-source-files -rav transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
+rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
  
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair

@@ -1,0 +1,63 @@
+#!/bin/bash -vx
+
+# calculate an interferometric pair
+#2021/06/10 Kurt Feigl
+
+if [ "$#" -ne 1 ]; then
+    bname=`basename $0`
+    echo "$bname will calculate an interferometric using gmtsar "
+    echo "usage:   "
+    echo "   $bname filename.tgz"
+    echo "   $bname site_sat_trk_swath_ref_sec.tgz"
+    echo "example:"
+    echo "   $bname FORGE_TSX_T30_strip004_20200415_20210505.tgz"
+    echo "Tarfile named filename.tgz is assumed to exist on transfer.chtc.wisc.edu:/staging/groups/geoscience/insar"
+    exit -1
+fi
+
+#export YYYYMMDD1="2019-10-02"
+#export YYYYMMDD2="2019-11-16"
+
+echo "Starting script named $0"
+echo "Argument is $1"
+echo PWD is ${PWD}
+echo HOME is ${HOME} 
+
+timetag=`date +"%Y%m%dT%H%M%S"`
+echo timetag is ${timetag}
+runname="${sat}_${trk}_${sit}_${t0}_${t1}"
+echo runname is ${runname}
+
+#pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
+#tgz="FORGE_TSX_T30_strip004_20200415_20210505.tgz"
+tgz=${1}
+
+ site=`echo ${tgz} | awk -F_ '{print $1}'`
+  sat=`echo ${tgz} | awk -F_ '{print $2}'`
+  trk=`echo ${tgz} | awk -F_ '{print $3}'`
+swath=`echo ${tgz} | awk -F_ '{print $4}'`
+  ref=`echo ${tgz} | awk -F_ '{print $5}'`
+  sec=`echo ${tgz} | awk -F_ '{print $6}' | sed 's/.tgz//'`
+
+echo "site is $site"
+echo "sat  is $sat"
+echo "trk  is $trk"
+echo "swath is $swath"
+echo "ref is $ref"
+echo "sec is $sec"
+
+if [[ ! -f /staging/groups/geoscience/insar/${tgz} ]]; then
+    echo "ERROR: Could not find input file named /staging/groups/geoscience/insar/${tgz}"
+    ls -l /staging/groups/geoscience/insar
+    exit -1
+else
+  ls -l /staging/groups/geoscience/insar/${tgz}
+  time cp /staging/groups/geoscience/insar/${tgz} .
+  time tar -xzvf ${tgz}
+  source setup_inside_container_gmtsar.sh 
+  cd "In${ref}_${sec}"
+  time ./run.sh | tee run.log
+fi
+
+
+

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+timetag=`date +"%Y%m%dT%H%M%S"`
+echo timetag is ${timetag}
+
 # move output from DOY_DOY folder into InYYYYMDD_YYYMMDD
 if [[ ! $# -eq 3 ]] ; then
     bname=`basename ${0}`
@@ -82,18 +85,24 @@ if [[ ! $# -eq 3 ]] ; then
     fi
 
     echo "pair_status is now ${pair_status}"
+
+    # prepare cut grd files for gipht 
+    # prepare_grids_for_gipht6.sh $site
+
+    # make plots (depends on having makefile)
+    # make -f plotting.make plot_pha_utm
+
     cd ..
     
     # make a tar file
-    tgzfile=In${ref}_${sec}_out.tgz
+    #tgzfile=In${ref}_${sec}_${timetag}.tgz
+    tgzfile=In${ref}_${sec}.tgz
     # remove echoes when satisfied 
     #tar -czvf $tgzfile In${ref}_${sec}
     # follow the links
-    tar -chzvf $tgzfile In${ref}_${sec}
+    tar -chzvf ${tgzfile} In${ref}_${sec}
     
-    rm -rvf RAW
-    rm -rvf dem
-
+ 
     # transfer pair to askja under ${HOME}/insar/[sat][trk]/site
     # htcondor version
     # ssh $askja "mkdir -p ${HOME}/insar/$sat/$trk/$site"
@@ -105,14 +114,15 @@ if [[ ! $# -eq 3 ]] ; then
         mkdir -p /s12/insar/${SITE}/TSX
         cp -v  $tgzfile /s12/insar/${SITE}/TSX
         # clean up after pair is transferred
-        # rm -fv $tgzfile
-        # rm -rf In${ref}_${sec}
-    elif [[ -d /staging/groups/geoscience/insar/TSX ]]; then
-        mkdir -p /staging/groups/insar/${SITE}/TSX
-        cp -v  $tgzfile /staging/groups/insar/${SITE}/TSX
+        #rm -fv $tgzfile
+        #rm -rfv In${ref}_${sec}
+    elif [[ -d /staging/groups/geoscience/insar ]]; then
+        mkdir -p /staging/groups/geoscience/insar
+        cp -v  $tgzfile /staging/groups/geoscience/insar
         # clean up after pair is transferred
-        # rm -fv $tgzfile
-        # rm -rf In${ref}_${sec}
+        rm -fv $tgzfile
+        rm -rfv In${ref}_${sec}
+        rm -rfv *.tgz FringeFlow bin_htcondor 
     else
         echo "Cannot find a place to transfer tar file named $tgzfile"
         # clean up 

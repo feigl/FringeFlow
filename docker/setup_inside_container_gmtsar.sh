@@ -1,13 +1,23 @@
 #!/bin/bash -e
-## 2021/07/08 Kurt Feigl
+# To set up paths inside container, source this file
+# 2021/07/08 Kurt Feigl
 
-# set up paths inside container
+#
+if [[ ! -w "$HOME" ]]; then
+    echo "Resetting HOME from $HOME to $PWD"
+    export HOME=$PWD
+fi
 
 # configure environment 
+if [[ -f /home/batzli/setup.sh ]]; then
+    source /home/batzli/setup.sh
+else
+    export PATH=${HOME}/bin_htcondor:${PATH}
+fi
 
+export PATH=${HOME}/FringeFlow/sh:${PATH}
 export PATH=${HOME}/FringeFlow/sh:${PATH}
 export PATH=${HOME}/FringeFlow/docker:${PATH}
 export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
 export PATH=${HOME}/FringeFlow/gmtsar6/gmtsar-aux:${PATH}
-#export PATH=${HOME}/bin_htcondor:${PATH}
 

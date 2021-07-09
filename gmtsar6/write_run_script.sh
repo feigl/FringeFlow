@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash 
 #!/usr/bin/env -S bash -x 
 # 	options: -ex
 # 	-x  Print commands and their arguments as they are executed.
@@ -104,13 +104,13 @@ RAWdir=../../RAW
 #RAWdir=../RAW
 
 # construct name for In directory
-pairdir=In${ref}_${sec}
-if [ -d $pairdir ]; then
-	echo "removing existing pairdir named $pairdir"
-   	rm -rf $pairdir
+inpairdir=In${ref}_${sec}
+if [ -d $inpairdir ]; then
+	echo "removing existing inpairdir named $inpairdir"
+   	rm -rf $inpairdir
 fi
-mkdir $pairdir
-cd $pairdir
+mkdir $inpairdir
+cd $inpairdir
 cp $cnf .
 cnf=`basename $cnf`
 echo "Configuration filename cnf is $cnf"
@@ -152,39 +152,40 @@ if [ "$sat" == "TSX" ] ; then
 	touch ${sec}.LED
 
 	#longdirname1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
-    longdirname1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref}  | awk '{print $12}'`
+    longdirname1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref}  | awk '{print $12}'`
 	echo "longdirname1 is $longdirname1"
 	longbasename1=`basename $longdirname1`
 	echo "longbasename is $longbasename1"
 	#longdirname2=`grep ${site} ${DATDIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
-	longdirname2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec}  | awk '{print $12}'`
+	longdirname2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec}  | awk '{print $12}'`
 	echo "longdirname2 is $longdirname2"
 	longbasename2=`basename $longdirname2`
 	echo "longbasename2 is $longbasename2"
 
-	# copy the whole thing
-	cp -rv $RAWdir/$longbasename1 .
-	cp -rv $RAWdir/$longbasename2 .
+	# # copy the whole thing
+	# cp -r $RAWdir/$longbasename1 .
+	# cp -r $RAWdir/$longbasename2 .
+
 
 	# links for $ref and $sec .cos and .xml with date names for rsynced earlier run_pair_gmtsarv60.sh
 	#XMLref=`find $RAWdir/TDX1_SM_091_strip_005_20201023014507 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
-	#XMLref=`find $RAWdir/$longbasename1 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
-	XMLref=`find $longbasename1 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
+	XMLref=`find $RAWdir/$longbasename1 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
+	#XMLref=`find $longbasename1 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
 	ln -s $XMLref ${ref}.xml
 	#cp -v $XMLref ${ref}.xml
 	#COSref=`find $RAWdir/TDX1_SM_091_strip_005_20201023014507 -name "*.cos"`
-	#COSref=`find $RAWdir/$longbasename1 -name "*.cos"`
-	COSref=`find $longbasename1 -name "*.cos"`
+	COSref=`find $RAWdir/$longbasename1 -name "*.cos"`
+	#COSref=`find $longbasename1 -name "*.cos"`
 	ln -s $COSref ${ref}.cos
 	#cp -v $COSref ${ref}.cos
 	#XMLsec=`find $RAWdir/TDX1_SM_091_strip_005_20201114014508 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
-	#XMLsec=`find $RAWdir/$longbasename2 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
-	XMLsec=`find $longbasename2 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
+	XMLsec=`find $RAWdir/$longbasename2 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
+	#XMLsec=`find $longbasename2 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
 	ln -s $XMLsec ${sec}.xml
     #cp -v $XMLsec ${sec}.xml
 	#COSsec=`find $RAWdir/TDX1_SM_091_strip_005_20201114014508 -name "*.cos"`
-	#COSsec=`find $RAWdir/$longbasename2 -name "*.cos"`
-	COSsec=`find $longbasename2 -name "*.cos"`
+	COSsec=`find $RAWdir/$longbasename2 -name "*.cos"`
+	#COSsec=`find $longbasename2 -name "*.cos"`
 	ln -s $COSsec ${sec}.cos
     #cp -v $COSsec ${sec}.cos
 
@@ -204,13 +205,13 @@ echo SAT = $sat
 # build the command [p2p_processing.csh now handles TSX and other sats that don't have their own scripts, but order of args has probably changed]
 if [[ "$sat" == "TSX" ]] ; then
 	if [[ "$site" == "dcamp" || "$site" == "tungs" || "$site" == "dixie" || "$site" == "tusca" ]] ; then #special case for Airbus not urgent
-		echo "USING AIRBUS VERSION OF P2P FOR TSX"
-		echo p2p_TSX_SLC_airbus.csh $ref $sec $cnf >> run.sh
+		echo '# USING AIRBUS VERSION OF P2P FOR TSX' >> run.sh
+		echo "p2p_TSX_SLC_airbus.csh $ref $sec $cnf" >> run.sh
   	else
 		#this script is now p2p_processing.csh  
 		#echo p2p_TSX_SLC.csh $ref $sec $cnf >> run.sh
 		# standard out of the box version
-		echo p2p_processing.csh ${sat} ${ref} ${sec} ${cnf} >> run.sh
+		echo "p2p_processing.csh ${sat} ${ref} ${sec} ${cnf}" >> run.sh
 		# Kurt's modified version
      	#echo p2p_processingKF.csh ${sat} $ref $sec $cnf >> run.sh
 	fi
@@ -218,12 +219,10 @@ else
     echo "unknown sat $sat"
 fi
 
+# handle post-processing
+echo "post_process_pair.sh ${site} ${ref} ${sec}" >> run.sh
+
 # make run.sh executable 
 chmod +x run.sh
 
-#cd ..
-echo "print working directory:"
-pwd
-echo "Nonsider running the following command"
-echo "cd $pairdir; ./run.sh"
-#exit 0
+exit 0

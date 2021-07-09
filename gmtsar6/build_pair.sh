@@ -1,10 +1,12 @@
-#!/bin/bash -vex
-#!/usr/bin/env -S bash -x
+#!/bin/bash 
+
 # for debugging, add "-vx" switch after "bash" in the shebang line above.
 # switches in line above:
 #      -e exit on error
 #      -v verbose
 #      -x examine
+
+# based on /home/batzli/bin_htcondor/run_pair_gmtsarv60.sh
 # run_pair_gmtsarv60.sh (this script)
 # how to run a pair of insar images 20160804 Kurt Feigl
 #
@@ -25,6 +27,12 @@
 # edit 20201228 batzli added some breaks for troublshooting
 # edit 20210305 batzli ran successful pair, removed exit before result file cutting, moving, and cleanup, moved a >cd and actual >./run.sh to pair2e.sh
 # edit 20210308 batzli added ${unwrap} variable ("value" [.12] or empthy) to pass through from run_pair_DAG_gmtsarv60.sh to here (run_pair_gmtsarv60.sh) then to pair2e.sh
+
+### 2021/07/08 ***
+# change name of script to build_pair.sh 
+# clean out anything not related to TSX
+# This script builds a directory for a run
+# This script does not actually run GMTSAR
 
 if [[ ! $# -eq 14 ]] ; then
     echo '	ERROR: $0 requires 14 arguments.'
@@ -47,13 +55,18 @@ fi
 # set satellite and track
 sat=${1}
 trk=${2}
+itrk=`echo $trk | sed 's/T//'` 
 # set reference and secondary variables
 ref=${3}
 sec=${4}
-orb1a=`expr $ref - 1`
+orb1a=`expr $ref - 1`  
 orb2a=`expr $sec - 1`
 user=${5}
 satparam=${6} # extra parameter for satellite specific parameters (e.g., for S1A satparam = subswath number)
+# remove underscore
+swath=`echo $satparam | sed 's/_//'`
+echo "swath is $swath"
+
 demf=${7}
 # set filter wavelength
 filter_wv=${8}
@@ -81,74 +94,87 @@ else
 fi
 echo "DATADIR is $DATADIR"
 
+# make a directory for this pair
+pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
 
-# set up ssh transfer (for HTCONDOR only, [missing destination dir?] move up to conditional)
+if [[ ! -d ${pairdir} ]]; then
+    mkdir -p ${pairdir}
+    cd ${pairdir}
 
+    # copy cut grid file
+    mkdir -p dem 
+    cd dem
+    cp ${DATADIR}/insar/dem/cut_$demf ./$demf
+    cd ..
 
-# make local directories for local copies of data and dem
-#if [ ! -d "/s12/${user}/RAW" ] ; then
-if [ ! -d "./RAW" ] ; then
-	mkdir RAW
+    ## get data from askja
+    mkdir -p RAW
+    cd RAW
+    longfilename1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
+    echo "longfilename1 is $longfilename1"
+    cp -r $longfilename1 .
+
+    ## get secondary data to working directory
+    longfilename2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
+    echo "longfilename2 is $longfilename2"
+    cp -r $longfilename2 .
+    cd ../
+
+    # run a script to write a script (run.sh)
+    write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
+
+    # copy the FringeFlow scripts
+    mkdir -p FringeFlow
+    # cd FringeFlow
+    # cp -r ${HOME}/FringeFlow/gmtsar6 .
+    # cp -r ${HOME}/FringeFlow/gmtsar-aux .
+    # cp -r ${HOME}/FringeFlow/docker .
+    # cp -r ${HOME}/FringeFlow/sh .
+    # cd ..
+    rsync --exclude=".git" -ra ${HOME}/FringeFlow .
+
+    # copy the bin_htcondor scripts
+    rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
+
+    # copy makefile for plotting routines
+    cd In${ref}_${sec}
+    cp /home/batzli/bin_htcondor/plotting.make .
+    cd ..
+
+    # copy setup file
+    cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
+
+    # make a tar file
+    tgzfile=${pairdir}.tgz
+    echo "Making tar file named ${tgzfile}"
+    tar -czf ../$tgzfile ./
+    cd ../
+
+    # transfer the tar file
+    if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+        mkdir -p /s12/insar/
+        cp -v  $tgzfile /s12/insar/
+        ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
+        time rsync --progress -av $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        # clean up after pair is transferred
+        # rm -fv $tgzfile
+    else
+        echo "Cannot find a place to transfer tar file named $tgzfile"
+    fi
+
+    # send the executable to CHTC
+    rsync -rav /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+
+    # make a submit file and send to CHTC
+    cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sub | sed "s/FORGE_TSX_T30_strip004_20200415_20210505.tgz/${pairdir}.tgz/" > ${pairdir}.sub
+    rsync -rav ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+ 
+    # submit the job
+    ssh submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub"
+
 fi
-#if [ ! -d "/s12/${user}/dem" ] ; then
-if [ ! -d "./dem" ] ; then
-	mkdir dem
-fi
 
-# transfer cut grid file to job server (for moving to submit-2)
-# scp $askja:${HOME}/insar/condor/feigl/insar/dem/cut_$demf dem/$demf
-# copy cut grid for current use
-cp ${DATADIR}/insar/dem/cut_$demf dem/$demf
+# check on status of jobs
+ssh submit-2.chtc.wisc.edu "condor_q"
 
-# get data from askja
-cd RAW
-## get reference data to working directory
-swath=`echo $satparam | awk '{print substr($1,7,3)}'`
-echo "swath is $swath"
-#longfilename1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
-longfilename1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
-echo "longfilename1 is $longfilename1"
-cp -r $longfilename1 .
-
-## get secondary data to working directory
-swath=`echo $satparam | awk '{print substr($1,7,3)}'`
-echo "swath is $swath"
-#longfilename2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
-longfilename2=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
-echo "longfilename2 is $longfilename2"
-cp -r $longfilename2 .
-
-echo "leaving RAW"
-cd ../
-echo "in $0 working directory is now $PWD"
-pwd
-
-# run a script to write a script (run.sh)
-write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
-
-# make the run script executable
-chmod a+x In${ref}_${sec}/run.sh
-
-# make a tar file
-tgzfile=In${ref}_${sec}_in.tgz
-tar -czvf $tgzfile In${ref}_${sec}
-
-# transfer the tar file
-if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
-    mkdir -p /s12/insar/${SITE}/TSX
-    cp -v  $tgzfile /s12/insar/${SITE}/TSX
-    ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar/TSX
-    time rsync --progress -rav $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/TSX
-    # clean up after pair is transferred
-    # rm -fv In${ref}_${sec}.tgz
-elif [[ -d /staging/groups/geoscience/insar/TSX ]]; then
-    mkdir -p /staging/groups/insar/${SITE}/TSX
-    cp -v  $tgzfile /staging/groups/insar/${SITE}/TSX
-    # clean up after pair is transferred
-    #rm -fv $tgzfile
-else
-    echo "Cannot find a place to transfer tar file named $tgzfile"
-    # clean up 
-    # rm -rf In${ref}_${sec}
-fi
 exit 0

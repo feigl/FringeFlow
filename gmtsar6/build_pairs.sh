@@ -1,5 +1,8 @@
-#!/bin/bash -vx
-#!/usr/bin/env -S bash -x
+#!/bin/bash
+
+# build directories for running gmtsar6. 
+# based on /home/batzli/bin_htcondor/run_pair_DAG_gmtsarv60.sh
+
 # 	switches in line above after "bash"
 # 	-x  Print commands and their arguments as they are executed.
 # 	-e  Exit immediately if a command exits with a non-zero status.
@@ -37,7 +40,7 @@ elif [ "$#" -eq 2 ]; then
 	unwrap=${2}
 else
    echo "usage: this script expects a PAIRSmake.txt file and numerical value for threshold_snaphu"
-   echo "$0 PAIRSmake.txt"
+   echo "$0 PAIRSmake.txt 0"
    echo "$0 PAIRSmake.txt 0.12"
    exit 0
 fi
@@ -72,33 +75,24 @@ ymin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $3}'`
 ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
 
 ### set DEM and make sure cut version of DEM exists on askja
-   #echo "check for cut dem on askja"
-   #echo ASKJA = $askja
-   # get DEM from input file
-   demf=`grep dem $1 | tail -1 | awk '{print $18}'`
-   #echo "demf is $demf"
-
-   #since we are on askja, don't need to ssh to it but just run it. also should current user's bin_htcondor directory -- batzli 20210211 
-   #ssh -Y $askja "/home/batzli/bin_htcondor/prepDEMforCondorJob.sh $demf $xmin $xmax $ymin $ymax"  # 20200106 change location to groups folder
-
-   #batzli edited prepDEMforCondorJob.sh for use on Askja 20210211 and set /s12/insar/dem as the main directory
-   #~/bin_htcondor/prepDEMforCondorJob.sh $demf $xmin $xmax $ymin $ymax
-   #prepDEMforCondorJob.sh $demf $xmin $xmax $ymin $ymax
+# get DEM from input file
+demf=`grep dem $1 | tail -1 | awk '{print $18}'`
+#echo "demf is $demf"
 
 ### check variables
-   #I believe next will be: 
-   #~/bin_htcondor/run_pair_gmtsarv60.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site
-   # but some variables are missing: ($satparam) need to find source
-   # echo "Currently defined Variables:"
-   # echo "sat=$sat track=$track ref=$ref sec=$sec"
-   # echo "user=$user" 
-   # echo "satparam=$satparam"
-   # echo "dem=$demf"
-   # echo "filter_wv=$filter_wv"
-   # echo "xmin=$xmin xmax=$xmax ymin=$ymin ymax=$ymax"
-   # echo "site=$site"
-   # echo "unwrap=${unwrap}"
-   # echo "missing some so lets keep going..."
+#I believe next will be: 
+#~/bin_htcondor/run_pair_gmtsarv60.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site
+# but some variables are missing: ($satparam) need to find source
+# echo "Currently defined Variables:"
+# echo "sat=$sat track=$track ref=$ref sec=$sec"
+# echo "user=$user" 
+# echo "satparam=$satparam"
+# echo "dem=$demf"
+# echo "filter_wv=$filter_wv"
+# echo "xmin=$xmin xmax=$xmax ymin=$ymin ymax=$ymax"
+# echo "site=$site"
+# echo "unwrap=${unwrap}"
+# echo "missing some so lets keep going..."
 
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair

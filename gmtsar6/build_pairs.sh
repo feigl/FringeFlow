@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 # build directories for running gmtsar6. 
 # based on /home/batzli/bin_htcondor/run_pair_DAG_gmtsarv60.sh
@@ -39,9 +39,10 @@ if [ "$#" -eq 1 ]; then
 elif [ "$#" -eq 2 ]; then
 	unwrap=${2}
 else
-   echo "usage: this script expects a PAIRSmake.txt file and numerical value for threshold_snaphu"
+   echo "usage: this script expects a PAIRSmake.txt file and, optionally, a numerical value for threshold_snaphu"
    echo "$0 PAIRSmake.txt 0"
    echo "$0 PAIRSmake.txt 0.12"
+   echo "Note that last line of file must be blank or a comment."
    exit 0
 fi
 
@@ -62,17 +63,11 @@ if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
 else
     export DATADIR=${HOME}
 fi
-echo "DATADIR is $DATADIR"
+#cho "DATADIR is $DATADIR"
 
 # set filter wavelength
 filter_wv=`tail -1 $1 | awk '{print $19}'`
 
-# set cut region in latitude and longitude
-site=`tail -1 $1 | awk '{print $12}'`
-xmin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $1}'`
-xmax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $2}'`
-ymin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $3}'`
-ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
 
 ### set DEM and make sure cut version of DEM exists on askja
 # get DEM from input file
@@ -94,38 +89,67 @@ demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 # echo "unwrap=${unwrap}"
 # echo "missing some so lets keep going..."
 
+# use this syntax
+# https://www.cyberciti.biz/faq/bash-check-if-string-starts-with-character-such-as/
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair
 
+# 1         2         3      4      5                    6                    7    8    9   10       11        12      13     14      15     16     17   18                     19
 # a         b         c      d      e                    f                    g    h    i    j       k          l      m       n      o      p      q    r                       s
 # mast      slav      orb1   orb2   doy_mast             doy_slav             dt   nan  trk  orbdir  swath      site   wv      bpar   bperp  burst  sat  dem                     filter_wv   
 # 20200415  20210505  54442  60287  105.054610604005006  124.054702444455998  385  NAN  T30  A       strip_004  forge  0.0311  -20.4  6.7    nan    TSX  forge_dem_3dep_10m.grd  80                      
 
-
-while read -r a b c d e f g h i j k l m n o p q r s; do
 # ignore commented lines
+#  [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
+
+# initialize counters
+kount=0
+ngood=0
+# loop over lines in make file
+while read -r a b c d e f g h i j k l m n o p q r s ; do
+let "kount+=1"
+#echo On line $i  a is $a
+  # syntax must be exactly as on follwing line. No quotes around special characters. No "if" statement. 
+  # Next line of code will try to process a blank line
+  # [[ $a =~ ^#.* ]] && continue
+  # Next line of code will skip over blank lines
   [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
-ref=$a
-sec=$b
-track=$i
-filter_wv=$s #added by Kurt and Sam 2021/07/02
-sat=$q
-if [[ "$sat" == "TDX" ]]; then
-   sat="TSX"
-fi
-satparam=$k
-# echo "ref=$ref"
-# echo "sec=$sec"
-# echo "track=$track"
-# echo "sat=$sat"
-# echo "satparam=$satparam"
-# echo "unwrap=${unwrap}"
+   let "ngood+=1"  
+   ref=$a
+   sec=$b
+   track=$i
+   sat=$q
+   if [[ "$sat" == "TDX" ]]; then
+      sat="TSX"
+   fi
+   satparam=$k
+   # remove underscore
+   swath=`echo $satparam | sed 's/_//'`
+   #echo "swath is $swath"
 
-build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
+   demf=$r
+   filter_wv=$s #added by Kurt and Sam 2021/07/02
 
-done < $1   # end of "while read" loop from above
+   # set cut region in latitude and longitude
+   site=$l
+   xmin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $1}'`
+   xmax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $2}'`
+   ymin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $3}'`
+   ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
 
+   # make a directory for this pair
+   pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
 
+   echo ""
+   echo ""
+   echo "LAUNCHING PAIR ${ngood} on ${pairdir}"
+   echo "build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap"
+   time build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap | tee ${pairdir}.log 
+done < "$1"   # end of "while read" loop from above
+echo ""
+echo ""
+echo "Processed $ngood good lines of $kount lines total in file $1"
+echo "Normal end of $0"
 
 
 

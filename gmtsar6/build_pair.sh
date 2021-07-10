@@ -36,6 +36,7 @@
 
 if [[ ! $# -eq 14 ]] ; then
     echo '	ERROR: $0 requires 14 arguments.'
+    echo "  Number of arguments actually received ${#}"
     echo '	Usage: $0 sat trk ref sec user satparam demf filter_wv xmin xmax ymin ymax site'
     echo '	$1=sat'
     echo '	$2=trk'
@@ -65,7 +66,7 @@ user=${5}
 satparam=${6} # extra parameter for satellite specific parameters (e.g., for S1A satparam = subswath number)
 # remove underscore
 swath=`echo $satparam | sed 's/_//'`
-echo "swath is $swath"
+#echo "swath is $swath"
 
 demf=${7}
 # set filter wavelength
@@ -92,89 +93,89 @@ if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
 else
     export DATADIR=${HOME}
 fi
-echo "DATADIR is $DATADIR"
+#echo "DATADIR is $DATADIR"
 
 # make a directory for this pair
 pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
+echo "pairdir is $pairdir"
 
-if [[ ! -d ${pairdir} ]]; then
-    mkdir -p ${pairdir}
-    cd ${pairdir}
+mkdir -p ${pairdir}
+cd ${pairdir}
 
-    # copy cut grid file
-    mkdir -p dem 
-    cd dem
-    cp ${DATADIR}/insar/dem/cut_$demf ./$demf
-    cd ..
+# copy cut grid file
+mkdir -p dem 
+cd dem
+cp ${DATADIR}/insar/dem/cut_$demf ./$demf
+cd ..
 
-    ## get data from askja
-    mkdir -p RAW
-    cd RAW
-    longfilename1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
-    echo "longfilename1 is $longfilename1"
-    cp -r $longfilename1 .
-
-    ## get secondary data to working directory
-    longfilename2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
-    echo "longfilename2 is $longfilename2"
-    cp -r $longfilename2 .
-    cd ../
-
-    # run a script to write a script (run.sh)
-    write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
-
-    # copy the FringeFlow scripts
-    mkdir -p FringeFlow
-    # cd FringeFlow
-    # cp -r ${HOME}/FringeFlow/gmtsar6 .
-    # cp -r ${HOME}/FringeFlow/gmtsar-aux .
-    # cp -r ${HOME}/FringeFlow/docker .
-    # cp -r ${HOME}/FringeFlow/sh .
-    # cd ..
-    rsync --exclude=".git" -ra ${HOME}/FringeFlow .
-
-    # copy the bin_htcondor scripts
-    rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
-
-    # copy makefile for plotting routines
-    cd In${ref}_${sec}
-    cp /home/batzli/bin_htcondor/plotting.make .
-    cd ..
-
-    # copy setup file
-    cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
-
-    # make a tar file
-    tgzfile=${pairdir}.tgz
-    echo "Making tar file named ${tgzfile}"
-    tar -czf ../$tgzfile ./
-    cd ../
-
-    # transfer the tar file
-    if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
-        mkdir -p /s12/insar/
-        cp -v  $tgzfile /s12/insar/
-        ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
-        time rsync --progress -av $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
-        # clean up after pair is transferred
-        # rm -fv $tgzfile
-    else
-        echo "Cannot find a place to transfer tar file named $tgzfile"
-    fi
-
-    # send the executable to CHTC
-    rsync -rav /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
-
-    # make a submit file and send to CHTC
-    cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sub | sed "s/FORGE_TSX_T30_strip004_20200415_20210505.tgz/${pairdir}.tgz/" > ${pairdir}.sub
-    rsync -rav ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
- 
-    # submit the job
-    ssh submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub"
-
+## get data from askja
+mkdir -p RAW
+cd RAW
+longfilename1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
+#echo "longfilename1 is $longfilename1"
+if [[ ! -d $longfilename1 ]]; then
+    echo "ERROR $0 Cannot find $longfilename1"
+    exit -1
 fi
+cp -r $longfilename1 .
+
+## get secondary data to working directory
+longfilename2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
+#echo "longfilename2 is $longfilename2"
+if [[ ! -d $longfilename2 ]]; then
+    echo "ERROR $0 Cannot find $longfilename2"
+    exit -1
+fi
+cp -r $longfilename1 .
+
+cp -r $longfilename2 .
+cd ../
+
+# run a script to write a script (run.sh)
+write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
+
+# copy the FringeFlow scripts, excluding source code control stuff in .git folder
+rsync --exclude=".git" -ra ${HOME}/FringeFlow .
+
+# copy the bin_htcondor scripts, excluding source code control stuff in .git folder
+rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
+
+# copy makefile for plotting routines
+cd In${ref}_${sec}
+cp /home/batzli/bin_htcondor/plotting.make .
+cd ..
+
+# copy setup file
+cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
+
+# make a tar file
+tgzfile=${pairdir}.tgz
+echo "Making tar file named ${tgzfile}"
+tar -czf ../$tgzfile ./
+cd ../
+
+# transfer the tar file
+if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+    mkdir -p /s12/insar/
+    cp -f  $tgzfile /s12/insar/
+    ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
+    rsync --progress -a $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+    # clean up after pair is transferred
+    rm -f $tgzfile
+else
+    echo "Cannot find a place to transfer tar file named $tgzfile"
+fi
+
+# send the executable to CHTC
+rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+
+# make a submit file and send to CHTC
+cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sub | sed "s/FORGE_TSX_T30_strip004_20200415_20210505.tgz/${pairdir}.tgz/" > ${pairdir}.sub
+rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+
+# submit the job
+ssh submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub"
+
 
 # check on status of jobs
 ssh submit-2.chtc.wisc.edu "condor_q"
-
-exit 0

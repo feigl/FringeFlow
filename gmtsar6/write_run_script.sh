@@ -49,7 +49,7 @@ orb1b=`expr $ref + 1`
 orb2a=`expr $ref - 1`
 orb2b=`expr $ref + 1`
 homedir=`pwd`
-echo "Working directory homedir is $homedir"
+#echo "Working directory homedir is $homedir"
 
 # if [ $# -lt 3 ] ; then
 # 	echo " Usage: pair2.sh ERS 12345 67890 dem/dem.grd [conf.ers.txt]"
@@ -62,7 +62,7 @@ if [ $# -gt 3 ] ; then
   TSX)
     # should already be in container
 	if [[ -f /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt ]]; then
-       cp -v /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
+       cp -f /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
 	fi
     cnf=$homedir/config.tsx.txt
     ;;
@@ -78,7 +78,7 @@ else
     cnf=$homedir/config.s1a.txt
 fi
 
-echo "Config file cnf is $cnf"
+#echo "Config file cnf is $cnf"
 
 
 if [ $# -ge 5 ] ; then
@@ -88,12 +88,12 @@ fi
 
 # Edit configuration file for unwrapping (default if not edited is "0" meaning "no")
 # this test checks to see if the variable is set as an expression that evaluates to nothing if unwrap is unset
-echo "the unwrap variable is ${unwrap}"
-echo "the config file is ${cnf}"
+#echo "the unwrap variable is ${unwrap}"
+#echo "the config file is ${cnf}"
 if [[ ${unwrap} != 0 ]]; then
 #if [ -z ${unwrap+x} ]; then 
 	sed -i "/threshold_snaphu/c\threshold_snaphu = ${unwrap}" $cnf
-	echo "setting the threshold_snaphu to ${unwrap}"
+	#echo "setting the threshold_snaphu to ${unwrap}"
 fi
 	
 # construct path to RAW data
@@ -106,14 +106,14 @@ RAWdir=../../RAW
 # construct name for In directory
 inpairdir=In${ref}_${sec}
 if [ -d $inpairdir ]; then
-	echo "removing existing inpairdir named $inpairdir"
+	#echo "removing existing inpairdir named $inpairdir"
    	rm -rf $inpairdir
 fi
 mkdir $inpairdir
 cd $inpairdir
 cp $cnf .
 cnf=`basename $cnf`
-echo "Configuration filename cnf is $cnf"
+#echo "Configuration filename cnf is $cnf"
 
 # This may or may not have changed in v6.0
 mkdir raw intf SLC topo
@@ -123,7 +123,7 @@ mkdir raw intf SLC topo
 cd topo
 #ln -s ../$demgrd dem.grd #attempted fix for below broke the processing.  Needs to be fixed in the move.
 #ln -s ../../$demgrd dem.grd #this broke when moving files up and out $DOY directory -- SAB 06/30/21
-cp -v ../../$demgrd dem.grd # copy, do not link
+cp -f ../../$demgrd dem.grd # copy, do not link
 cd ..
 
 # set up links to RAW 
@@ -153,14 +153,14 @@ if [ "$sat" == "TSX" ] ; then
 
 	#longdirname1=`grep ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | sed 's%/s12/%/root/%' | awk '{print $12}'`
     longdirname1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref}  | awk '{print $12}'`
-	echo "longdirname1 is $longdirname1"
+	#echo "longdirname1 is $longdirname1"
 	longbasename1=`basename $longdirname1`
-	echo "longbasename is $longbasename1"
+	#echo "longbasename is $longbasename1"
 	#longdirname2=`grep ${site} ${DATDIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | sed 's%/s12/%/root/%' | awk '{print $12}'`
 	longdirname2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec}  | awk '{print $12}'`
-	echo "longdirname2 is $longdirname2"
+	#echo "longdirname2 is $longdirname2"
 	longbasename2=`basename $longdirname2`
-	echo "longbasename2 is $longbasename2"
+	#echo "longbasename2 is $longbasename2"
 
 	# # copy the whole thing
 	# cp -r $RAWdir/$longbasename1 .
@@ -200,7 +200,7 @@ cd ..
 # start to write the commands for the run script with sebang
 echo '#!/bin/bash -vx' > run.sh
 
-echo SAT = $sat
+#echo SAT = $sat
 
 # build the command [p2p_processing.csh now handles TSX and other sats that don't have their own scripts, but order of args has probably changed]
 if [[ "$sat" == "TSX" ]] ; then
@@ -225,4 +225,3 @@ echo "post_process_pair.sh ${site} ${ref} ${sec}" >> run.sh
 # make run.sh executable 
 chmod +x run.sh
 
-exit 0

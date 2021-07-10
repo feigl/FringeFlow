@@ -76,8 +76,8 @@ xmin=${9}
 xmax=${10}
 ymin=${11}
 ymax=${12}
-#site=${13}
-site=`echo ${13} | awk '{ print toupper($1) }'`
+site=${13}
+SITE=`echo ${13} | awk '{ print toupper($1) }'`
 unwrap=${14}
 
 # set remote user on chtc
@@ -96,7 +96,7 @@ fi
 #echo "DATADIR is $DATADIR"
 
 # make a directory for this pair
-pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
+pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 echo "pairdir is $pairdir"
 
 mkdir -p ${pairdir}

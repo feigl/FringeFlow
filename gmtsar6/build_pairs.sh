@@ -136,15 +136,17 @@ let "kount+=1"
    xmax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $2}'`
    ymin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $3}'`
    ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
+   SITE=`echo ${site} | awk '{ print toupper($1) }'`
+
 
    # make a directory for this pair
-   pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
+   pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 
    echo ""
    echo ""
    echo "LAUNCHING PAIR ${ngood} on ${pairdir}"
    echo "build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap"
-   time build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap | tee ${pairdir}.log 
+   build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap | tee ${pairdir}.log 
 done < "$1"   # end of "while read" loop from above
 echo ""
 echo ""

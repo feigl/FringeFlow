@@ -4,6 +4,7 @@ timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
 # move output from DOY_DOY folder into InYYYYMDD_YYYMMDD
+
 if [[ ! $# -eq 3 ]] ; then
     bname=`basename ${0}`
     echo "${bname} will move GMTSAR output from DOY_DOY folder into InYYYYMDD_YYYMMDD"
@@ -80,8 +81,13 @@ if [[ ! $# -eq 3 ]] ; then
         echo "arc_std = ${arc_std}"
         echo "arc_rms = ${arc_rms}"
         rm arc.grd
-    #else
-    #	pair_status=0
+    elif [[ -e "phasefilt_ll.grd" ]]; then
+        pair_status=1
+        arc_mean='NaN'
+        arc_std="NaN"
+        arc_rms="NaN"
+    else
+    	pair_status=0
     fi
 
     echo "pair_status is now ${pair_status}"

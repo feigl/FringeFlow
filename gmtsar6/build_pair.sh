@@ -77,14 +77,14 @@ xmax=${10}
 ymin=${11}
 ymax=${12}
 site=${13}
-SITE=`echo ${13} | awk '{ print toupper($1) }'`
+SITE=`echo ${site} | awk '{ print toupper($1) }'`
 unwrap=${14}
 
 # set remote user on chtc
-if [[ ${user} = "batzli" ]]; then
+if [[ ${USER} = "batzli" ]]; then
    ruser="sabatzli"
 else
-   ruser=${user}
+   ruser=${USER}
 fi
 
 # set data directory
@@ -99,83 +99,97 @@ fi
 pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 echo "pairdir is $pairdir"
 
-mkdir -p ${pairdir}
-cd ${pairdir}
+# do this for debugging
+# touch ${pairdir}.tgz
+# date > ${pairdir}.sub
 
-# copy cut grid file
-mkdir -p dem 
-cd dem
-cp ${DATADIR}/insar/dem/cut_$demf ./$demf
-cd ..
+if [[ ! -f ${pairdir}.tgz ]]; then
+    mkdir -p ${pairdir}
+    cd ${pairdir}
 
-## get data from askja
-mkdir -p RAW
-cd RAW
-longfilename1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
-#echo "longfilename1 is $longfilename1"
-if [[ ! -d $longfilename1 ]]; then
-    echo "ERROR $0 Cannot find $longfilename1"
-    exit -1
+    # copy cut grid file
+    mkdir -p dem 
+    cd dem
+    cp ${DATADIR}/insar/dem/cut_$demf ./$demf
+    cd ..
+
+    ## get data from askja
+    mkdir -p RAW
+    cd RAW
+    longfilename1=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${ref} | awk '{print $12}'`
+    #echo "longfilename1 is $longfilename1"
+    if [[ ! -d $longfilename1 ]]; then
+        echo "ERROR $0 Cannot find $longfilename1"
+        exit -1
+    fi
+    cp -r $longfilename1 .
+
+    ## get secondary data to working directory
+    longfilename2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
+    #echo "longfilename2 is $longfilename2"
+    if [[ ! -d $longfilename2 ]]; then
+        echo "ERROR $0 Cannot find $longfilename2"
+        exit -1
+    fi
+    cp -r $longfilename1 .
+
+    cp -r $longfilename2 .
+    cd ../
+
+    # run a script to write a script (run.sh)
+    write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
+
+    # copy the FringeFlow scripts, excluding source code control stuff in .git folder
+    rsync --exclude=".git" -ra ${HOME}/FringeFlow .
+
+    # copy the bin_htcondor scripts, excluding source code control stuff in .git folder
+    rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
+
+    # copy makefile for plotting routines
+    # cd In${ref}_${sec}
+    # cp /home/batzli/bin_htcondor/plotting.make .
+    # cd ..
+
+    # copy setup file
+    cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
+
+    # make a tar file
+    tgzfile=${pairdir}.tgz
+    echo "Making tar file named ${tgzfile}"
+    tar -czf ../$tgzfile ./
+    cd ..
+
+    # transfer the tar file
+    if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+        mkdir -p /s12/insar/
+        cp -f  $tgzfile /s12/insar/
+        #ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
+        rsync --progress -av $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        # clean up after pair is transferred
+        #rm -f $tgzfile
+    else
+        echo "Cannot find a place to transfer tar file named $tgzfile"
+    fi
+
+    # send the executable to CHTC
+    #rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+
+    # make a submit file and send to CHTC
+    cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
+    #rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 fi
-cp -r $longfilename1 .
 
-## get secondary data to working directory
-longfilename2=`grep -i ${site} ${DATADIR}/insar/TSX/TSX_OrderList.txt | grep ${sec} | awk '{print $12}'`
-#echo "longfilename2 is $longfilename2"
-if [[ ! -d $longfilename2 ]]; then
-    echo "ERROR $0 Cannot find $longfilename2"
-    exit -1
-fi
-cp -r $longfilename1 .
-
-cp -r $longfilename2 .
-cd ../
-
-# run a script to write a script (run.sh)
-write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
-
-# copy the FringeFlow scripts, excluding source code control stuff in .git folder
-rsync --exclude=".git" -ra ${HOME}/FringeFlow .
-
-# copy the bin_htcondor scripts, excluding source code control stuff in .git folder
-rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
-
-# copy makefile for plotting routines
-cd In${ref}_${sec}
-cp /home/batzli/bin_htcondor/plotting.make .
-cd ..
-
-# copy setup file
-cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
-
-# make a tar file
-tgzfile=${pairdir}.tgz
-echo "Making tar file named ${tgzfile}"
-tar -czf ../$tgzfile ./
-cd ../
-
-# transfer the tar file
-if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
-    mkdir -p /s12/insar/
-    cp -f  $tgzfile /s12/insar/
-    ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
-    rsync --progress -a $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
-    # clean up after pair is transferred
-    rm -f $tgzfile
-else
-    echo "Cannot find a place to transfer tar file named $tgzfile"
-fi
-
-# send the executable to CHTC
-rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
-
-# make a submit file and send to CHTC
-cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sub | sed "s/FORGE_TSX_T30_strip004_20200415_20210505.tgz/${pairdir}.tgz/" > ${pairdir}.sub
-rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
-
+#echo "Current working directory is now ${PWD}"
 # submit the job
-ssh submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub"
-
-
+# The next line of code fails to return
+#ssh -T submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub" 
+# use try "-t" swicth this instead
+if [[ -f ${pairdir}.sub ]]; then
+    #ls -l ${pairdir}.sub
+    #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'
+    #echo "ls -l ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu  
+    #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+    echo "condor_submit ${pairdir}.sub" >> submit_all.sh
+fi
 # check on status of jobs
-ssh submit-2.chtc.wisc.edu "condor_q"
+# ssh submit-2.chtc.wisc.edu "condor_q"

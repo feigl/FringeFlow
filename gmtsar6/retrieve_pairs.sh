@@ -14,6 +14,7 @@ fi
 
 echo "site is $site"
 echo "pairlist is $pairlist"
+SITE=`echo ${site} | awk '{ print toupper($1) }'`
 
 # set user
 user=`echo $HOME | awk -F/ '{print $(NF)}'`
@@ -35,7 +36,13 @@ else
 fi
 echo "DATADIR is $DATADIR"
 
+# get the output files
 rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
+
+# get the log files. It would be better to pull these by names
+rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.log" .
+rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.out" .
+rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.err" .
  
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair

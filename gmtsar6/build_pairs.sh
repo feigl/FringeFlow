@@ -102,6 +102,8 @@ demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 # ignore commented lines
 #  [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
 
+# start list of jobs
+echo "#!/bin/bash" > submit_all.sh
 # initialize counters
 kount=0
 ngood=0
@@ -136,8 +138,8 @@ let "kount+=1"
    xmax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $2}'`
    ymin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $3}'`
    ymax=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $4}'`
-   SITE=`echo ${site} | awk '{ print toupper($1) }'`
 
+   SITE=`echo ${site} | awk '{ print toupper($1) }'`
 
    # make a directory for this pair
    pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}

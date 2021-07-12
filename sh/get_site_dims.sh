@@ -4,6 +4,7 @@
 # batzli update 20210304 made more universal with $user variable but requires each user have /gmtsar-aux in their home directory as with /bin_htcondor
 # 2021/03/18 Kurt and Sam, make "batzli" the user to hold the data base
 # 2021/07/05 Kurt update to use local copy of file named site_dims.txt 
+# 2021/07/07 Kurt update handle upper or lower case
 
 # SITE 5 LETTER CODE NAMES
 #
@@ -34,10 +35,6 @@ if [[ $# -eq 1 ]]; then
 fi
 
 # get user name for location of text file 
-# user=`echo $HOME | awk -F/ '{print $(NF)}'`
-# on Askja, Sam Batzli holds reference (and only) copy of this data base.
-# It is private. 
-#user="batzli"
 
 if [[ -f $HOME/gmtsar-aux/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/gmtsar-aux/site_dims.txt
@@ -51,20 +48,11 @@ else
     exit -1
 fi
 
-site=$1
-coord_id=$2
+#site=$1
+# 2021/07/08 make lower case
+site=`echo ${1} | awk '{ print tolower($1) }'`
 
-# if [[ `grep $site $SITE_TABLE | wc -l` -gt 0 ]]; then
-#   if [[ `grep $site -A${coord_id} $SITE_TABLE | tail -1 | wc -w` -gt 0 ]]; then  
-#     echo $(grep $site -A${coord_id} $SITE_TABLE | tail -1)
-#   else 
-#     echo "option not yet defined for this site."
-#     exit 1
-#   fi
-# else 
-#   echo "site undefined."
-#   exit 1
-# fi
+coord_id=${2}
 
 grep -i $site $SITE_TABLE > t1.tmp
 if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then 

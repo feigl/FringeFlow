@@ -1,0 +1,62 @@
+# run_pair_gmtsar.sub
+# Run 1 interferometric pair using GMTSAR under ht_condor
+
+# 2021/07/08 Kurt Feigl
+universe = docker
+
+# Docker image
+#docker_image = docker.io/nbearson/isce_mintpy:latest 
+#docker_image = docker.io/isce/isce2:latest
+#docker_image = docker.io/benjym/insar
+#docker_image = docker.io/nbearson/isce_chtc2
+ docker_image = nbearson/gmtsar
+
+# files
+log    = run_pair_gmtsar.$(Process).log 
+output = run_pair_gmtsar.$(Process).out
+error  = run_pair_gmtsar.$(Process).err
+
+executable = run_pair_gmtsar.sh
+
+### prepare large data file on askja with a name like this:
+    # build_pairs.sh PAIRSmake.txt 0
+    # rsync --progress -av FORGE_TSX_T30_strip004_20200415_20210505.tgz feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+
+### do this before submitting
+    # condor_submit run_pair_gmtsar.sub
+
+
+transfer_input_files = run_pair_gmtsar.sh
+
+#arguments = $(Process)
+arguments = FORGE_TSX_T30_strip004_20200415_20210505.tgz
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+request_cpus = 1
+request_memory = 40GB
+request_disk = 200GB
+
+#https://batchdocs.web.cern.ch/tutorial/exercise9a.html
+Requirements           = OpSysAndVer =?= "CentOS7"
+
+# IMPORTANT! Require execute servers that can access /staging
+Requirements = (Target.HasCHTCStaging == true)
+
+queue
+
+### Think about multiple runs
+    #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
+    # Example 3
+    #   queue input,arguments from (
+    #    file1, -a -b 26
+    #    file2, -c -d 92
+    # )
+    #Using the from form of the options, each of the two variables specified is given a value from the list of items. For this example the queue command expands to
+    #  input = file1
+    #  arguments = -a -b 26
+    #  queue 
+    #  input = file2
+    #  arguments = -c -d 92
+    #  queue

@@ -9,7 +9,7 @@ universe = docker
 #docker_image = docker.io/isce/isce2:latest
 #docker_image = docker.io/benjym/insar
 #docker_image = docker.io/nbearson/isce_chtc2
- docker_image = nbearson/gmtsar
+ docker_image = nbearson/gmtsar:latest
 
 # files
 log    = run_pair_gmtsar.$(Process).log 

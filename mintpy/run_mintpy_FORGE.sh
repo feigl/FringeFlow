@@ -6,11 +6,12 @@
 ### inside the container 
 # prep_isce.py must have permissions to write ../isce
 
-source /opt/isce2/isce_env.sh
-export PATH=$PATH:$HOME/MintPy/mintpy/
+#source /opt/isce2/isce_env.sh
+#export PATH=$PATH:$HOME/MintPy/mintpy/
 
 # need this, too for PyAPS pyaps3
-export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
+#export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
+#export PYTHONPATH=$HOME/MintPy/mintpy/:$HOME/PyAPS
 
 # clean start
 rm -rf pic isce.log 
@@ -18,10 +19,10 @@ rm -rf pic isce.log
 
 # copy keys for ERA PYAPS
 if [ -f ../model.cfg ]; then
-   cp -v ../model.cfg $HOME/PyAPS/pyaps3/model.cfg
+   cp -v ../model.cfg $MINTPY_HOME/PyAPS/pyaps3/model.cfg
 fi
 if [ -f model.cfg ]; then
-   cp -v model.cfg $HOME/PyAPS/pyaps3/model.cfg
+   cp -v model.cfg $MINTPY_HOME/PyAPS/pyaps3/model.cfg
 fi
 #else
 #    echo "ERROR: missing key file named model.cfg"

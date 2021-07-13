@@ -86,7 +86,7 @@ cp -v $HOME/magic.tgz .
 # copy input files
 #cp /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv .
 #cp -r ../TEMPLATE/* .
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/$sit/S1/ISCE/"dem*" ISCE
+#rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/$sit/S1/ISCE/"dem*" ISCE
 # make a copy of executable scripts
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 

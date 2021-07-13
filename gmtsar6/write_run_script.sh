@@ -166,7 +166,8 @@ if [ "$sat" == "TSX" ] ; then
 	# cp -r $RAWdir/$longbasename1 .
 	# cp -r $RAWdir/$longbasename2 .
 
-
+    # need to handle DLR files differently
+	
 	# links for $ref and $sec .cos and .xml with date names for rsynced earlier run_pair_gmtsarv60.sh
 	#XMLref=`find $RAWdir/TDX1_SM_091_strip_005_20201023014507 -name "*.xml" | grep -v ANNOTATION | grep -v iif`
 	XMLref=`find $RAWdir/$longbasename1 -name "*.xml" | grep -v ANNOTATION | grep -v iif`

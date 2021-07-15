@@ -18,6 +18,7 @@ export PATH=${PATH}:${HOME}/FringeFlow/docker
 export PATH=${PATH}:${HOME}/FringeFlow/isce
 export PATH=${PATH}:${HOME}/FringeFlow/mintpy
 export PATH=${PATH}:${HOME}/FringeFlow/ssara
+export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
 
 export PATH=${PATH}:${HOME}/gipht/csh
 

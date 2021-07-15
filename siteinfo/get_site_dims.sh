@@ -1,7 +1,7 @@
 #!/bin/bash
 # script to give dimensions of interest based on site 
 # Elena C Reinisch 20180327
-# batzli update 20210304 made more universal with $user variable but requires each user have /gmtsar-aux in their home directory as with /bin_htcondor
+# batzli update 20210304 made more universal with $user variable but requires each user have /siteinfo in their home directory as with /bin_htcondor
 # 2021/03/18 Kurt and Sam, make "batzli" the user to hold the data base
 # 2021/07/05 Kurt update to use local copy of file named site_dims.txt 
 # 2021/07/07 Kurt update handle upper or lower case
@@ -36,15 +36,15 @@ fi
 
 # get user name for location of text file 
 
-if [[ -f $HOME/gmtsar-aux/site_dims.txt ]]; then
-    export SITE_TABLE=$HOME/gmtsar-aux/site_dims.txt
-elif [[ -f $HOME/FringeFlow/gmtsar-aux/site_dims.txt ]]; then
-    export SITE_TABLE=$HOME/FringeFlow/gmtsar-aux/site_dims.txt
+if [[ -f $HOME/siteinfo/site_dims.txt ]]; then
+    export SITE_TABLE=$HOME/siteinfo/site_dims.txt
+elif [[ -f $HOME/FringeFlow/siteinfo/site_dims.txt ]]; then
+    export SITE_TABLE=$HOME/FringeFlow/siteinfo/site_dims.txt
 elif [[ -f $HOME/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/site_dims.txt
 else
     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
-    echo "consider rsync -rav askja.ssec.wisc.edu:/home/batzli/gmtsar-aux/site_dims.txt $HOME"
+    echo "consider rsync -rav askja.ssec.wisc.edu:/home/batzli/siteinfo/site_dims.txt $HOME"
     exit -1
 fi
 

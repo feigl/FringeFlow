@@ -56,7 +56,7 @@ else if ($SSC == 5) then
  endif
  @ YDAY = $YR * 365 + $DAY
 else if ($SSC == 7) then
- /t31/ebaluyut/gmtsar-aux/GMTSAR_scripts/eTSX_baseline.csh $1 $2 > temp
+ /t31/ebaluyut/siteinfo/GMTSAR_scripts/eTSX_baseline.csh $1 $2 > temp
  #if ($SSC == 7 || $SSC == 8) then
  @ YR = $T0 / 1000 - 2007
  @ YDAY = $YR * 356 + $DAY

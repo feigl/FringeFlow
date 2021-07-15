@@ -1,7 +1,7 @@
 #!/bin/bash -x
  
 tar -C $HOME -xzvf bin_htcondor.tgz 
-tar -C $HOME -xzvf gmtsar-aux.tgz 
+tar -C $HOME -xzvf siteinfo.tgz 
 
 source setup_docker.sh 
 

@@ -24,7 +24,7 @@ cp run_one_pair.sh $runname
 # script things
 cd /home/batzli
 tar -czvf $workdir/$runname/bin_htcondor.tgz bin_htcondor
-tar -czvf $workdir/$runname/gmtsar-aux.tgz gmtsar-aux
+tar -czvf $workdir/$runname/siteinfo.tgz siteinfo
 cd $workdir
 
 cp PAIRSmake.txt $runname

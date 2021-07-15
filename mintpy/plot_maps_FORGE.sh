@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -vex
 
 # plot output of MINTPY as geocoded maps in UTM projection
 # FORGE
@@ -36,24 +36,33 @@ export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
 
 # On Feb 27, 2020, at 14:35, Corné Kreemer <cornelisk@unr.edu> wrote:
 
-# As for the data download: GARL happens automatically (it is a PBO station).
-# WGS84 plotting coordinates for GARL: 40.4165266  -119.3554565
-# reflalo="40.4165266 -119.3554565" # GARL
-# sublat="40.348 40.449" # includes GARL
-# sublon="-119.46 -119.350" #includes GARL
-reflalo="38.38549343099232 -112.8127091435896" # GranitePeak
+
+# sub area of intereste
 # sublat="38.256 38.639" # includes GranitePeak
 # sublon="-113.170  -112.487" #includes GranitePeak
-sublat="38.35 38.60" # includes GranitePeak
-sublon="-112.95  -112.80" #includes GranitePeak
+# sublat="38.35 38.60" # includes GranitePeak
+# sublon="-112.95  -112.80" #includes GranitePeak
+##(base) brady:docker feigl$ get_site_dims.sh forge 1
+#-R-112.9852300488545/-112.7536042430101/38.4450885264283/38.59244067077842
+sublat="38.4450885264283 38.59244067077842" # 
+sublon="-112.9852300488545 -112.7536042430101" #
+midlat=`echo $sublat | awk '{print ($1 + $2)/2.}'`
+midlon=`echo $sublon | awk '{print ($1 + $2)/2.}'`
 
-#figtitle='SanEmidio_SENTINEL_T144f4_referredToGPSstationGARL' # must be one word 
-figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word 
+# reference site
+# reflalo="38.38549343099232 -112.8127091435896" # GranitePeak
+# figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word 
+reflalo="$midlat $midlon" # Midpoint
+figtitle=`echo $PWD | awk '{print $1"_wrtMidpoint"}'` # must be one word 
+vmin="-100" # clip LOS velocity in mm/year
+vmax=" 100" # clip LOS velocity in mm/year
+
 
 
 # get coordinates of sites
-foldername=`dirname $0`
-csvname=`echo ${foldername} | awk '{print $1"/FORGE_GPS_MonitoringCoordinatesOnly.csv"}'`
+#foldername=`dirname $0`
+#csvname=`echo ${foldername} | awk '{print $1"/FORGE_GPS_MonitoringCoordinatesOnly.csv"}'`
+csvname="$HOME/FringeFlow/gmtsar-aux/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 cat ${csvname} | awk -F, 'NR>1{printf("%12.7f %12.7f\n",$3,$4)}' > sites.lalo
     
 ## average velocity
@@ -63,6 +72,15 @@ echo fvel is $fvel
 \cp -uv geo_velocity.h5 ${fvel}.h5
 ls -l ${fvel}.h5
 
+# map of average velocity - study area only
+
+view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
+--scalebar 0.1 0.2 0.2 \
+--cbar-ext both -v $vmin $vmax \
+--unit mm/year  --cbar-label LOS_displacement_[mm/year] --sub-lat ${sublat} --sub-lon ${sublon}  \
+--pts-file sites.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
+
+
 ## complete time series
 #ftse='geo_timeseries_ERA5_ramp_demErr'
 ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
@@ -70,23 +88,22 @@ echo ftse is $ftse
 
 #save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
 
-# map of average velocity - study area only
-view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
---unit mm/year --scalebar 0.3 0.2 0.05 --cbar-label LOS_displacement_[mm/year] --sub-lat ${sublat} --sub-lon ${sublon}  \
---pts-file sites.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
-
 
 # map of average velocity over whole area
+#--scalebar 0.3 0.2 0.05 
 view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} --pts-file sites.lalo --pts-marker '>w' \
---lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year --scalebar 0.3 0.2 0.05  \
+--lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year  \
+--cbar-ext both -v $vmin $vmax \
 --cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
 
 # map all pairs w.r.t. reference in study area
 view.py -o ${ftse}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
+--cbar-ext both -v $vmin $vmax \
 --pts-file sites.lalo --pts-marker '>w' --figext .pdf ${ftse}.h5
 
 # map all pairs w.r.t. reference whole area
 view.py -o ${ftse}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
+--cbar-ext both -v $vmin $vmax \
 --pts-file sites.lalo --pts-marker '>w' ${ftse}.h5
 
 

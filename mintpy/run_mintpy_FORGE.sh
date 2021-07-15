@@ -19,10 +19,10 @@ rm -rf pic isce.log
 
 # copy keys for ERA PYAPS
 if [ -f ../model.cfg ]; then
-   cp -v ../model.cfg $MINTPY_HOME/PyAPS/pyaps3/model.cfg
+   cp -v ../model.cfg /home/ops/PyAPS/pyaps3/model.cfg
 fi
 if [ -f model.cfg ]; then
-   cp -v model.cfg $MINTPY_HOME/PyAPS/pyaps3/model.cfg
+   cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
 fi
 #else
 #    echo "ERROR: missing key file named model.cfg"

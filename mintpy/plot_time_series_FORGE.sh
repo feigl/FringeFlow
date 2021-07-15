@@ -20,22 +20,6 @@ sublon="-113.170  -112.487" #includes GranitePeak
 figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word 
 
 
-# get file with wells
-#\cp -v /Users/feigl/BoxSync/WHOLESCALE/Maps/SanEmidioWells/San_Emidio_Wells_2019WithLatLon.csv  .
-#cat San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $4,$17,$18}' | grep -v '"' > wells.namelalo
-#cat /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $4,$17,$18}' | grep -v '"' > wells.namelalo
-#cat ../../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $4,$17,$18}' | grep -v '"' > wells.namelalo
-#cp ../../wells.namelalo .
-
-#
-# for fbase in hgt incLocal lat lon los shadowMask
-# do
-#     #fname=${fbase}'.rdr'
-#     fname=${fbase}'.rdr.full'
-#     echo 'multilook ' ${fname}
-#     if [ -f ${in_dir}/${fname}.vrt ]; then
-
-
 #tsview.py --lalo 40.364713 -119.405194 --nodisplay --figext .pdf --unit mm --ylim -25 25 --figtitle Well45-21 geo_timeseries_ERA5_ramp_demErr.h5
 
 ## complete time series
@@ -43,9 +27,7 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word
 ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
 echo ftse is $ftse
 
-#cat FORGE_GPS_MonitoringCoordinatesOnly.csv
-foldername=`dirname $0`
-csvname=`echo ${foldername} | awk '{print $1"/FORGE_GPS_MonitoringCoordinatesOnly.csv"}'`
+csvname="$HOME/FringeFlow/gmtsar-aux/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 
 #for wellname in `cat wells.namelalo | awk '{print $1}'`; do
 for wellname in "GDM-09_060519"; do
@@ -68,17 +50,20 @@ for wellname in "GDM-09_060519"; do
       # make time series plot
     # to clip add this switch --ylim -25 25
     tsview.py --outfile ${pdfname1} --lalo ${welllalo} --dpi 600 --ref-lalo ${reflalo} --ylim -15 15 \
-    --show-gps --ref-gps GARL  \
     --nodisplay --figext .pdf --zf  --unit mm ${ftse}.h5
+
+     # Try to add GPS station -- fails
+     # --show-gps --ref-gps GARL  \
+     # downloading site list from UNR Geod Lab: http://geodesy.unr.edu/NGLStationPages/DataHoldings.txt
+     # File "/opt/conda/lib/python3.8/site-packages/mintpy-1.3.0-py3.8.egg/mintpy/utils/plot.py", line 1068, in plot_gps
+     # raise ValueError('input reference GPS site "{}" not available!'.format(inps.ref_gps_site))
+     # ValueError: input reference GPS site "GARL" not available!
 
 
      txtname1=`echo $wellname | awk '{print "Site_"$1"_ts.txt"}'`
      echo txtname1 is ${txtname1}
      slope=`grep slope ${txtname1}`
      echo slope is ${slope}
-
-  
-
    
 	# tag it using ImageMagick
 	fileinfo=`convert ${pdfname2} -ping -format "%t" info:`
@@ -90,6 +75,8 @@ for wellname in "GDM-09_060519"; do
 	 -gravity northeast -annotate +60+250 "$figtitle" \
 	 -gravity northeast -annotate +60+350 "$slope" \
 	 "$pdfname3"
+
+ 
 done
 
 

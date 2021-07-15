@@ -62,7 +62,7 @@ vmax=" 100" # clip LOS velocity in mm/year
 # get coordinates of sites
 #foldername=`dirname $0`
 #csvname=`echo ${foldername} | awk '{print $1"/FORGE_GPS_MonitoringCoordinatesOnly.csv"}'`
-csvname="$HOME/FringeFlow/gmtsar-aux/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 cat ${csvname} | awk -F, 'NR>1{printf("%12.7f %12.7f\n",$3,$4)}' > sites.lalo
     
 ## average velocity

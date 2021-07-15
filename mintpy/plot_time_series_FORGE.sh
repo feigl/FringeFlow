@@ -27,7 +27,7 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word
 ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
 echo ftse is $ftse
 
-csvname="$HOME/FringeFlow/gmtsar-aux/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 
 #for wellname in `cat wells.namelalo | awk '{print $1}'`; do
 for wellname in "GDM-09_060519"; do

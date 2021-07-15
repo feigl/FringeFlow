@@ -18,7 +18,7 @@ fi
 export PATH=${HOME}/FringeFlow/sh:${PATH}
 export PATH=${HOME}/FringeFlow/docker:${PATH}
 export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
-export PATH=${HOME}/FringeFlow/gmtsar6/siteinfo:${PATH}
+export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
 
 if [[ -d /home/ops/ssara_client ]]; then
     export PATH=${PATH}:/home/ops/ssara_client

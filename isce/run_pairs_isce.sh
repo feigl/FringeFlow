@@ -40,57 +40,54 @@ export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
 echo runname is ${runname}
 
 
-# set path
-echo looking for isce_env.sh
-ls /opt
-find /opt -name isce_env.sh -ls
-echo looking for stackSentinel.py
-find /opt -name stackSentinel.py -ls
-source /opt/isce2/isce_env.sh
-export PATH=$PATH:$HOME/MintPy/mintpy/
-
-# 20210605 needed for stackSentinel.py
-export PATH=$PATH:/opt/isce2/src/isce2/contrib/stack/topsStack
-which stackSentinel.py
-stackSentinel.py --help | tee stackSentinel.txt 
-
-
-#set PYTHONPATH for PyAPS pyaps3
-export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
-
 #uncompress SSH keys ssh.tgz
 tar -C ${HOME} -xzvf ssh.tgz
 rm -vf ssh.tgz
 
 # uncompress files for shell scripts and add to search path
-tar -C ${HOME} -xzvf sh.tgz
-export PATH=${HOME}/sh:${PATH}
-echo PATH is ${PATH}
+tar -C ${HOME} -xzvf FringeFlow.tgz
+
 
 #change working directory to folder with same name as run
 #cd S1_144_SANEM_20190110_20190122
 cd ${runname}
 pwd
 
-echo "Copying input SLC files from askja"
+# echo "Copying input SLC files from askja"
+# mkdir -p SLC
+# rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t0}*.zip" SLC
+# rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t1}*.zip" SLC
+
+echo "Downloading SLC files"
 mkdir -p SLC
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t0}*.zip" SLC
-rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/${sit}/${sat}/SLC/"${sat}*_V_${t1}*.zip" SLC
+cd SLC
+echo PWD is now ${PWD}
+which run_ssara.sh
+run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
+ls -ltr | tee -a ../slc.log
+cd ..
 
 echo "Copying input ORBIT files from askja"
 mkdir -p ORBITS
 cd ORBITS
-get_orbits_from_askja.sh
+get_orbits_from_askja.sh | tee -a ../orbits.log
+cd ..
+
+echo "Making a DEM"
+mkdir -p DEM
+cd DEM
+# make the DEM
+echo "dem.py -a stitch -b $(get_site_dims.sh $site i) -r -s 1 -c" | tee -a ../dem.log
+cd ..
 
 
 
+# echo "Uncompressing template files from tar file named ../pair2.tgz"
+# tar -xzvf ../pair2.tgz 
 
-echo "Uncompressing template files from tar file named ../pair2.tgz"
-tar -xzvf ../pair2.tgz 
-
-echo "Results from ls and du follow"
-ls -l
-du -h .
+# echo "Results from ls and du follow"
+# ls -l
+# du -h .
 
 
 # ## Copy Keys
@@ -116,29 +113,22 @@ du -h .
 # tar -xzvf ../pair1.tgz
 
 
-# cd SLC
-# echo PWD is now ${PWD}
-# which run_ssara.sh
-# run_ssara.sh $sat $trk $sit $t0 $t1
-# ls -ltr | tee SLC.txt
-# cd ..
-
 # cd ORBITS
 # get_orbits.sh
 # ls -ltr | tee ORBITS.txt
 # cd ..
 
-cd ISCE
-run_isce.sh
-ls -ltr | tee ISCE.txt
-# delete intermediate files
-rm -rf configs stack run_files interferograms coreg_secondarys secondarys geom_reference reference
-# delete input files
-rm -rf SLC ORBITS
-# keep final output 
-find  baselines -type f -ls | tee baselines.lst
-find  merged    -type f -ls | tee merged.lst
-cd ..
+# cd ISCE
+# run_isce.sh
+# ls -ltr | tee ISCE.txt
+# # delete intermediate files
+# rm -rf configs stack run_files interferograms coreg_secondarys secondarys geom_reference reference
+# # delete input files
+# rm -rf SLC ORBITS
+# # keep final output 
+# find  baselines -type f -ls | tee baselines.lst
+# find  merged    -type f -ls | tee merged.lst
+# cd ..
 
 ### MINTPY will fail with only one pair
     # cd MINTPY

@@ -13,8 +13,8 @@ universe = docker
 
 # files
 log    = run_pairs_isce.$(Process).log 
-output = run_pairs_isce..$(Process).out
-error  = run_pairs_isce..$(Process).err
+output = run_pairs_isce.$(Process).out
+error  = run_pairs_isce.$(Process).err
 
 executable = run_pairs_isce.sh
 

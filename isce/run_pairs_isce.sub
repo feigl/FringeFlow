@@ -16,7 +16,7 @@ log    = run_pairs_isce.$(Cluster).$(Process).log
 output = run_pairs_isce.$(Cluster).$(Process).out
 error  = run_pairs_isce.$(Cluster).$(Process).err
 
-executable = $HOME/FringeFlow/isce/run_pairs_isce.sh
+executable = /home/feigl/FringeFlow/isce/run_pairs_isce.sh
 
 ### prepare large data file on askja with a name like this:
     # mkdir S1_144_SANEM_20190110_20190122

@@ -16,7 +16,7 @@ log    = run_pairs_isce.$(Cluster).$(Process).log
 output = run_pairs_isce.$(Cluster).$(Process).out
 error  = run_pairs_isce.$(Cluster).$(Process).err
 
-executable = run_pairs_isce.sh
+executable = $HOME/FringeFlow/isce/run_pairs_isce.sh
 
 ### prepare large data file on askja with a name like this:
     # mkdir S1_144_SANEM_20190110_20190122
@@ -39,20 +39,12 @@ arguments = "S1 144 SANEM 20190110  20190122"
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 
-#+IsBuildJob = true
-# requirements = (OpSysMajorVer =?= 7)
-#request_cpus = 1
-#request_memory = 2GB
-#request_disk = 2GB
-
 request_cpus = 1
 request_memory = 40GB
 request_disk = 200GB
 
-
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
-
 
 queue
 

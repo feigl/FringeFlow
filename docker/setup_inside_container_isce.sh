@@ -34,6 +34,9 @@ fi
 if [[ -d /home/ops/ssara_client ]]; then
     export PATH=${PATH}:/home/ops/ssara_client
     export PYTHONPATH=${PYTHONPATH}:/home/ops/ssara_client
+elif [[ -d $HOME/ssara_client ]]; then
+    export PATH=${PATH}:$HOME/ssara_client
+    export PYTHONPATH=${PYTHONPATH}:$HOME/ssara_client
 fi
 
 if [[ -d /home/ops/MintPy ]]; then

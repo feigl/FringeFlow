@@ -23,9 +23,9 @@ else
         ## copy keys here
 
         # cp -v $HOME/.netrc . 
-        if [[ -f $HOME/.netrc ]]; then
-            echo "File named $HOME/.netrc exists"
-            ls -la $HOME/.netrc
+        if [[ -f $HOME/magic/.netrc ]]; then
+            echo "File named $HOME/.netrc exists. Copying it"
+            cp -vf $HOME/magic/.netrc $HOME/.netrc
         else
             echo "ERROR: could not find named $HOME/.netrc"
             exit -1
@@ -72,7 +72,7 @@ else
     else
         echo "ERROR: could not find file named magic.tgz"
         echo "To make one, consider the following command"
-        echo "cd; tar -czvf magic.tgz .netrc model.cfg password_config.py .ssh"
+        echo "cd; tar -czvf magic.tgz magic/.netrc magic/model.cfg magic/password_config.py "
         exit -1
     fi
     cd ${startdir}

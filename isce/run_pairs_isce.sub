@@ -1,0 +1,72 @@
+# run_pairs_isce.sub
+# Run several interferometric pair using ISCE under ht_condor
+
+# 2021/05/28 Nick Bearson and Kurt Feigl
+# 2021/07/20 Kurt Feigl
+universe = docker
+
+# Docker image
+#docker_image = docker.io/nbearson/isce_mintpy:latest 
+#docker_image = docker.io/isce/isce2:latest
+#docker_image = docker.io/benjym/insar
+ docker_image = docker.io/nbearson/isce_chtc2
+
+# files
+log    = run_pairs_isce.$(Process).log 
+output = run_pairs_isce..$(Process).out
+error  = run_pairs_isce..$(Process).err
+
+executable = run_pairs_isce.sh
+
+### prepare large data file on askja with a name like this:
+    # mkdir S1_144_SANEM_20190110_20190122
+    # tar -czvf S1_144_SANEM_20190110_20190122.tgz S1_144_SANEM_20190110_20190122
+    # rsync -rav S1_144_SANEM_20190110_20190122.tgz transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+
+### do this before submitting
+    # cd $HOME/FringeFlow; git pull;cd $HOME
+    # tar -C ${HOME}/FringeFlow --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
+    # tar -C ${HOME} -czvf ssh.tgz .ssh
+    # tar -C ${HOME} -czvf ${PWD}/magic.tgz password_config.py .netrc model.cfg .ssh
+    # condor_submit run_pairs_isce.sub
+
+
+transfer_input_files = FringeFlow.tgz, magic.tgz, ssh.tgz
+
+#arguments = $(Process)
+arguments = "S1 144 SANEM 20190110  20190122"
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+#+IsBuildJob = true
+# requirements = (OpSysMajorVer =?= 7)
+#request_cpus = 1
+#request_memory = 2GB
+#request_disk = 2GB
+
+request_cpus = 1
+request_memory = 40GB
+request_disk = 200GB
+
+
+# IMPORTANT! Require execute servers that can access /staging
+Requirements = (Target.HasCHTCStaging == true)
+
+
+queue
+
+### Think about multiple runs
+    #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
+    # Example 3
+    #   queue input,arguments from (
+    #    file1, -a -b 26
+    #    file2, -c -d 92
+    # )
+    #Using the from form of the options, each of the two variables specified is given a value from the list of items. For this example the queue command expands to
+    #  input = file1
+    #  arguments = -a -b 26
+    #  queue 
+    #  input = file2
+    #  arguments = -c -d 92
+    #  queue

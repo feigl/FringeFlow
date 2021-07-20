@@ -80,55 +80,19 @@ cd DEM
 echo "dem.py -a stitch -b $(get_site_dims.sh $site i) -r -s 1 -c" | tee -a ../dem.log
 cd ..
 
-
-
-# echo "Uncompressing template files from tar file named ../pair2.tgz"
-# tar -xzvf ../pair2.tgz 
-
-# echo "Results from ls and du follow"
-# ls -l
-# du -h .
-
-
-# ## Copy Keys
-# # extract keys from tar file
-# tar -xzvf magic.tgz
-
-# # for SSARA
-# ls -l password_config.py
-# cp -v password_config.py $HOME/ssara_client
-
-# # for orbits via wget
-# ls -la .netrc
-
-# # key for MintPy and PyAPS
-# ls -la model.cfg
-# find $HOME . -name model.cfg -ls 
-# #cp -vf model.cfg $HOME/PyAPS/pyaps3/model.cfg
-# cp -vf model.cfg `find $HOME -name model.cfg` 
-
-# mkdir $runname
-# cd $runname
-# echo PWD is now ${PWD}
-# tar -xzvf ../pair1.tgz
-
-
-# cd ORBITS
-# get_orbits.sh
-# ls -ltr | tee ORBITS.txt
-# cd ..
-
-# cd ISCE
-# run_isce.sh
-# ls -ltr | tee ISCE.txt
-# # delete intermediate files
-# rm -rf configs stack run_files interferograms coreg_secondarys secondarys geom_reference reference
-# # delete input files
-# rm -rf SLC ORBITS
-# # keep final output 
-# find  baselines -type f -ls | tee baselines.lst
-# find  merged    -type f -ls | tee merged.lst
-# cd ..
+echo "Running ISCE"
+mkdir -p ISCE
+cd ISCE
+run_isce.sh ${site} | tee -a ../isce.log
+ls -ltr | tee -a ../isce.log
+# delete intermediate files
+rm -rf configs stack run_files interferograms coreg_secondarys secondarys geom_reference reference
+# delete input files
+rm -rf SLC ORBITS
+# keep final output 
+find  baselines -type f -ls | tee baselines.lst
+find  merged    -type f -ls | tee merged.lst
+cd ..
 
 ### MINTPY will fail with only one pair
     # cd MINTPY

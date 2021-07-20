@@ -7,7 +7,11 @@
 rm -f tmp.*
 
 # download index file
-ssh -l feigl askja.ssec.wisc.edu 'ls /s12/insar/S1/ORBITS' > tmp.fnames0
+#ssh -i $HOME/.ssh/id_rsa -l feigl askja.ssec.wisc.edu 'ls /s12/insar/S1/ORBITS' > tmp.fnames0
+#cp -v $HOME/.ssh/id_rsa . 
+#ssh -i ./id_rsa -l feigl askja.ssec.wisc.edu 'ls /s12/insar/S1/ORBITS' > tmp.fnames0
+ssh -i /home/ops/.ssh/id_rsa -l feigl askja.ssec.wisc.edu 'ls /s12/insar/S1/ORBITS' > tmp.fnames0
+
 
 for slcname in $(ls ../SLC/S1?_IW_SLC*.zip ); do
    sat=`echo $slcname| awk '{print substr($1,8,3)}'` 
@@ -28,7 +32,8 @@ for slcname in $(ls ../SLC/S1?_IW_SLC*.zip ); do
 
    for fname1 in ${fnames3}; do
       echo fname1 is $fname1
-      rsync -av -e "ssh -l feigl" askja.ssec.wisc.edu:/s12/insar/S1/ORBITS/${fname1} .
+      #rsync -av -e "ssh -i $HOME/.ssh/id_rsa -l feigl" askja.ssec.wisc.edu:/s12/insar/S1/ORBITS/${fname1} .
+      rsync -av -e "ssh -i /home/ops/.ssh/id_rsa -l feigl" askja.ssec.wisc.edu:/s12/insar/S1/ORBITS/${fname1} .
    done
    #mv -v $fname1 $yyyymmdd  
 done 

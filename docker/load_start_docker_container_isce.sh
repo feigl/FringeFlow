@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash 
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
@@ -24,7 +24,7 @@ echo HOME is ${HOME}
 # export trk=144
 # export t0=20190110
 # export t1=20190122
-if [[] "$#" -eq 5 ]]; then
+if [[ "$#" -eq 5 ]]; then
   echo "Arguments are $1 $2 $3 $4 $5"
   export sat=$1
   export trk=$2
@@ -82,6 +82,7 @@ cd $runname
 # cp -v $HOME/SSARA-master/password_config.py .
 # cp -v $HOME/site_dims.txt .
 cp -v $HOME/magic.tgz .
+cp -v $HOME/.ssh/id_rsa .
 
 # copy input files
 #cp /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv .
@@ -93,8 +94,8 @@ cp -v $HOME/magic.tgz .
 ## pull scripts and make a tar file
 cd $HOME
 #git pull 
-tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
-mv -v FringeFlow.tgz $dirname/$runname
+#tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
+#mv -v FringeFlow.tgz $dirname/$runname
 
 
 # make a tar file
@@ -107,7 +108,13 @@ docker pull docker.io/nbearson/isce_chtc2
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
 
-
+echo '  '
+echo "Starting image in container..."
+echo "Once container starts, consider the following commands"
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
+echo 'domagic.sh magic.tgz'
+echo '  '
+echo '  '
 ## arrange permissions
 # go directory above container
 cd $dirname
@@ -127,13 +134,17 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD isce/isce2:latest
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
-docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
+#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
+# inherit ssh keys with proper permissions
+#https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
+#docker run --rm -it -v ~/.ssh:/root/.ssh:ro
+docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
 
 # change permissions back again
 cd ..
-if [[ (( $HOST -eq askja.ssec.wisc.edu ) || ( $HOST -eq maule.ssec.wisc.edu )) ]]; then
-   sudo chown -R ${USER}:'domain users' $runname 
-fi
-
+# if [[ (( $HOST -eq askja.ssec.wisc.edu ) || ( $HOST -eq maule.ssec.wisc.edu )) ]]; then
+#    sudo chown -R ${USER}:'domain users' $runname 
+# fi
+echo "sudo chown -R ${USER}:'domain users' $runname" 
 
 #podman unshare chown -R feigl:'domain users' $PWD

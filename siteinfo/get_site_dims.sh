@@ -58,23 +58,57 @@ grep -i $site $SITE_TABLE > t1.tmp
 if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then 
     case $coord_id in
         1 | 2 | 3)
-        grep -i $site -A${coord_id} $SITE_TABLE | tail -1
-        exit 0
+            grep -i $site -A${coord_id} $SITE_TABLE | tail -1
+            exit 0
+        ;;
+        W )
+            # output W, 
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$1)}' 
+            exit 0
+        ;;
+        E)
+            # output E, 
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$2)}' 
+            exit 0
+        ;;
+        S)
+            # output S, 
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$3)}' 
+            exit 0
+        ;;
+        N)
+            # output N, 
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$4)}' 
+            exit 0
         ;;
         -1 )
-        aline=`echo $coord_id | awk '{print sqrt($1*$1)}'`
-        grep -i $site $SITE_TABLE -A${aline} | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %20.10f\n E = %20.10f\n S = %20.10f\n N = %20.10f\n",$1,$2,$3,$4)}' 
-        exit 0
+            # output W, E, S, N separately
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %20.10f\n E = %20.10f\n S = %20.10f\n N = %20.10f\n",$1,$2,$3,$4)}' 
+            exit 0
         ;;
-        -2 )
-        aline=`echo $coord_id | awk '{print sqrt($1*$1)}'`
-        grep -i $site $SITE_TABLE -A${aline} | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %12.3f\n E = %12.3f\n S = %12.3f\n N = %12.3f\n",$1,$2,$3,$4)}' 
-        exit 0
-        ;;
+        i) 
+             # output integer bounds S, N, W, E
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%d %d %d %d\n",$3,$4+1,$1,$2+1)}' 
+            exit 0
+            ;;
+        b) 
+            # output Bounding box S, N, W, E 
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f %20.10f  %20.10f %20.10f\n",$3,$4,$1,$2)}' 
+            # output Bounding box S, N, W, E with single quotes
+            #https://unix.stackexchange.com/questions/222709/how-to-print-quote-character-in-awk/222717
+            #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("\047%20.10f %20.10f  %20.10f %20.10f\047\n",$3,$4,$1,$2)}' 
+            # output Bounding box S, N, W, E with double quotes
+            #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("\047\x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22\047\n",$3,$4,$1,$2)}' 
+            exit 0
+            ;;
+         -2 )
+            grep -i $site $SITE_TABLE -A2 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %12.3f\n E = %12.3f\n S = %12.3f\n N = %12.3f\n",$1,$2,$3,$4)}' 
+            exit 0
+            ;;
         *)
-        echo "option not yet defined for this site."
-        exit 1
-        ;;
+            echo "option not yet defined for this site."
+            exit -1
+            ;;
     esac
 else 
   echo "site undefined."

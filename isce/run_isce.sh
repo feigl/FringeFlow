@@ -1,15 +1,41 @@
-#!/bin/bash -vx
+#!/bin/bash 
 # run ISCE inside container
 
-echo "Starting script named $0"
-echo "PWD is  $PWD"
-echo "Echo results of ls -l follow"
-ls -l
-du -sh *
+if [[  ( "$#" -eq 1)  ]]; then
+    site=$1
+    # launch date of Sentinel 1-A is April 3, 2014
+    YYYYMMDD1="2014-04-03"
+    YYYYMMDD2="2029-12-31" # T23:59:59.999999"
+    echo YYYYMMDD1 is ${YYYYMMDD1}
+    echo YYYYMMDD2 is ${YYYYMMDD2}
+elif [[  ( "$#" -eq 3)  ]]; then
+    site=$1
+    t0=$2
+    t1=$3
+    YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+    YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+    echo YYYYMMDD1 is ${YYYYMMDD1}
+    echo YYYYMMDD2 is ${YYYYMMDD2}
+else
+    bname=`basename $0`
+    echo "$bname run ISCE "
+    echo "usage:   $bname site5"
+    echo "usage:   $bname cosoc"
+    exit -1
+fi
 
-# configure environment 
-source /opt/isce2/isce_env.sh
-export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
+timetag=`date +"%Y%m%dT%H%M%S"`
+echo timetag is ${timetag}
+
+# get working version of ssara client
+#cp -rp /home/feigl/SSARA-master $HOME
+#export PYTHONPATH=$HOME/ssara_client
+
+
+
+# # configure environment 
+# source /opt/isce2/isce_env.sh
+# export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
 
 # test
 which stackSentinel.py
@@ -21,22 +47,30 @@ which stackSentinel.py
 rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
 # count SLC
-export nSLC=`ls SLC | wc -l`
+export nSLC=`ls ../SLC | wc -l`
 echo "number of SLC files nSLC is $nSLC"
 
-echo "looking for files that are not zip in SLC folder"
-find SLC -ls | grep -v .zip
+# echo "Looking for S1 files that are not zip in SLC folder"
+# find .. -name "S1*V_*" | grep -v .zip
 
-# Carry only a small subset of orbits
-# this is still hard-wired for SANEM with these switches: 
-# -n 3 (swath) 
-# -b (bounding box)
-# -d dem
-stackSentinel.py -w ./ -s ../SLC/ -a aux/ -o ../ORBITS \
--n 3 -z 2 -r 6 -c 1 -C geometry  -b '40.348 40.449 -119.46 -119.375' \
--d demLat_N40_N41_Lon_W120_W119.dem.wgs84   
+# get bounding box
+bbox="$(get_site_dims.sh cosoc S) $(get_site_dims.sh cosoc N) $(get_site_dims.sh cosoc W) $(get_site_dims.sh cosoc E)"
+echo "Bounding box bbox is $bbox"
 
-#--start ${YYYYMMDD1} --stop ${YYYYMMDD2}
+# get DEM 
+dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
+echo "DEM file name dem is $dem"
+if [[ ! -f $dem ]]; then
+    echo "ERROR: could not find DEM file named ../DEM/$dem"
+fi
+
+stackSentinel.py -w ./ -s ../SLC/ -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
+-C geometry -d ../DEM/${dem} \
+-b "${bbox}" \
+--start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \
+-W interferogram
+# -W slc only first two steps would calculate all baselines
+
 
 # set up a script to run all the scripts
 ls -1 run_files/* | grep -v job | awk '{print "bash",$1}' > run_isce_jobs.sh
@@ -60,9 +94,9 @@ tail -1 isce.log | tee -a run_isce_jobs.log
 
 
 # count number of interferograms
-export npairs=`ls -d merged/interferograms |  wc`
+npairs=`ls -d merged/interferograms |  wc`
 echo number of pairs requested npairs is ${npairs} | tee -a run_isce_jobs.log 
-export npairs_unw=`ls merged/interferograms/*/filt_fine.unw | wc`
+npairs_unw=`ls merged/interferograms/*/filt_fine.unw | wc`
 echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_jobs.log 
 
 # graphics output
@@ -75,18 +109,14 @@ echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_job
 # geocode
 #geocodeIsce.py -f merged/interferograms/20190110_20190122/filt_fine.int -d demLat_N40_N41_Lon_W120_W119.dem.wgs84 -m ./reference -s ./secondarys/20190122/ -a 2 -r 6 -b '40.348 40.449 -119.46 -119.375' 
 #convert out.ppm merged/interferograms/20190110_20190122/filt_fine.dem.crop.jpg
-if [ -f merged/interferograms/${t0}_${t1}/filt_fine.int ]; then
-    geocodeIsce.py -f merged/interferograms/${t0}_${t1}/filt_fine.int -d demLat_N40_N41_Lon_W120_W119.dem.wgs84 -m ./reference -s ./secondarys/${t1}/ -a 2 -r 6 -b '40.348 40.449 -119.46 -119.375' 
-    mdx.py dem.crop -z -100 -wrap 6.28 -P
-    convert out.ppm merged/interferograms/${t0}_${t1}/filt_fine_geo_crop.jpg
-fi
+# if [ -f merged/interferograms/${t0}_${t1}/filt_fine.int ]; then
+#     geocodeIsce.py -f merged/interferograms/${t0}_${t1}/filt_fine.int -d $dem -m ./reference -s ./secondarys/${t1}/ -a 2 -r 6 -b '40.348 40.449 -119.46 -119.375' 
+#     mdx.py dem.crop -z -100 -wrap 6.28 -P
+#     convert out.ppm merged/interferograms/${t0}_${t1}/filt_fine_geo_crop.jpg
+# fi
 
-#2021-03-13 00:53:09,018 - isce.zerodop.topozero - WARNING - Default Peg heading set to: -2.90493584856863
-#2021-03-13 02:24:23,944 - isce.mroipac.correlation - INFO - Calculating Correlation
-# less than 2 hours for 7 aquisitions
-#2021-03-18 18:06:31,974 - isce.zerodop.topozero - WARNING - Default Peg heading set to: -2.90493584856863
-#2021-03-18 18:17:52,645 - isce.mroipac.correlation - INFO - Calculating Correlation
-# less than 7 minutes for 2 SLCs
+plot_interferograms.sh
+
 
 
 

@@ -2,8 +2,8 @@
 # plot interferograms
 
 # configure environment 
-source /opt/isce2/isce_env.sh
-export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
+#source /opt/isce2/isce_env.sh
+#export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
 
 # graphics output
 #mdx.py interferograms/20181006_20181018/IW3/fine_01.int -z -100 -wrap 6.28 -P

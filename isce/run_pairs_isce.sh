@@ -42,14 +42,17 @@ echo runname is ${runname}
 
 #uncompress SSH keys ssh.tgz
 tar -C ${HOME} -xzvf ssh.tgz
-rm -vf ssh.tgz
+#rm -vf ssh.tgz
 
 # uncompress files for shell scripts and add to search path
 tar -C ${HOME} -xzvf FringeFlow.tgz
 
+# set up paths and environment
+source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 
 #change working directory to folder with same name as run
 #cd S1_144_SANEM_20190110_20190122
+mkdir ${runname}
 cd ${runname}
 pwd
 

@@ -12,11 +12,15 @@ universe = docker
  docker_image = docker.io/nbearson/isce_chtc2
 
 # files
-log    = run_pairs_isce.$(Cluster).$(Process).log 
-output = run_pairs_isce.$(Cluster).$(Process).out
-error  = run_pairs_isce.$(Cluster).$(Process).err
+#log    = run_pairs_isce.$(Cluster).$(Process).log 
+#output = run_pairs_isce.$(Cluster).$(Process).out
+#error  = run_pairs_isce.$(Cluster).$(Process).err
+log    = run_pairs_isce.$(BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).log
+output = run_pairs_isce.$(BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).out
+error  = run_pairs_isce.$(BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).err
 
-executable = /home/feigl/FringeFlow/isce/run_pairs_isce.sh
+
+executable = run_pairs_isce.sh
 
 ### prepare large data file on askja with a name like this:
     # mkdir S1_144_SANEM_20190110_20190122
@@ -36,7 +40,7 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, ssh.tgz
 #arguments = $(Process)
 #arguments = "S1 144 SANEM 20190110  20190122"
 #arguments = "S1  64 COSOC 20200101  20200130"
-arguments = "S1  20 FORGE 20200101  20200130"
+ arguments = "S1  20 FORGE 20200101  20200130"
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

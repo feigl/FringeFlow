@@ -15,15 +15,16 @@ else
     exit -1
 fi
 
-if [[ ! -d $HOME/ssara_client ]]; then
-   if [[ -d /home/ops/ssara_client ]]; then
-        cp -rpv /home/ops/ssara_client/ $HOME
-        chmod -R +w $HOME/ssara_client/password_config.py
-        cp -fv $HOME/magic/password_config.py /home/ops/ssara_client/
-        export PATH=$HOME/ssara_client:${PATH}
-        export PYTHONPATH=$HOME/ssara_client:${PYTHONPATH}
-    fi
+# make a copy of the ssara client so that we can have permissions to set the password file
+#if [[ ! -d $HOME/ssara_client ]]; then
+if [[ -d /home/ops/ssara_client ]]; then
+    cp -rpv /home/ops/ssara_client/ $HOME
+    chmod -R +w $HOME/ssara_client/password_config.py
+    cp -fv $HOME/magic/password_config.py /home/ops/ssara_client/
+    export PATH=$HOME/ssara_client:${PATH}
+    export PYTHONPATH=$HOME/ssara_client:${PYTHONPATH}
 fi
+#fi
 
 export SSARA_HOME=$( dirname $(which ssara_federated_query.py ) )
 echo "Checking for file named password_config.py in ${SSARA_HOME}"

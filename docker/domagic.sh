@@ -60,12 +60,12 @@ else
     #         echo "ERROR: Could not find file named $HOME/password_config.py"
     #         exit -1
     #     fi
-    # else
-    #     echo "ERROR: could not find file named magic.tgz"
-    #     echo "To make one, consider the following command"
-    #     echo "cd; tar -czvf magic.tgz magic/.netrc magic/model.cfg magic/password_config.py"
-    #     exit -1
-    # fi
+    else
+        echo "ERROR: could not find file named magic.tgz"
+        echo "To make one, consider the following command"
+        echo "cd; tar -czvf magic.tgz magic/.netrc magic/model.cfg magic/password_config.py"
+        exit -1
+    fi
 
     # # .ssh 
     # if [[ -d $HOME/.ssh ]]; then

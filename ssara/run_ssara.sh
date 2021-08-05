@@ -116,3 +116,5 @@ if [[ ! ${action} == "print" ]]; then
 fi
 echo "$0 ended normally"
 exit 0
+
+

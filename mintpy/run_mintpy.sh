@@ -1,34 +1,41 @@
 #!/bin/bash -vx
-## 2021/05/25 Kurt Feigl
+## 2021/08/05 Kurt Feigl
 
 # Run epochs for MINTPY
+bname=`basename $0`
+if [[  ( "$#" -eq 1)  ]]; then
+   export CFG=$1
+   export STEP="load_data"  
+elif [[  ( "$#" -eq 2)  ]]; then
+  export CFG=$1
+  export STEP=$2
+else
+    echo "$bname will run mintpy "
+    echo "usage:   $bname config.cfg step_name"
+    echo "example: $bname FORGE_20210719_ERA5.cfg load_data"
+    echo "example: $bname FORGE_20210719_ERA5.cfg quick_overview"
+    exit -1
+#   ['load_data', 'modify_network', 'reference_point', 'quick_overview', 'correct_unwrap_error']
+#   ['invert_network', 'correct_LOD', 'correct_SET', 'correct_troposphere', 'deramp', 'correct_topography']
+#   ['residual_RMS', 'reference_date', 'velocity', 'geocode', 'google_earth', 'hdfeos5']
+fi
 
-### inside the container 
-# prep_isce.py must have permissions to write ../isce
-
-source /opt/isce2/isce_env.sh
-export PATH=$PATH:$HOME/MintPy/mintpy/
-
-# need this, too for PyAPS pyaps3
-export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
+echo "Config file CFG is $CFG"
+echo "STEP is ${STEP}"
 
 # clean start
 rm -rf pic isce.log
+
+# TODO test on STEP
 #rm -rf inputs
 
 # copy keys for ERA PYAPS
-# if [ -f ../model.cfg ]; then
-#    cp -v ../model.cfg $HOME/PyAPS/pyaps3/model.cfg
-# fi
-# if [ -f model.cfg ]; then
-#    cp -v model.cfg $HOME/PyAPS/pyaps3/model.cfg
-# else
-#    echo "ERROR: missing key file named model.cfg"
-#    exit -1
-# fi
-
-
-
+if [ -f ../model.cfg ]; then
+   cp -v ../model.cfg /home/ops/PyAPS/pyaps3/model.cfg
+fi
+if [ -f model.cfg ]; then
+   cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
+fi
 
 # # Add meta data to configuration file
 # head SANEM_T144f_askja.cfg 
@@ -41,9 +48,8 @@ rm -rf pic isce.log
 # PROJECT_NAME            =    SANEM_T144f_askja
 # ISCE_VERSION            =    2.4.2
 
-# run step 1
-# smallbaselineApp.py SANEM_T144f_askja.cfg --end load_data
-# run all steps:
-smallbaselineApp.py SANEM_T144f_askja.cfg | tee smallbaselineApp.log
-# run tropo only
-#smallbaselineApp.py SANEM_T144f_askja.cfg  --start correct_troposphere
+export TTAG=`date +"%Y%m%dT%H%M%S"`
+echo TTAG is ${TTAG}
+
+echo "Starting smallbaselineApp.py now "
+smallbaselineApp.py  ${CFG} --start ${STEP} | tee smallbaselineApp_${CFG}_${TTAG}.log

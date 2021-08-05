@@ -2,12 +2,12 @@
 Workflow for generating interferometric fringe patterns from synthetic aperture radar data
 
 cd $HOME
-if [[ -d FringeFlow ]]; do
-    cd FringeFlow
-    git pull
-else
-   git clone https://github.com/feigl/FringeFlow.git
-fi
+if [[ -d FringeFlow ]]; do  
+    cd FringeFlow  
+    git pull  
+else  
+   git clone https://github.com/feigl/FringeFlow.git  
+fi  
 
 # for GMTSAR
 source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh  

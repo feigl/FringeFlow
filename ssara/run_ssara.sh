@@ -1,5 +1,5 @@
 #!/bin/bash -e
-## 2021/06/07 Kurt Feigl
+## 2021/06/21 Kurt Feigl
 
 ## SSARA for downloading data
 
@@ -114,4 +114,5 @@ if [[ ! ${action} == "print" ]]; then
     --download | tee -a ssara_$timetag}.log
 
 fi
-  
+echo "$0 ended normally"
+exit 0

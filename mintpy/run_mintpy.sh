@@ -37,6 +37,8 @@ if [ -f model.cfg ]; then
    cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
 fi
 
+export WEATHER_DIR="${PWD}/../ERA5"
+
 # # Add meta data to configuration file
 # head SANEM_T144f_askja.cfg 
 # ########## 1. load_data

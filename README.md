@@ -3,10 +3,10 @@ Workflow for generating interferometric fringe patterns from synthetic aperture 
 
 cd $HOME
 if [[ -d FringeFlow ]]; do  
-    cd FringeFlow  
-    git pull  
+     cd FringeFlow  
+     git pull  
 else  
-   git clone https://github.com/feigl/FringeFlow.git  
+    git clone https://github.com/feigl/FringeFlow.git  
 fi  
 
 # for GMTSAR

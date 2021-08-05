@@ -44,7 +44,7 @@ elif [[ -f $HOME/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/site_dims.txt
 else
     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
-    echo "consider rsync -rav askja.ssec.wisc.edu:/home/batzli/siteinfo/site_dims.txt $HOME"
+    echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"
     exit -1
 fi
 

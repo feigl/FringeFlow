@@ -1,4 +1,0 @@
-dem.py -a stitch -b must input coordinate system index
-1 for lat/lon
-2 for UTM
-3 for UTM zone -r -s 1 -c

@@ -37,7 +37,11 @@ if [ -f model.cfg ]; then
    cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
 fi
 
-export WEATHER_DIR="${PWD}/../ERA5"
+# make a directory for storing weather data
+if [ ! -d ${PWD}/../WEATHER ]; then
+   mkdir -p "${PWD}/../WEATHER"
+fi
+export WEATHER_DIR="${PWD}/../WEATHER"
 
 # # Add meta data to configuration file
 # head SANEM_T144f_askja.cfg 
@@ -55,3 +59,41 @@ echo TTAG is ${TTAG}
 
 echo "Starting smallbaselineApp.py now "
 smallbaselineApp.py  ${CFG} --start ${STEP} | tee smallbaselineApp_${CFG}_${TTAG}.log
+
+#******************** plot & save to pic ********************
+view.py --dpi 150 --noverbose --nodisplay --update velocity.h5 --dem inputs/geometryRadar.h5 --mask maskTempCoh.h5 -u mm
+view.py --dpi 150 --noverbose --nodisplay --update temporalCoherence.h5 -c gray -v 0 1
+view.py --dpi 150 --noverbose --nodisplay --update maskTempCoh.h5 -c gray -v 0 1
+view.py --dpi 150 --noverbose --nodisplay --update inputs/geometryRadar.h5
+view.py --dpi 150 --noverbose --nodisplay --update avgPhaseVelocity.h5
+view.py --dpi 150 --noverbose --nodisplay --update avgSpatialCoh.h5 -c gray -v 0 1
+view.py --dpi 150 --noverbose --nodisplay --update maskConnComp.h5 -c gray -v 0 1
+view.py --dpi 150 --noverbose --nodisplay --update timeseries.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+view.py --dpi 150 --noverbose --nodisplay --update geo/geo_maskTempCoh.h5 -c gray
+view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
+view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 velocity
+view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+view.py --dpi 150 --noverbose --nodisplay --update velocityERA5.h5 --mask no
+view.py --dpi 150 --noverbose --nodisplay --update numInvIfgram.h5 --mask no
+#copy *.txt files into ./pic directory.
+#move *.png/pdf/kmz files to ./pic directory.
+#time used: 03 mins 3.7 secs.
+# Explore more info & visualization options with the following scripts:
+#         info.py                    #check HDF5 file structure and metadata
+#         view.py                    #2D map view
+#         tsview.py                  #1D point time-series (interactive)   
+#         transect.py                #1D profile (interactive)
+#         plot_coherence_matrix.py   #plot coherence matrix for one pixel (interactive)
+#         plot_network.py            #plot network configuration of the dataset    
+#         plot_transection.py        #plot 1D profile along a line of a 2D matrix (interactive)
+#         save_kmz.py                #generate Google Earth KMZ file in raster image
+#         save_kmz_timeseries.py     #generate Goodle Earth KMZ file in points for time-series (interactive)
+        
+# Go back to directory: /s22/insar/FORGE/S1/MINTPY_20210719
+
+# ################################################
+#    Normal end of smallbaselineApp processing!
+# ################################################
+# Time used: 03 mins 4.2 secs

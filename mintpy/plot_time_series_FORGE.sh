@@ -1,4 +1,5 @@
 #!/bin/bash -ex
+# 2021/08/09 Kurt Feigl siteinfo is now outside of FringeFlow
 
 source /opt/isce2/isce_env.sh
 export PATH=$PATH:$HOME/MintPy/mintpy/
@@ -27,7 +28,9 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word
 ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
 echo ftse is $ftse
 
-csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+# TODO check for updates
+#csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 
 #for wellname in `cat wells.namelalo | awk '{print $1}'`; do
 for wellname in "GDM-09_060519"; do

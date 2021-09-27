@@ -1,5 +1,6 @@
 #!/bin/bash 
 # run ISCE inside container
+# 20210809 update SLCdir
 
 if [[  ( "$#" -eq 1)  ]]; then
     site=$1
@@ -8,6 +9,7 @@ if [[  ( "$#" -eq 1)  ]]; then
     YYYYMMDD2="2029-12-31" # T23:59:59.999999"
     echo YYYYMMDD1 is ${YYYYMMDD1}
     echo YYYYMMDD2 is ${YYYYMMDD2}
+    slcdir="SLC"
 elif [[  ( "$#" -eq 3)  ]]; then
     site=$1
     t0=$2
@@ -16,6 +18,7 @@ elif [[  ( "$#" -eq 3)  ]]; then
     YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
     echo YYYYMMDD1 is ${YYYYMMDD1}
     echo YYYYMMDD2 is ${YYYYMMDD2}
+    slcdir="SLC_${t0}_${t1}"
 else
     bname=`basename $0`
     echo "$bname run ISCE "
@@ -47,24 +50,27 @@ which stackSentinel.py
 rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
 # count SLC
-export nSLC=`ls ../SLC | wc -l`
+export nSLC=`ls ../${SLCdir}| wc -l`
 echo "number of SLC files nSLC is $nSLC"
 
 # echo "Looking for S1 files that are not zip in SLC folder"
 # find .. -name "S1*V_*" | grep -v .zip
 
 # get bounding box
-bbox="$(get_site_dims.sh cosoc S) $(get_site_dims.sh cosoc N) $(get_site_dims.sh cosoc W) $(get_site_dims.sh cosoc E)"
+#bbox="$(get_site_dims.sh cosoc S) $(get_site_dims.sh cosoc N) $(get_site_dims.sh cosoc W) $(get_site_dims.sh cosoc E)"
+bbox="$(get_site_dims.sh ${site} S) $(get_site_dims.sh ${site} N) $(get_site_dims.sh ${site} W) $(get_site_dims.sh ${site} E)"
 echo "Bounding box bbox is $bbox"
 
 # get DEM 
-dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
+#dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
+# TODO update this
+dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
 echo "DEM file name dem is $dem"
 if [[ ! -f $dem ]]; then
     echo "ERROR: could not find DEM file named ../DEM/$dem"
 fi
 
-stackSentinel.py -w ./ -s ../SLC/ -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
+stackSentinel.py -w ./ -s ../${SLCdir}/ -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
 -C geometry -d ../DEM/${dem} \
 -b "${bbox}" \
 --start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \

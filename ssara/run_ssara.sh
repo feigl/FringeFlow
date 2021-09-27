@@ -12,10 +12,12 @@ else
     echo "$bname will calculate an interferometric pair "
     echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
     echo "example: $bname S1 144 SANEM 20190110  20190122"
+    echo "example: $bname S1  20 FORGE 20190101  20191231"
     exit -1
 fi
 
 # make a copy of the ssara client so that we can have permissions to set the password file
+# required to download
 #if [[ ! -d $HOME/ssara_client ]]; then
 if [[ -d /home/ops/ssara_client ]]; then
     cp -rpv /home/ops/ssara_client/ $HOME
@@ -58,6 +60,11 @@ echo t0 is $t0
 echo t1 is $t1
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
+
+# make a directory to hold these things
+slcdir="SLC_${t0}_${t1}"
+mkdir -p "${slcdir}"
+cd "${slcdir}"
 
 # get working version of ssara client
 #cp -rp /home/feigl/SSARA-master $HOME
@@ -103,7 +110,7 @@ if [[ ! ${action} == "print" ]]; then
     --kml | tee ssara_${timetag}.kml
 
 
-    # download data
+    # download data  # requires keys
     # switch for ICSE --start 2018-10-01 --stop 2018-11-15
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59" --download
 

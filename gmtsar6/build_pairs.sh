@@ -63,7 +63,7 @@ if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
 else
     export DATADIR=${HOME}
 fi
-#cho "DATADIR is $DATADIR"
+echo "DATADIR is $DATADIR"
 
 # set filter wavelength
 filter_wv=`tail -1 $1 | awk '{print $19}'`

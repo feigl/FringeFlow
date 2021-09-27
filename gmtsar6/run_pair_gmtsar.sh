@@ -56,7 +56,8 @@ else
   time tar -xzvf ${tgz}
   source setup_inside_container_gmtsar.sh 
   cd "In${ref}_${sec}"
-  time ./run.sh | tee run.log
+  # send output to home, in hopes that it will transfer back at the end
+  time ./run.sh | tee ${HOME}/run.log
 fi
 
 

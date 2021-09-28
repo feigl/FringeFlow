@@ -18,7 +18,14 @@ fi
 export PATH=${HOME}/FringeFlow/sh:${PATH}
 export PATH=${HOME}/FringeFlow/docker:${PATH}
 export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
-export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
+# SiteInfo is no longer in repo
+#export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
+# will need to carry this with us
+export PATH=${HOME}/siteinfo:${PATH}
+
+# needed for ISCE and MINTPY
+#export PATH=${HOME}/FringeFlow/mintpy:${PATH}
+#export PATH=${HOME}/FringeFlow/isce:${PATH}
 
 if [[ -d /home/ops/ssara_client ]]; then
     export PATH=${PATH}:/home/ops/ssara_client

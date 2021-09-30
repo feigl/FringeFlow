@@ -8,20 +8,35 @@ if [[ ! -w "$HOME" ]]; then
     export HOME=$PWD
 fi
 
-# configure environment 
+# configure environment for Reinisch workflow
 if [[ -f /home/batzli/setup.sh ]]; then
     source /home/batzli/setup.sh
 else
-    export PATH=${HOME}/bin_htcondor:${PATH}
+    if [[ -d ${HOME}/bin_htcondor ]]; then
+        export PATH=${HOME}/bin_htcondor:${PATH}
+    else
+        export PATH=${PWD}/bin_htcondor:${PATH}
+    fi
 fi
 
-export PATH=${HOME}/FringeFlow/sh:${PATH}
-export PATH=${HOME}/FringeFlow/docker:${PATH}
-export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
+if [[ -d ${HOME}/FringeFlow ]]; then
+    export PATH=${HOME}/FringeFlow/sh:${PATH}
+    export PATH=${HOME}/FringeFlow/docker:${PATH}
+    export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
+else
+    export PATH=${PWD}/FringeFlow/sh:${PATH}
+    export PATH=${PWD}/FringeFlow/docker:${PATH}
+    export PATH=${PWD}/FringeFlow/gmtsar6:${PATH}
+fi
+
 # SiteInfo is no longer in repo
 #export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
 # will need to carry this with us
-export PATH=${HOME}/siteinfo:${PATH}
+if [[ -d ${HOME}/siteinfo ]]; then
+    export PATH=${HOME}/siteinfo:${PATH}
+else
+    export PATH=${PWD}/siteinfo:${PATH}
+fi
 
 # needed for ISCE and MINTPY
 #export PATH=${HOME}/FringeFlow/mintpy:${PATH}

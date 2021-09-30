@@ -32,6 +32,8 @@ fi
 # SiteInfo is no longer in repo
 #export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
 # will need to carry this with us
+# Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
+# rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
     export PATH=${HOME}/siteinfo:${PATH}
 else

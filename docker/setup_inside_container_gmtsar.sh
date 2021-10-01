@@ -36,9 +36,12 @@ fi
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
     export PATH=${HOME}/siteinfo:${PATH}
+    export SITE_TABLE=$HOME/siteinfo/site_dims.txt
 else
     export PATH=${PWD}/siteinfo:${PATH}
+    export ${PWD}/$HOME/siteinfo/site_dims.txt
 fi
+
 
 # needed for ISCE and MINTPY
 #export PATH=${HOME}/FringeFlow/mintpy:${PATH}

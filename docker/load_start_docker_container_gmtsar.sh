@@ -37,7 +37,7 @@ cp $HOME/PAIRSmake.txt .
 cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
 
 # 2021/01/10 siteinfo is no longer in repo
-if [[ -f $HOME/siteinfo ]]; then
+if [[ -d $HOME/siteinfo ]]; then
    cp -r $HOME/siteinfo .
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."

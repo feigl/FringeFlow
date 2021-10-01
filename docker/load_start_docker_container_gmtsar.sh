@@ -54,7 +54,8 @@ docker pull docker.io/nbearson/gmtsar
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ (( "$HOST" -eq "askja.ssec.wisc.edu") || ( "$HOST" -eq "maule.ssec.wisc.edu")) ]]; then
+#if [[ (( "$HOST" -eq "askja.ssec.wisc.edu") || ( "$HOST" -eq "maule.ssec.wisc.edu")) ]]; then
+if [[ (( "$HOST" == "askja.ssec.wisc.edu") || ( "$HOST" == "maule.ssec.wisc.edu")) ]]; then
   podman unshare chown -R 1000:1000 $runname
 fi
 # go into container

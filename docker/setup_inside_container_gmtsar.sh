@@ -36,10 +36,12 @@ fi
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
     export PATH=${HOME}/siteinfo:${PATH}
-    export SITE_TABLE=$HOME/siteinfo/site_dims.txt
-else
+    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+elif [[ -d ${PWD}/siteinfo ]]; then 
     export PATH=${PWD}/siteinfo:${PATH}
-    export ${PWD}/$HOME/siteinfo/site_dims.txt
+    export SITE_TABLE=${PWD}/siteinfo/site_dims.tx
+else
+    echo "WARNING cannot find directory named siteinfo"
 fi
 
 

@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash 
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
@@ -11,7 +11,6 @@ if [[ ( "$#" -ne 1 ) ]]; then
      echo "example: $bname /s22/insar/FORGE/S1"
     exit -1
 fi
-
 
 echo "Starting script named $0"
 echo PWD is ${PWD}
@@ -61,6 +60,11 @@ fi
 # go into container
 cd $runname
 
+
+echo "Once container starts, try: "
+echo "source /root/FringeFlow/docker/setup_inside_container_gmtsar.sh"
+echo "Starting container...."
+
 # run script in container
 #docker run --name $runname -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy ./bin/run_pair.sh 20190110  20190122
 
@@ -86,5 +90,3 @@ if [[ $(hostname) = "askja.ssec.wisc.edu" ]] || [[ $(hostname) = "maule.ssec.wis
     sudo chown -R ${USER}:'domain users' $runname 
 fi
 
-
-#podman unshare chown -R feigl:'domain users' $PWD

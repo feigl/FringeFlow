@@ -5,6 +5,8 @@
 # 2021/03/18 Kurt and Sam, make "batzli" the user to hold the data base
 # 2021/07/05 Kurt update to use local copy of file named site_dims.txt 
 # 2021/07/07 Kurt update handle upper or lower case
+# 2021/10/01 Kurt definitive version of siteinfo.tgz database lives on aska
+#            definitive version of this script lives in FringeFlow/sh
 
 # SITE 5 LETTER CODE NAMES
 #
@@ -38,10 +40,10 @@ fi
 
 if [[ -f $HOME/siteinfo/site_dims.txt ]]; then
     export SITE_TABLE=$HOME/siteinfo/site_dims.txt
-elif [[ -f $HOME/FringeFlow/siteinfo/site_dims.txt ]]; then
-    export SITE_TABLE=$HOME/FringeFlow/siteinfo/site_dims.txt
-elif [[ -f $HOME/site_dims.txt ]]; then
-    export SITE_TABLE=$HOME/site_dims.txt
+# elif [[ -f $HOME/FringeFlow/siteinfo/site_dims.txt ]]; then
+#     export SITE_TABLE=$HOME/FringeFlow/siteinfo/site_dims.txt
+# elif [[ -f $HOME/site_dims.txt ]]; then
+#     export SITE_TABLE=$HOME/site_dims.txt
 else
     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
     echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"

@@ -2,6 +2,7 @@
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
+# 2021/01/10 siteinfo is no longer in repo
 
 if [[ ( "$#" -ne 1 ) ]]; then
     bname=`basename $0`
@@ -34,6 +35,14 @@ cd $runname
 # get important files
 cp $HOME/PAIRSmake.txt .
 cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt .
+
+# 2021/01/10 siteinfo is no longer in repo
+if [[ -f $HOME/siteinfo ]]; then
+   cp -r $HOME/siteinfo .
+else
+   echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
+   exit -1
+fi
 
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2

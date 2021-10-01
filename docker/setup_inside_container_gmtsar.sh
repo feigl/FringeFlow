@@ -39,7 +39,7 @@ if [[ -d ${HOME}/siteinfo ]]; then
     export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
 elif [[ -d ${PWD}/siteinfo ]]; then 
     export PATH=${PWD}/siteinfo:${PATH}
-    export SITE_TABLE=${PWD}/siteinfo/site_dims.tx
+    export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
 else
     echo "WARNING cannot find directory named siteinfo"
 fi

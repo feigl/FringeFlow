@@ -1,6 +1,7 @@
-#!/bin/bash 
+#!/bin/bash -vx
 # run ISCE inside container
 # 20210809 update SLCdir
+# 20211006 fix SLCdir
 
 if [[  ( "$#" -eq 1)  ]]; then
     site=$1
@@ -9,16 +10,17 @@ if [[  ( "$#" -eq 1)  ]]; then
     YYYYMMDD2="2029-12-31" # T23:59:59.999999"
     echo YYYYMMDD1 is ${YYYYMMDD1}
     echo YYYYMMDD2 is ${YYYYMMDD2}
-    slcdir="SLC"
+    slcdir="../SLC"
 elif [[  ( "$#" -eq 3)  ]]; then
     site=$1
     t0=$2
     t1=$3
     YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+    #YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+    YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
     echo YYYYMMDD1 is ${YYYYMMDD1}
     echo YYYYMMDD2 is ${YYYYMMDD2}
-    slcdir="SLC_${t0}_${t1}"
+    slcdir="../SLC_${t0}_${t1}"
 else
     bname=`basename $0`
     echo "$bname run ISCE "
@@ -29,6 +31,8 @@ fi
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
+echo slcdir is $slcdir
+
 
 # get working version of ssara client
 #cp -rp /home/feigl/SSARA-master $HOME
@@ -50,7 +54,7 @@ which stackSentinel.py
 rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
 # count SLC
-export nSLC=`ls ../${SLCdir}| wc -l`
+nSLC=`ls ${slcdir} | wc -l`
 echo "number of SLC files nSLC is $nSLC"
 
 # echo "Looking for S1 files that are not zip in SLC folder"
@@ -64,14 +68,15 @@ echo "Bounding box bbox is $bbox"
 # get DEM 
 #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
 # TODO update this
-dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
+#dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
+dem=`ls dem*.wgs84 | head -1`
 echo "DEM file name dem is $dem"
 if [[ ! -f $dem ]]; then
-    echo "ERROR: could not find DEM file named ../DEM/$dem"
+    echo "ERROR: could not find DEM file named $dem"
 fi
 
-stackSentinel.py -w ./ -s ../${SLCdir}/ -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
--C geometry -d ../DEM/${dem} \
+stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
+-C geometry -d ${dem} \
 -b "${bbox}" \
 --start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \
 -W interferogram

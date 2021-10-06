@@ -1,5 +1,15 @@
 #!/bin/bash -ex
+# Make time series plots from output of MINTPY
+if [[  "$#" -ne 1  ]]; then
+     bname=`basename $0`
+     echo "$bname make time series from output of MINTPY"
+     echo "usage:   $bname file.h5"
+     echo "example: $bname geo_timeseries_ERA5_demErr.h5"
+     exit -1
+fi
+
 # 2021/08/09 Kurt Feigl siteinfo is now outside of FringeFlow
+
 
 source /opt/isce2/isce_env.sh
 export PATH=$PATH:$HOME/MintPy/mintpy/
@@ -25,12 +35,13 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word
 
 ## complete time series
 #ftse='geo_timeseries_ERA5_ramp_demErr'
-ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
+#ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
 echo ftse is $ftse
 
 # TODO check for updates
 #csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+echo csvname is $csvname
 
 #for wellname in `cat wells.namelalo | awk '{print $1}'`; do
 for wellname in "GDM-09_060519"; do

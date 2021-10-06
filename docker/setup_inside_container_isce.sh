@@ -24,8 +24,9 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/isce
     export PATH=${PATH}:${HOME}/FringeFlow/mintpy
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
-    export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
+    #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
 fi
+
 
 if [[ -d ${HOME}/gipht/csh ]]; then
     export PATH=${PATH}:${HOME}/gipht/csh
@@ -57,6 +58,21 @@ fi
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
 if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
     export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH
+fi
+
+# SiteInfo is no longer in repo
+#export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
+# will need to carry this with us
+# Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
+# rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
+if [[ -d ${HOME}/siteinfo ]]; then
+    export PATH=${HOME}/siteinfo:${PATH}
+    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+elif [[ -d ${PWD}/siteinfo ]]; then 
+    export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
+else
+    echo "WARNING cannot find directory named siteinfo"
 fi
 
 

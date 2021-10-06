@@ -4,6 +4,15 @@
 # FORGE
 # 2021/06/09 Kurt Feigl
 
+# Make maps from output of MINTPY
+if [[ (( "$#" -ne 1 )) ]]; then
+    bname=`basename $0`
+    echo "$bname make maps from output of MINTPY"
+    echo "usage:   $bname file.h5"
+    echo "example: $bname geo_velocity.h5"
+     exit -1
+fi
+
 # docker run -it --rm -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy
 
 source /opt/isce2/isce_env.sh
@@ -15,6 +24,12 @@ export PATH=$PATH:$HOME/PyAPS/
 # need this, too for PyAPS pyaps3
 export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
 
+# retrieve dates
+DATE12=`h5dump_attributes.sh geo_velocity.h5 | grep DATE12 | awk '{print $3}' | sed 's/"//g'`
+echo DATE12 is $DATE12
+# name of solution
+PROJECT_NAME=`h5dump_attributes.sh geo_velocity.h5 | grep PROJECT_NAME | awk '{print $3}' | sed 's/"//g'`
+echo PROJECT_NAME is $PROJECT_NAME
 # big area of interest
 # lon,lat,zero
 # -113.1687280468227,38.25665158645261,0 
@@ -37,7 +52,7 @@ export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
 # On Feb 27, 2020, at 14:35, Corné Kreemer <cornelisk@unr.edu> wrote:
 
 
-# sub area of intereste
+# sub area of interest
 # sublat="38.256 38.639" # includes GranitePeak
 # sublon="-113.170  -112.487" #includes GranitePeak
 # sublat="38.35 38.60" # includes GranitePeak
@@ -53,7 +68,7 @@ midlon=`echo $sublon | awk '{print ($1 + $2)/2.}'`
 # reflalo="38.38549343099232 -112.8127091435896" # GranitePeak
 # figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word 
 reflalo="$midlat $midlon" # Midpoint
-figtitle=`echo $PWD | awk '{print $1"_wrtMidpoint"}'` # must be one word 
+figtitle=`echo $PWD $PROJECT_NAME $DATE12| awk '{print $1_$2_$3"_wrtMidpoint"}'` # must be one word 
 vmin="-100" # clip LOS velocity in mm/year
 vmax=" 100" # clip LOS velocity in mm/year
 
@@ -70,7 +85,9 @@ cat ${csvname} | awk -F, 'NR>1{printf("%12.7f %12.7f\n",$3,$4)}' > sites.lalo
     
 ## average velocity
 #fvel='geo_velocity_ERA5_ramp_demErr'
-fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
+#fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
+
+fvel=geo_velocity_${PROJECT_NAME}_${DATE12}
 echo fvel is $fvel
 \cp -uv geo_velocity.h5 ${fvel}.h5
 ls -l ${fvel}.h5
@@ -86,7 +103,9 @@ view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 -
 
 ## complete time series
 #ftse='geo_timeseries_ERA5_ramp_demErr'
-ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
+ftse1=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
+ftse2=${ftse1}_${PROJECT_NAME}_${DATE12}
+#cp -fv ${ftse1}.h5 geo_timeseries_${PROJECT_NAME}_${DATE12}.h5 
 echo ftse is $ftse
 
 #save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
@@ -100,14 +119,14 @@ view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} 
 --cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
 
 # map all pairs w.r.t. reference in study area
-view.py -o ${ftse}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
+view.py -o ${ftse2}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
 --cbar-ext both -v $vmin $vmax \
---pts-file sites.lalo --pts-marker '>w' --figext .pdf ${ftse}.h5
+--pts-file sites.lalo --pts-marker '>w' --figext .pdf ${ftse1}.h5
 
 # map all pairs w.r.t. reference whole area
-view.py -o ${ftse}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
+view.py -o ${ftse2}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
 --cbar-ext both -v $vmin $vmax \
---pts-file sites.lalo --pts-marker '>w' ${ftse}.h5
+--pts-file sites.lalo --pts-marker '>w' ${ftse1}.h5
 
 
 exit

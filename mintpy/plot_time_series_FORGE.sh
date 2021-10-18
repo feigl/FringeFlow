@@ -36,11 +36,13 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word
 ## complete time series
 #ftse='geo_timeseries_ERA5_ramp_demErr'
 #ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
+ftse=`echo $1 | sed 's/.h5//'`
 echo ftse is $ftse
 
 # TODO check for updates
 #csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
-csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+#csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+csvname=`echo $SITE_TABLE | sed 's%site_dims.txt%forge/FORGE_GPS_MonitoringCoordinatesOnly.csv%'`
 echo csvname is $csvname
 
 #for wellname in `cat wells.namelalo | awk '{print $1}'`; do

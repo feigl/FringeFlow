@@ -55,22 +55,32 @@ echo PROJECT_NAME is $PROJECT_NAME
 # sub area of interest
 # sublat="38.256 38.639" # includes GranitePeak
 # sublon="-113.170  -112.487" #includes GranitePeak
-# sublat="38.35 38.60" # includes GranitePeak
-# sublon="-112.95  -112.80" #includes GranitePeak
 ##(base) brady:docker feigl$ get_site_dims.sh forge 1
 #-R-112.9852300488545/-112.7536042430101/38.4450885264283/38.59244067077842
-sublat="38.4450885264283 38.59244067077842" # 
-sublon="-112.9852300488545 -112.7536042430101" #
+#sublat="38.4450885264283 38.59244067077842" # 
+#sublon="-112.9852300488545 -112.7536042430101" #
+sublat="38.35 38.60" # includes GPS TURN Base Station UTMI
+sublon="-113.02  -112.80" #includes GPS TURN Base Station UTMI
 midlat=`echo $sublat | awk '{print ($1 + $2)/2.}'`
 midlon=`echo $sublon | awk '{print ($1 + $2)/2.}'`
 
 # reference site
-# reflalo="38.38549343099232 -112.8127091435896" # GranitePeak
+#reflalo="38.38549343099232 -112.8127091435896" # GranitePeak
 # figtitle=`echo $PWD | awk '{print $1"_wrtGranitePeak"}'` # must be one word 
-reflalo="$midlat $midlon" # Midpoint
-figtitle=`echo $PWD $PROJECT_NAME $DATE12| awk '{print $1_$2_$3"_wrtMidpoint"}'` # must be one word 
-vmin="-100" # clip LOS velocity in mm/year
-vmax=" 100" # clip LOS velocity in mm/year
+#figtitle=`echo $PWD $PROJECT_NAME $DATE12| awk '{print $1_$2_$3"_wrtGranitePeak"}'` # must be one word 
+# REFE
+# TURN Base Station UTMI coordinates. Horizontal
+# NAD83 (2011) (Epoch: 2010.0000) Latitude Longitude 38.401892 -113.010330
+# Vertical
+# NAD83 Ellipsoidal Height
+# 1506.239 meters
+reflalo="38.401892 -113.010330"  # GPS TURN Base Station UTMI
+figtitle=`echo $PWD $PROJECT_NAME $DATE12| awk '{print $1_$2_$3"_wrtGPS_TURN_UTMI"}'` # must be one word 
+
+#reflalo="$midlat $midlon" # Midpoint
+#figtitle=`echo $PWD $PROJECT_NAME $DATE12| awk '{print $1_$2_$3"_wrtMidpoint"}'` # must be one word 
+vmin="-30" # clip LOS velocity in mm/year
+vmax=" 30" # clip LOS velocity in mm/year
 
 
 
@@ -80,7 +90,10 @@ vmax=" 100" # clip LOS velocity in mm/year
 #csvname="$HOME/FringeFlow/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
 #TODO check for updates
 #rsync -rav feigl@askja.ssec.wisc.edu:siteinfo $HOME
-csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+#csvname="$HOME/siteinfo/forge/FORGE_GPS_MonitoringCoordinatesOnly.csv"
+csvname=`echo $SITE_TABLE | sed 's%site_dims.txt%forge/FORGE_GPS_MonitoringCoordinatesOnly.csv%'`
+echo csvname is $csvname
+
 cat ${csvname} | awk -F, 'NR>1{printf("%12.7f %12.7f\n",$3,$4)}' > sites.lalo
     
 ## average velocity
@@ -93,13 +106,25 @@ echo fvel is $fvel
 ls -l ${fvel}.h5
 
 # map of average velocity - study area only
-
+# --wrap 
+# --vlim $vmin $vmax
 view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
---scalebar 0.1 0.2 0.2 \
---cbar-ext both -v $vmin $vmax \
+--scalebar 0.1 0.2 0.2   \
+--cbar-ext both \
+--gps-label --show-gps --gps-comp enu2los --ref-gps UTM2 \
 --unit mm/year  --cbar-label LOS_displacement_[mm/year] --sub-lat ${sublat} --sub-lon ${sublon}  \
 --pts-file sites.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
 
+
+#save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
+
+# map of average velocity over whole area
+#--scalebar 0.3 0.2 0.05 
+view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} --pts-file sites.lalo --pts-marker '>w' \
+--lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year  \
+--cbar-ext both -v $vmin $vmax \
+--gps-label --show-gps --gps-comp enu2los --ref-gps UTM2 \
+--cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
 
 ## complete time series
 #ftse='geo_timeseries_ERA5_ramp_demErr'
@@ -108,24 +133,17 @@ ftse2=${ftse1}_${PROJECT_NAME}_${DATE12}
 #cp -fv ${ftse1}.h5 geo_timeseries_${PROJECT_NAME}_${DATE12}.h5 
 echo ftse is $ftse
 
-#save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
-
-
-# map of average velocity over whole area
-#--scalebar 0.3 0.2 0.05 
-view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} --pts-file sites.lalo --pts-marker '>w' \
---lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year  \
---cbar-ext both -v $vmin $vmax \
---cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
 
 # map all pairs w.r.t. reference in study area
 view.py -o ${ftse2}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
 --cbar-ext both -v $vmin $vmax \
+--gps-label --show-gps --gps-comp enu2los --ref-gps UTM2 \
 --pts-file sites.lalo --pts-marker '>w' --figext .pdf ${ftse1}.h5
 
 # map all pairs w.r.t. reference whole area
 view.py -o ${ftse2}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
 --cbar-ext both -v $vmin $vmax \
+--gps-label --show-gps --gps-comp enu2los --ref-gps UTM2 \
 --pts-file sites.lalo --pts-marker '>w' ${ftse1}.h5
 
 

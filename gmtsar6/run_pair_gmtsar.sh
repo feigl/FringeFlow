@@ -2,6 +2,7 @@
 
 # calculate an interferometric pair
 #2021/06/10 Kurt Feigl
+#2021/10/20 Sam -- modifying for use on Askja
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`
@@ -25,8 +26,6 @@ echo HOME is ${HOME}
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
-runname="${sat}_${trk}_${sit}_${t0}_${t1}"
-echo runname is ${runname}
 
 #pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
 #tgz="FORGE_TSX_T30_strip004_20200415_20210505.tgz"
@@ -46,19 +45,29 @@ echo "swath is $swath"
 echo "ref is $ref"
 echo "sec is $sec"
 
-if [[ ! -f /staging/groups/geoscience/insar/${tgz} ]]; then
-    echo "ERROR: Could not find input file named /staging/groups/geoscience/insar/${tgz}"
-    ls -l /staging/groups/geoscience/insar
-    exit -1
+runname="${sat}_${trk}_${sit}_${t0}_${t1}_${timetag}"
+echo runname is ${runname}
+
+# conditions to account for data availablity for local vs condor slot run
+if [[ -f ${tgz} ]]; then
+	echo "using local copy ${tgz}"
+	ls -l ${tgz}
+elif [[ -f /staging/groups/geoscience/insar/${tgz} ]]; then
+	echo "looking for a copy on staging"
+      	ls -l /staging/groups/geoscience/insar/${tgz}
+	time cp -v /staging/groups/geoscience/insar/${tgz} .
 else
-  ls -l /staging/groups/geoscience/insar/${tgz}
-  time cp /staging/groups/geoscience/insar/${tgz} .
-  time tar -xzvf ${tgz}
-  source setup_inside_container_gmtsar.sh 
-  cd "In${ref}_${sec}"
-  # send output to home, in hopes that it will transfer back at the end
-  time ./run.sh | tee ${HOME}/run.log
+	echo "ERROR: Could not find input file named ${tgz}"
+	ls -l /staging/groups/geoscience/insar ./
+	exit -1
 fi
 
+# extract tar file
+time tar -xzvf ${tgz}
+# intialize environmental vars including PATH
+source setup_inside_container_gmtsar.sh 
+cd "In${ref}_${sec}"
+# send output to home, in hopes that it will transfer back at the end
+time ./run.sh | tee ${HOME}/${runname}.log
 
 

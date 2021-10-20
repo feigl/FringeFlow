@@ -78,7 +78,7 @@ echo "Starting container...."
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
 docker run -it --rm -v "$PWD":"$PWD" \
--v /home/feigl/FringeFlow:/root/FringeFlow \
+-v ${HOME}/FringeFlow:/root/FringeFlow \
 -v /home/batzli/bin_htcondor:/root/bin_htcondor \
 -v /s12/insar:/root/insar \
 -w $PWD docker.io/nbearson/gmtsar

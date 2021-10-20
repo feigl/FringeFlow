@@ -60,6 +60,9 @@ echo TTAG is ${TTAG}
 echo "Starting smallbaselineApp.py now "
 smallbaselineApp.py  ${CFG} --start ${STEP} | tee smallbaselineApp_${CFG}_${TTAG}.log
 
+echo "Dumping dates"
+h5dump -d date inputs/ifgramStack.h5 | tee smallbaselineApp_${CFG}_${TTAG}.log
+
 #******************** plot & save to pic ********************
 view.py --dpi 150 --noverbose --nodisplay --update velocity.h5 --dem inputs/geometryRadar.h5 --mask maskTempCoh.h5 -u mm
 view.py --dpi 150 --noverbose --nodisplay --update temporalCoherence.h5 -c gray -v 0 1

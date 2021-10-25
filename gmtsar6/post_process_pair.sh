@@ -1,4 +1,5 @@
 #!/bin/bash
+# 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
@@ -93,10 +94,10 @@ if [[ ! $# -eq 3 ]] ; then
     echo "pair_status is now ${pair_status}"
 
     # prepare cut grd files for gipht 
-    # prepare_grids_for_gipht6.sh $site
+    prepare_grids_for_gipht6.sh $site
 
     # make plots (depends on having makefile)
-    # make -f plotting.make plot_pha_utm
+    make -f plotting.make plot_pha_utm
 
     cd ..
     

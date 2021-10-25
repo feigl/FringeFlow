@@ -107,6 +107,9 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     mkdir -p ${pairdir}
     cd ${pairdir}
 
+    # copy PAIRSmake.txt
+    cp -v ../PAIRSmake.txt .
+
     # copy cut grid file
     mkdir -p dem 
     cd dem

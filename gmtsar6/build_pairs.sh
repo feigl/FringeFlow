@@ -32,7 +32,7 @@
 # edit 20201106 Sam changed shebang from #!/bin/bash to #!/urs/bin/env -S bash as recommended by TC
 # edit 20201202 Sam and Kurt adapt for running on Askja
 # edit 20210308 Sam added optional unwrap variable to pass through to pair2e.sh for editing config.tsx.txt file "threshold_snaphu = 0.12" if unset or empty (default = 0)
-
+# edit 20211028 Kurt and Sam improve error reporting
 
 if [ "$#" -eq 1 ]; then
 	unwrap=0
@@ -119,6 +119,20 @@ let "kount+=1"
    let "ngood+=1"  
    ref=$a
    sec=$b
+
+
+   if [ -z ${ref+x} ]; then 
+      echo "variable ref is NOT set"; 
+   else 
+      echo "variable ref is set to $ref"; 
+   fi
+
+   f [ -z ${sec+x} ]; then 
+      echo "variable sec is NOT set"; 
+   else 
+      echo "variable sec is set to $sec"; 
+   fi
+
    track=$i
    sat=$q
    if [[ "$sat" == "TDX" ]]; then
@@ -144,6 +158,7 @@ let "kount+=1"
    # make a directory for this pair
    pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 
+   
    echo ""
    echo ""
    echo "LAUNCHING PAIR ${ngood} on ${pairdir}"

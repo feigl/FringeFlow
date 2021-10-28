@@ -177,9 +177,10 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     # send the executable to CHTC
     #rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
 
-    # make a submit file and send to CHTC
+    # make a submit file 
     cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
-    #rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+    # send submit file to CHTC
+    rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 fi
 
 #echo "Current working directory is now ${PWD}"

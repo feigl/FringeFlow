@@ -97,7 +97,7 @@ if [[ ! $# -eq 3 ]] ; then
     prepare_grids_for_gipht6.sh $site
 
     # make plots (depends on having makefile)
-    make -f plotting.make plot_pha_utm
+    # make -f plotting.make plot_pha_utm
 
     cd ..
     

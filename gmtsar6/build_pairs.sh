@@ -127,7 +127,7 @@ let "kount+=1"
       echo "variable ref is set to $ref"; 
    fi
 
-   f [ -z ${sec+x} ]; then 
+   if [ -z ${sec+x} ]; then 
       echo "variable sec is NOT set"; 
    else 
       echo "variable sec is set to $sec"; 

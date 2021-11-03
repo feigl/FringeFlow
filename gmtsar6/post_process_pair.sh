@@ -117,13 +117,19 @@ if [[ ! $# -eq 3 ]] ; then
     #rsync -av $tgzfile $askja:${HOME}/insar/$sat/$trk/$site/  
     #exit 0
     
-    if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
+    # test string for equality
+    #if [[ "$hostname" == "askja.ssec.wisc.edu" ]]; then
+
+   
+    if [[ -d /s12/insar ]]; then
+        # assume we are on askja
         mkdir -p /s12/insar/${SITE}/TSX
         cp -v  $tgzfile /s12/insar/${SITE}/TSX
         # clean up after pair is transferred
         #rm -fv $tgzfile
         #rm -rfv In${ref}_${sec}
     elif [[ -d /staging/groups/geoscience/insar ]]; then
+        # assume we are on submit-2 
         mkdir -p /staging/groups/geoscience/insar
         cp -v  $tgzfile /staging/groups/geoscience/insar
         # clean up after pair is transferred
@@ -131,6 +137,7 @@ if [[ ! $# -eq 3 ]] ; then
         rm -rfv In${ref}_${sec}
         rm -rfv *.tgz FringeFlow bin_htcondor 
     else
+        # trouble
         echo "Cannot find a place to transfer tar file named $tgzfile"
         # clean up 
         # rm -rf In${ref}_${sec}

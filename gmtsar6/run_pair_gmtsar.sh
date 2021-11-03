@@ -3,6 +3,7 @@
 # calculate an interferometric pair
 #2021/06/10 Kurt Feigl
 #2021/10/20 Sam -- modifying for use on Askja
+#2021/11/03 Kurt and Sam
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`
@@ -25,18 +26,19 @@ echo PWD is ${PWD}
 echo HOME is ${HOME} 
 
 timetag=`date +"%Y%m%dT%H%M%S"`
-echo timetag is ${timetag}
+echo "timetag is $timetag"
 
 #pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
 #tgz="FORGE_TSX_T30_strip004_20200415_20210505.tgz"
 tgz=${1}
+echo "tgz is $tgz"
 
- site=`echo ${tgz} | awk -F_ '{print $1}'`
-  sat=`echo ${tgz} | awk -F_ '{print $2}'`
-  trk=`echo ${tgz} | awk -F_ '{print $3}'`
+site=`echo ${tgz} | awk -F_ '{print $1}'`
+sat=`echo ${tgz} | awk -F_ '{print $2}'`
+trk=`echo ${tgz} | awk -F_ '{print $3}'`
 swath=`echo ${tgz} | awk -F_ '{print $4}'`
-  ref=`echo ${tgz} | awk -F_ '{print $5}'`
-  sec=`echo ${tgz} | awk -F_ '{print $6}' | sed 's/.tgz//'`
+ref=`echo ${tgz} | awk -F_ '{print $5}'`
+sec=`echo ${tgz} | awk -F_ '{print $6}' | sed 's/.tgz//'`
 
 echo "site is $site"
 echo "sat  is $sat"
@@ -53,9 +55,9 @@ if [[ -f ${tgz} ]]; then
 	echo "using local copy ${tgz}"
 	ls -l ${tgz}
 elif [[ -f /staging/groups/geoscience/insar/${tgz} ]]; then
-	echo "looking for a copy on staging"
-      	ls -l /staging/groups/geoscience/insar/${tgz}
-	time cp -v /staging/groups/geoscience/insar/${tgz} .
+  echo "looking for a copy on staging"
+  ls -l /staging/groups/geoscience/insar/${tgz}
+  time cp -v /staging/groups/geoscience/insar/${tgz} .
 else
 	echo "ERROR: Could not find input file named ${tgz}"
 	ls -l /staging/groups/geoscience/insar ./

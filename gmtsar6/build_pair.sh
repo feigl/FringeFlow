@@ -34,6 +34,8 @@
 # This script builds a directory for a run
 # This script does not actually run GMTSAR
 
+# 2021/11/03 Kurt and Sam add siteinfo to tarball
+
 if [[ ! $# -eq 14 ]] ; then
     echo '	ERROR: $0 requires 14 arguments.'
     echo "  Number of arguments actually received ${#}"
@@ -148,6 +150,9 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     # copy the bin_htcondor scripts, excluding source code control stuff in .git folder
     rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
 
+   # copy the siteinfo directory
+    rsync -ra /home/batzli/siteinfo .
+
     # copy makefile for plotting routines
     # cd In${ref}_${sec}
     # cp /home/batzli/bin_htcondor/plotting.make .
@@ -175,19 +180,22 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     fi
 
     # send the executable to CHTC
-    #rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+    echo "Now consider the following command"
+    echo "rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:"
 
     # make a submit file 
     cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
+
     # send submit file to CHTC
-    # rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+    echo "Now consider the following command"
+    echo "rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:"
 fi
 
 #echo "Current working directory is now ${PWD}"
 # submit the job
 # The next line of code fails to return
 #ssh -T submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub" 
-# use try "-t" swicth this instead
+# use try "-t" switch this instead
 if [[ -f ${pairdir}.sub ]]; then
     #ls -l ${pairdir}.sub
     #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'

@@ -7,6 +7,7 @@
 # 2021/07/07 Kurt update handle upper or lower case
 # 2021/10/01 Kurt definitive version of siteinfo.tgz database lives on aska
 #            definitive version of this script lives in FringeFlow/sh
+# 2021/11/08 Kurt clarify error message for SITE_TABLE
 
 # SITE 5 LETTER CODE NAMES
 #
@@ -22,42 +23,34 @@
 # fawns - Fawnskin
 
 if [[ $# -eq 0 ]]; then
-  echo "script to give dimensions of interest based on site"
-  echo "usage: get_site_dims.sh [site] [coordinate system index (1 for lat/lon, 2 for UTM, 3 for UTM zone)]"
-  echo "e.g., get_site_dims.sh brady 1"
-  exit 1
+    echo "script to give dimensions of interest based on site"
+    echo "usage: get_site_dims.sh [site] [coordinate system index (1 for lat/lon, 2 for UTM, 3 for UTM zone)]"
+    echo "e.g., get_site_dims.sh brady 1"
+    exit 1
 fi
 
 if [[ $# -eq 1 ]]; then
- echo "must input coordinate system index"
- echo "1 for lat/lon"
- echo "2 for UTM"
- echo "3 for UTM zone"
- exit 1
+    echo "must input coordinate system index"
+    echo "1 for lat/lon"
+    echo "2 for UTM"
+    echo "3 for UTM zone"
+    exit 1
 fi
 
-# get user name for location of text file 
+if [[ ! -f $SITE_TABLE ]]; then
+     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
+    echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"
+    echo "export SITE_TABLE=$HOME/siteinfo/site_dims.txt"  
+    exit -1
+fi
 
-# if [[ -f $HOME/siteinfo/site_dims.txt ]]; then
-#     export SITE_TABLE=$HOME/siteinfo/site_dims.txt
-# # elif [[ -f $HOME/FringeFlow/siteinfo/site_dims.txt ]]; then
-# #     export SITE_TABLE=$HOME/FringeFlow/siteinfo/site_dims.txt
-# # elif [[ -f $HOME/site_dims.txt ]]; then
-# #     export SITE_TABLE=$HOME/site_dims.txt
-# elif [[ -f ./siteinfo/site_dims.txt ]]; then
-#     export SITE_TABLE=./siteinfo/site_dims.txt
-# else
-#     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
-#     echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"
-#     exit -1
-# fi
-
+# get site ame
 #site=$1
 # 2021/07/08 make lower case
 site=`echo ${1} | awk '{ print tolower($1) }'`
-
 coord_id=${2}
 
+# grab information for this site
 grep -i $site $SITE_TABLE > t1.tmp
 if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then 
     case $coord_id in
@@ -91,7 +84,7 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             exit 0
         ;;
         i) 
-             # output integer bounds S, N, W, E
+            # output integer bounds S, N, W, E
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%d %d %d %d\n",$3,$4+1,$1,$2+1)}' 
             exit 0
             ;;
@@ -105,7 +98,7 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("\047\x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22\047\n",$3,$4,$1,$2)}' 
             exit 0
             ;;
-         -2 )
+        -2 )
             grep -i $site $SITE_TABLE -A2 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %12.3f\n E = %12.3f\n S = %12.3f\n N = %12.3f\n",$1,$2,$3,$4)}' 
             exit 0
             ;;
@@ -115,6 +108,7 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             ;;
     esac
 else 
-  echo "site undefined."
-  exit 1
+    echo "site undefined."
+    exit 1
 fi
+

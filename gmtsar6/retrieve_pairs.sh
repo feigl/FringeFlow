@@ -4,6 +4,7 @@
 # 2021/11/04 edit batzli Added some comments and commented-out line 101 for making UTMs since that is already done on submit-2. Changed mast-->ref and slav-->sec on line 56.
 # 2021/11/05 Kurt and Sam UTM files are already in tar ball, no need to make them here. Save plotting for later. 
 #   Retrieve, but do not delete tarball from /staging
+# 2021/11/08 Make plots, too.
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}
     site=`echo ${2} | awk '{print tolower($1)}'`
@@ -107,25 +108,25 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     ## make UTM grids - already done upstream 
     # prepare_grids_for_gipht6.sh $site
    
-    ## make plots - no need now
-    # if [[ -d In${ref}_${sec} ]]; then
-    #     cd In${ref}_${sec}
-    #     if [[ -f phasefilt_mask_utm.grd ]]; then   
-    #         # make plot
-    #         # plot_pair6.sh TSX T30 forge forge_TSX_T30_strip004_20200324_20210311 phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 97.6 feigl 80 999. "dem" $PWD
-    #         # echo "plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf"
-    #         # plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf
-    #         #plot_pair6.sh  TSX T30 forge "title" phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 $USER 80 999 In20181115_20190418
-    #         plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+    # make plots -
+    if [[ -d In${ref}_${sec} ]]; then
+        cd In${ref}_${sec}
+        if [[ -f phasefilt_mask_utm.grd ]]; then   
+            # make plot
+            # plot_pair6.sh TSX T30 forge forge_TSX_T30_strip004_20200324_20210311 phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 97.6 feigl 80 999. "dem" $PWD
+            # echo "plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf"
+            # plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+            #plot_pair6.sh  TSX T30 forge "title" phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 $USER 80 999 In20181115_20190418
+            plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
             
-    #         # make an exceptionally well documented CSV file;-)
-    #         gmt grdinfo phasefilt_mask_utm.grd     | awk '{print "#",$0}' > phasefilt_mask_utm.csv
-    #         gmt grd2xyz -s -fo phasefilt_mask_utm.grd   | awk '{printf("%.0f,%.0f,%.3f\n",$1,$2,$3)}' >> phasefilt_mask_utm.csv
+            # make an exceptionally well documented CSV file;-)
+            gmt grdinfo phasefilt_mask_utm.grd     | awk '{print "#",$0}' > phasefilt_mask_utm.csv
+            gmt grd2xyz -s -fo phasefilt_mask_utm.grd   | awk '{printf("%.0f,%.0f,%.3f\n",$1,$2,$3)}' >> phasefilt_mask_utm.csv
 
-    #         echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
-    #     fi
-    #     cd ..
-    # fi
+            echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
+        fi
+        cd ..
+    fi
 
 done < ${pairlist}   # end of "while read" loop from above
 

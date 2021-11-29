@@ -101,12 +101,12 @@ fi
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
 # ## pull scripts and make a tar file
-# cd $HOME
-# cd FringeFlow
-# git pull 
-# cd ..
-# tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
-# mv -v FringeFlow.tgz $runname
+cd $HOME
+cd FringeFlow
+git pull 
+cd ..
+tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
+cp -rfv FringeFlow.tgz $runname
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then
@@ -130,7 +130,8 @@ docker pull docker.io/nbearson/isce_mintpy:20211110
 echo '  '
 echo "Starting image in container..."
 echo "Once container starts, consider the following commands"
-echo 'source /root/FringeFlow/docker/setup_inside_container_isce.sh'
+echo 'tar -C $HOME -xzvf FringeFlow.tgz '
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '
 echo '  '
@@ -158,7 +159,7 @@ cd $runname
 #https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
 #docker run --rm -it -v ~/.ssh:/root/.ssh:ro
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
-docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_mintpy:20211110
+docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
 
 
 

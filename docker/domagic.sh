@@ -40,26 +40,26 @@ else
             exit -1
         fi
 
-    #     if [[ -f $HOME/magic/password_config.py ]]; then
-    #         echo "File named $HOME/magic/password_config.py exists."
-    #         if [[ -f $(which ssara_federated_query.py ) ]]; then
-    #             export SSARA_HOME=$( dirname  $(which ssara_federated_query.py ))
-    #             cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py 
-    #             echo "Checking for file named password_config.py in ${SSARA_HOME}"
-    #             if [[ -f ${SSARA_HOME}/password_config.py ]]; then
-    #                 ls -l ${SSARA_HOME}/password_config.py
-    #             else
-    #                 echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
-    #                 exit -1
-    #             fi
-    #         else 
-    #             echo "ERROR: could not find directory for SSARA"
-    #             exit -1
-    #         fi
-    #     else
-    #         echo "ERROR: Could not find file named $HOME/password_config.py"
-    #         exit -1
-    #     fi
+        if [[ -f $HOME/magic/password_config.py ]]; then
+            echo "File named $HOME/magic/password_config.py exists."
+            if [[ -f $(which ssara_federated_query.py ) ]]; then
+                export SSARA_HOME=$( dirname  $(which ssara_federated_query.py ))
+                cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py 
+                echo "Checking for file named password_config.py in ${SSARA_HOME}"
+                if [[ -f ${SSARA_HOME}/password_config.py ]]; then
+                    ls -l ${SSARA_HOME}/password_config.py
+                else
+                    echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
+                    exit -1
+                fi
+            else 
+                echo "ERROR: could not find directory for SSARA"
+                exit -1
+            fi
+        else
+            echo "ERROR: Could not find file named $HOME/password_config.py"
+            exit -1
+        fi
     else
         echo "ERROR: could not find file named magic.tgz"
         echo "To make one, consider the following command"

@@ -2,6 +2,7 @@
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
+# 2021/11/29 Kurt Feigl 
 
 if [[ (( "$#" -ne 1 ) && ( "$#" -ne 5 ) && ("$#" -ne 3)) ]]; then
     bname=`basename $0`
@@ -31,7 +32,7 @@ if [[ "$#" -eq 5 ]]; then
   export sit=$3
   export t0=$4
   export t1=$5
-elif [[] "$#" -eq 3 ]]; then
+elif [[ "$#" -eq 3 ]]; then
   echo "Arguments are $1 $2 $3"
   export sat=$1
   export trk=$2
@@ -100,18 +101,26 @@ fi
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
 ## pull scripts and make a tar file
-cd $HOME
+# cd $HOME
 #git pull 
 #tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
 #mv -v FringeFlow.tgz $dirname/$runname
 
+# 2021/01/10 siteinfo is no longer in repo
+if [[ -d $HOME/siteinfo ]]; then
+   cp -rfv $HOME/siteinfo .
+else
+   echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
+   exit -1
+fi
 
 # make a tar file
 #tar -czvf ../${runname}.tgz .
 
 
 # pull container from DockerHub
-docker pull docker.io/nbearson/isce_chtc2
+#docker pull docker.io/nbearson/isce_chtc2
+docker pull docker.io/nbearson/isce_mintpy:20211110
 
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
@@ -126,7 +135,7 @@ echo '  '
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ $HOST == askja.ssec.wisc.edu ]]; then
+if [[ (( "$HOST" == "askja.ssec.wisc.edu") || ( "$HOST" == "maule.ssec.wisc.edu")) ]]; then
   podman unshare chown -R 1000:1000 $runname
 fi
 # go into container
@@ -146,13 +155,16 @@ cd $runname
 # inherit ssh keys with proper permissions
 #https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
 #docker run --rm -it -v ~/.ssh:/root/.ssh:ro
-docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
+#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
+docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_mintpy:20211110
+
+
 
 # change permissions back again
 cd ..
-# if [[ (( $HOST -eq askja.ssec.wisc.edu ) || ( $HOST -eq maule.ssec.wisc.edu )) ]]; then
-#    sudo chown -R ${USER}:'domain users' $runname 
-# fi
-echo "sudo chown -R ${USER}:'domain users' $runname" 
+# https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
+if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
+    sudo chown -R ${USER}:'domain users' $runname 
+fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

@@ -101,10 +101,10 @@ fi
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
 ## pull scripts and make a tar file
-# cd $HOME
-#git pull 
-#tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
-#mv -v FringeFlow.tgz $dirname/$runname
+cd $HOME
+git pull 
+tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
+mv -v FringeFlow.tgz $dirname/$runname
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then

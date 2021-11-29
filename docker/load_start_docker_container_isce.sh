@@ -138,10 +138,10 @@ echo '  '
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ (( "$HOST" == "askja.ssec.wisc.edu") || ( "$HOST" == "maule.ssec.wisc.edu")) ]]; then
-  podman unshare chown -R 1000:1000 $runname
-fi
-# go into container
+# if [[ (( "$HOST" == "askja.ssec.wisc.edu") || ( "$HOST" == "maule.ssec.wisc.edu")) ]]; then
+#   podman unshare chown -R 1000:1000 $runname
+# fi
+# # go into container
 cd $runname
 
 # run script in container
@@ -166,8 +166,8 @@ docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:2021
 # change permissions back again
 cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
-if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
-    sudo chown -R ${USER}:'domain users' $runname 
-fi
+# if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
+#     sudo chown -R ${USER}:'domain users' $runname 
+# fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

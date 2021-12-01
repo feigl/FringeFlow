@@ -2,6 +2,7 @@
 
 # Set up keys for ISCE, GMTSAR, MINTPY, and SSARA
 # 2021/07/05 Kurt Feigl
+# 2021/12/01 Kurt, Nick, Sam modifying
 
 if [[  ( "$#" -ne 1)  ]]; then
     bname=`basename $0`
@@ -40,6 +41,11 @@ else
             exit -1
         fi
 
+       # copy authentification files for SSARA
+       # TODO: make local copy of the ssara_federated_query.py
+       #       reset SSARA_HOME environment variable
+       #       copy private copy of password_config.py into same location as .py
+       # For memory: after the first execution of password_config.py, we get a .pyc file that is compiled.
         if [[ -f $HOME/magic/password_config.py ]]; then
             echo "File named $HOME/magic/password_config.py exists."
             if [[ -f $(which ssara_federated_query.py ) ]]; then

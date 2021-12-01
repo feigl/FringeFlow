@@ -138,8 +138,11 @@ echo '  '
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ (( "$HOST" == "askja.ssec.wisc.edu") || ( "$HOST" == "maule.ssec.wisc.edu")) ]]; then
+if [[ $(hostname) == "askja.ssec.wisc.edu" || $(hostname) == "maule.ssec.wisc.edu" ]]; then
+  #echo "unsharing"
   podman unshare chown -R 1000:1000 $runname
+else
+  echo "not unsharing"
 fi
 # go into container
 cd $runname

@@ -102,9 +102,9 @@ fi
 
 # ## pull scripts and make a tar file
 cd $HOME
-cd FringeFlow
-git pull 
-cd ..
+# cd FringeFlow
+# git pull 
+# cd ..
 tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
 cp -rfv FringeFlow.tgz $runname
 

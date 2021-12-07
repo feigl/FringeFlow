@@ -1,7 +1,8 @@
 #!/bin/bash -e
-## 2021/07/08 Kurt Feigl
+# 2021/07/08 Kurt Feigl
+# 2021/12/07 Kurt and Nick
 
-# set up paths inside container
+# set up paths and environment variables inside container
 # source this file
 
 # configure environment for ISCE
@@ -32,14 +33,12 @@ if [[ -d ${HOME}/gipht/csh ]]; then
     export PATH=${PATH}:${HOME}/gipht/csh
 fi
 
-if [[ -d /home/ops/ssara_client ]]; then
-    export PATH=${PATH}:/home/ops/ssara_client
-    export PYTHONPATH=${PYTHONPATH}:/home/ops/ssara_client
-elif [[ -d $HOME/ssara_client ]]; then
-    export PATH=${PATH}:$HOME/ssara_client
-    export PYTHONPATH=${PYTHONPATH}:$HOME/ssara_client
-fi
+# set up for SSARA
+export SSARA_HOME=${HOME}/ssara_ops
+export PATH=${PATH}:${SSARA_HOME}
+export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
 
+# set up for MintPy
 if [[ -d /home/ops/MintPy ]]; then
     export MINTPY_HOME=/home/ops/MintPy
     export PATH=${PATH}:${MINTPY_HOME}/mintpy

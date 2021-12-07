@@ -46,7 +46,7 @@ else
         if [[ -f $HOME/magic/password_config.py ]]; then
             echo "File named $HOME/magic/password_config.py exists."
             if [ -d $HOME/ssara_client ]; then
-                export SSARA_HOME=$HOME/ssara_ops
+                #export SSARA_HOME=$HOME/ssara_ops
                 cp -r $HOME/ssara_client $SSARA_HOME
                 cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"

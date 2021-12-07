@@ -42,28 +42,26 @@ else
         fi
 
        # copy authentification files for SSARA
-       # TODO: make local copy of the ssara_federated_query.py
-       #       reset SSARA_HOME environment variable
-       #       copy private copy of password_config.py into same location as .py
        # For memory: after the first execution of password_config.py, we get a .pyc file that is compiled.
         if [[ -f $HOME/magic/password_config.py ]]; then
             echo "File named $HOME/magic/password_config.py exists."
-            if [[ -f $(which ssara_federated_query.py ) ]]; then
-                export SSARA_HOME=$( dirname  $(which ssara_federated_query.py ))
-                cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py 
+            if [ -d $HOME/ssara_client ]; then
+                export SSARA_HOME=$HOME/ssara_ops
+                cp -r $HOME/ssara_client $SSARA_HOME
+                cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"
                 if [[ -f ${SSARA_HOME}/password_config.py ]]; then
                     ls -l ${SSARA_HOME}/password_config.py
                 else
-                    echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
+                    echo "ERROR: could not find file named password_config.py in ${SSARA_HOME}"
                     exit -1
                 fi
-            else 
-                echo "ERROR: could not find directory for SSARA"
+            else
+                echo "ERROR: clean SSARA directory does not exist as $HOME/ssara_client"
                 exit -1
             fi
         else
-            echo "ERROR: Could not find file named $HOME/password_config.py"
+            echo "ERROR: Could not find magic SSARA password file named $HOME/magic/password_config.py"
             exit -1
         fi
     else

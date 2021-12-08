@@ -77,17 +77,23 @@ echo "Starting container...."
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
 #docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
-docker run -it --rm -v "$PWD":"$PWD" \
--v ${HOME}/FringeFlow:/root/FringeFlow \
--v /home/batzli/bin_htcondor:/root/bin_htcondor \
--v /s12/insar:/root/insar \
--w $PWD docker.io/nbearson/gmtsar
+if [[ -d /home/batzli/bin_htcondor ]] && [[ -d /s12/insar:/root/insar ]] ; then
+  docker run -it --rm -v "$PWD":"$PWD" \
+  -v ${HOME}/FringeFlow:/root/FringeFlow \
+  -v /home/batzli/bin_htcondor:/root/bin_htcondor \
+  -v /s12/insar:/root/insar \
+  -w $PWD docker.io/nbearson/gmtsar
+else
+  docker run -it --rm -v "$PWD":"$PWD" \
+  -v ${HOME}/FringeFlow:/root/FringeFlow \
+  -w $PWD docker.io/nbearson/gmtsar
+fi
 
 # change permissions back again
 cd ..
 
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
-if [[ $(hostname) = "askja.ssec.wisc.edu" ]] || [[ $(hostname) = "maule.ssec.wisc.edu" ]]; then
+if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
     sudo chown -R ${USER}:'domain users' $runname 
 fi
 

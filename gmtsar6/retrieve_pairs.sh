@@ -40,6 +40,9 @@ fi
 echo "DATADIR is $DATADIR"
 
 # get the output files
+# We need to make this smarter.  It should use our PAIRSmake.txt to be more selective in the transfer.
+# Alternatively, or in addition, once confident in the output, we could delete after transfer to leave a clean sheet.
+
 #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
 rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
 

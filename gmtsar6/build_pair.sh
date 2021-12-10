@@ -35,7 +35,8 @@
 # This script does not actually run GMTSAR
 
 # 2021/11/03 Kurt and Sam add siteinfo to tarball
-# 2021/11/16 Kurt and Sam designed (but not implemented auto-submit in if statement at end of this file)
+# 2021/11/16 Kurt and Sam designed (but not implemented auto-submit in four places in if statements at end of this file)
+# 2021/12/09 Sam attempted to implement auto-submit
 
 if [[ ! $# -eq 14 ]] ; then
     echo '	ERROR: $0 requires 14 arguments.'
@@ -181,19 +182,21 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     fi
 
     # send the executable to CHTC
-    echo "Now consider the following command"
+    #echo "Now consider the following command"
     #echo "Now running the following command"
     # remove echo and quotes for auto submit
-    echo "rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:"
+    #echo "rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:"
+    rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
 
     # make a submit file 
     cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
 
     # send submit file to CHTC
-    echo "Now consider the following command"
+    #echo "Now consider the following command"
     #echo "Now running the following command"
     # remove echo and quotes for auto submit
-    echo "rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:"
+    #echo "rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:"
+    rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 fi
 
 #echo "Current working directory is now ${PWD}"
@@ -205,10 +208,10 @@ if [[ -f ${pairdir}.sub ]]; then
     #ls -l ${pairdir}.sub
     #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'
     #uncomment the next two lines for auto submit
-    #echo "ls -l ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu  
-    #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+    echo "ls -l ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu  
+    echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
     #comment the following line for auto submit
-    echo "condor_submit ${pairdir}.sub" >> submit_all.sh
+    #echo "condor_submit ${pairdir}.sub" >> submit_all.sh
 fi
 # check on status of jobs
 # ssh submit-2.chtc.wisc.edu "condor_q"

@@ -108,8 +108,8 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
         echo "Did not find an ouput tar file for In${ref}_${sec}"
     fi
 
-    ## make UTM grids - already done upstream 
-    # prepare_grids_for_gipht6.sh $site
+    ## make UTM grids 
+    prepare_grids_for_gipht6.sh $site
    
     # make plots -
     if [[ -d In${ref}_${sec} ]]; then

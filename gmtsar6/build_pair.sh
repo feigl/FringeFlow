@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -vx 
 
 # for debugging, add "-vx" switch after "bash" in the shebang line above.
 # switches in line above:

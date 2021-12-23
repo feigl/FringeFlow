@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -vx
 # 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
 
 timetag=`date +"%Y%m%dT%H%M%S"`

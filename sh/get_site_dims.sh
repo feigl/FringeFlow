@@ -38,7 +38,7 @@ if [[ $# -eq 1 ]]; then
 fi
 
 if [[ ! -f $SITE_TABLE ]]; then
-     echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt"
+	echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt (currently defined as: $SITE_TABLE)"
     echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"
     echo "export SITE_TABLE=$HOME/siteinfo/site_dims.txt"  
     exit -1

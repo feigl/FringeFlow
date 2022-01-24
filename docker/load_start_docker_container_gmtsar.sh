@@ -43,6 +43,23 @@ else
    exit -1
 fi
 
+echo '  '
+echo "Starting image in container..."
+echo "Once container starts, consider the following commands"
+#echo 'tar -C $HOME -xzvf FringeFlow.tgz '
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh'
+# echo 'domagic.sh magic.tgz'
+# echo 'export SITE_TABLE=$HOME/siteinfo/site_dims.txt'
+echo '#test to see if that darned siteinfo is working'
+echo '   get_site_dims.sh forge 1'
+echo '  '
+echo '  '
+# set up for scripts 
+
+
+ # should output
+#-R-112.9852300488545/-112.7536042430101/38.4450885264283/38.59244067077842
+
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
 docker pull docker.io/nbearson/gmtsar

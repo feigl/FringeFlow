@@ -64,10 +64,15 @@ else
 	exit -1
 fi
 
+# we are in a docker container now for an individual pair, right?
 # extract tar file
 time tar -xzvf ${tgz}
 # intialize environmental vars including PATH
 source setup_inside_container_gmtsar.sh 
+# set an environmental var for SITE_TABLE
+#parent=$(dirname $PWD)
+export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
+echo "the site dimensions file is $SITE_TABLE"
 cd "In${ref}_${sec}"
 # send output to home, in hopes that it will transfer back at the end
 time ./run.sh | tee ${HOME}/${runname}.log

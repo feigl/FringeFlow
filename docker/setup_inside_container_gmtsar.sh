@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -exv
 # To set up paths inside container, source this file
 # 2021/07/08 Kurt Feigl
 # 2021/11/03 Kurt and Sam add some documentation
@@ -43,14 +43,14 @@ fi
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
     export PATH=${HOME}/siteinfo:${PATH}
-    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+    export SITE_TABLE="${HOME}/siteinfo/site_dims.txt"
 elif [[ -d ${PWD}/siteinfo ]]; then 
     export PATH=${PWD}/siteinfo:${PATH}
-    export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
+    export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
 else
-    echo "WARNING cannot find directory named siteinfo"
+    echo "WARNING the logic in setup_inside_container_gmtsar.sh cannot find directory named siteinfo in ${home} or ${PWD} but maybe we are looking in the wrong place or maybe the paths are exported in the wrong shell?"
 fi
-echo "SITE_TABLE is $SITE_TABLE"
+echo "If we are in the right place, then SITE_TABLE is $SITE_TABLE or the next attempt is to export that variable in run_pairs_gmtsar.sh?"
 
 
 # needed for ISCE and MINTPY

@@ -19,6 +19,8 @@
 # 20210308 Sam added ${12} unwrap value "0.12" or empty (passed in from run_pair_gmtsarv60.sh) 
 # 20210318 Kurt and Sam added self-documentation.
 # 20210707 Kurt and Sam adapt for docker. "region_cut" must be empty
+# 20211217 Sam added 'export SITE_TABLE=${PWD}/siteinfo/site_dims.txt' to run.sh file
+
 if [ ! "$#" -eq 12 ]; then
 	echo "$0 needs 12 arguments. Found only $#"
    	exit 1
@@ -198,9 +200,9 @@ cd ..
 
 
 
-# start to write the commands for the run script with sebang
-echo '#!/bin/bash -vx' > run.sh
-
+# start to write the commands for the run script with shebang
+echo "#!/bin/bash -vx" > run.sh
+ 
 #echo SAT = $sat
 
 # build the command [p2p_processing.csh now handles TSX and other sats that don't have their own scripts, but order of args has probably changed]

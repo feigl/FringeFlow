@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/bin/bash -vx
 # 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
-# move output from DOY_DOY folder into InYYYYMDD_YYYMMDD
+# move output from DOY_DOY folder into InYYYYMMDD_YYYYMMDD
 
 if [[ ! $# -eq 3 ]] ; then
     bname=`basename ${0}`
-    echo "${bname} will move GMTSAR output from DOY_DOY folder into InYYYYMDD_YYYMMDD"
+    echo "${bname} will move GMTSAR output from DOY_DOY folder into InYYYYMMDD_YYYYMMDD"
     echo "Usage: $bname site5 ref sec"
     echo "$bname forge 20200415 20210505"
     exit -1
@@ -45,7 +45,9 @@ if [[ ! $# -eq 3 ]] ; then
     fi
 
     echo "pair_status is ${pair_status}"
-
+    parent=$(dirname ${PWD})
+    export SITE_TABLE="$parent/siteinfo/site_dims.txt"
+    echo "trying to set SITE_TABLE to $SITE_TABLE again this time in post_processing.sh"
     if [ $pair_status != 0 ]; then
 
         xmin=`get_site_dims.sh ${site} 1 | awk -F-R '{print $2}' | awk -F/ '{print $1}'`

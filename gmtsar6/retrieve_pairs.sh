@@ -5,11 +5,12 @@
 # 2021/11/05 Kurt and Sam UTM files are already in tar ball, no need to make them here. Save plotting for later. 
 #   Retrieve, but do not delete tarball from /staging
 # 2021/11/08 Make plots, too.
+# 2021/12/17 UTMs are made on submit-2 but plots are made here back on Center server (e.g. Ajska)
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}
     site=`echo ${2} | awk '{print tolower($1)}'`
 else
-    echo "retrieve pairs from CHTC"
+    echo "retrieve pairs from CHTC. Run in desired destination directory."
     echo "$0 PAIRSmake.txt site"
     echo "$0 PAIRSmake.txt forge"
     exit -1
@@ -83,7 +84,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
 
     # directory for this pair
     pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
-    echo "pairdir is $pairdir"
+    echo "in retrive_pairs.sh main loop, pairdir is now set to $pairdir"
 
     #echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In${ref}_${sec}*.tgz" .
@@ -105,14 +106,17 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
             fi
         done
     else
-        echo "Did not find an ouput tar file for In${ref}_${sec}"
+        echo "Did not find an ouput tar file named: ${tgzs}, for making In${ref}_${sec}"
     fi
 
-    ## make UTM grids 
-    prepare_grids_for_gipht6.sh $site
+    ## make UTM grids -- No, this now happens on submit-2.
+    #echo "as we start prepare_grids_for_gift6.sh we are in PWD=${PWD}"
+    #echo "and ref=${ref} with sec=${sec}" 
+    #prepare_grids_for_gipht6.sh $site
    
-    # make plots -
+    # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
     if [[ -d In${ref}_${sec} ]]; then
+	echo "entering directory In${ref}_${sec}"
         cd In${ref}_${sec}
         if [[ -f phasefilt_mask_utm.grd ]]; then   
             # make plot
@@ -129,6 +133,8 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
             echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
         fi
         cd ..
+    else
+            echo "Did not find directory In${ref}_${sec}"
     fi
 
 done < ${pairlist}   # end of "while read" loop from above

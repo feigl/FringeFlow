@@ -50,11 +50,10 @@ echo "DATADIR is $DATADIR"
 
 echo 'ref       sec       orb1   orb2   doy_ref             doy_sec             dt   nan  trk  orbdir  swath      site   wv      bpar   bperp  burst  sat  dem                     filter_wv' > goodpairs.txt 
 
- 
-while read -r a b c d e f g h i j k l m n o p q r s; do
-  # syntax must be exactly as on follwing line. No quotes around special characters. No "if" statement. 
+# syntax must be exactly as on follwing line. No quotes around special characters. No "if" statement. 
 # ignore commented lines
-  [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
+while read -r a b c d e f g h i j k l m n o p q r s; do
+   [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
     ref=$a
     sec=$b
     dt=$g
@@ -83,10 +82,8 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
     # copy tarball and delete
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
- 
-    
-  
-    if [[ ! -d "${tgz1}" ]]; then
+
+    if [[ ! -f "${tgz1}" ]]; then
         echo "extracting files from tarball named ${tgz1}"
         tar -xzf ${tgz1}
     
@@ -122,7 +119,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
             fi
             echo "Completed In${ref}_${sec}"
             cd ..
-            # echo "now in directory ${PWD}"
+            echo "now in directory ${PWD}"
         else
             echo "Did not find directory In${ref}_${sec}"
         fi

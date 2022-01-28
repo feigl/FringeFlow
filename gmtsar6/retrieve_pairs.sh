@@ -97,9 +97,9 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
             echo "pairdir is now set to $pairdir"
 
             # get the log files by names - next step is to delete
-            rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.log" .
-            rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.out" .
-            rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.err" .
+            # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.log" .
+            # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.out" .
+            # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.err" .
 
             if [[ -f phasefilt_mask_utm.grd ]]; then   
                 # make plot

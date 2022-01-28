@@ -50,7 +50,9 @@ echo "DATADIR is $DATADIR"
 
 echo 'ref       sec       orb1   orb2   doy_ref             doy_sec             dt   nan  trk  orbdir  swath      site   wv      bpar   bperp  burst  sat  dem                     filter_wv' > goodpairs.txt 
 
+ 
 while read -r a b c d e f g h i j k l m n o p q r s; do
+  # syntax must be exactly as on follwing line. No quotes around special characters. No "if" statement. 
 # ignore commented lines
   [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
     ref=$a
@@ -68,7 +70,6 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     swath=`echo $satparam | sed 's/_//'`
     demf=$r
     filter_wv=$s
-
 
     # set name of tarball
     tgz1="In${ref}_${sec}.tgz"

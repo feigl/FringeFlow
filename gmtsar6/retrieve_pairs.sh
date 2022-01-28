@@ -85,12 +85,13 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
 
     if [[ -f ${tgz1} ]]; then
         echo "extracting files from tarball named ${tgz1}"
-        tar -xzf ${tgz1}
+        tar -xvzf ${tgz1}
     
         # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
         if [[ -d In${ref}_${sec} ]]; then
             echo "entering directory In${ref}_${sec}"
             \cd In${ref}_${sec}
+            echo "now in directory ${PWD}"
 
             # name of input directory for this pair
             pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}

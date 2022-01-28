@@ -72,7 +72,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
 
     echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
     # set name of tarball
-    tgz1="In${ref}_${sec}.tgz"
+    tgz1=In${ref}_${sec}.tgz
     echo "tgz1 is now ${tgz1}"
 
     # find out what is there
@@ -83,7 +83,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     # copy tarball and delete
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
 
-    if [[ -f "${tgz1}" ]]; then
+    if [[ -f ${tgz1} ]]; then
         echo "extracting files from tarball named ${tgz1}"
         tar -xzf ${tgz1}
     

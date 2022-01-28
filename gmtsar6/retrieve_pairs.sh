@@ -42,6 +42,7 @@ fi
 echo "DATADIR is $DATADIR"
 
 
+
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair
 # a         b         c      d      e                    f                    g    h    i    j       k          l      m       n      o      p      q    r                       s
 # ref       sec       orb1   orb2   doy_mast             doy_slav             dt   nan  trk  orbdir  swath      site   wv      bpar   bperp  burst  sat  dem                     filter_wv   
@@ -77,7 +78,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/${tgz1}"
 
     # copy tarball 
-    rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
+    #rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
     # copy tarball and delete
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
  
@@ -114,6 +115,8 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
                 gmt grd2xyz -s -fo phasefilt_mask_utm.grd   | awk '{printf("%.0f,%.0f,%.3f\n",$1,$2,$3)}' >> phasefilt_mask_utm.csv
 
                 echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
+            else
+                echo "could not find UTM file named phasefilt_mask_utm.grd"
             fi
             echo "Completed In${ref}_${sec}"
             cd ..

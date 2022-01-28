@@ -5,7 +5,8 @@
 # 2021/11/05 Kurt and Sam UTM files are already in tar ball, no need to make them here. Save plotting for later. 
 #   Retrieve, but do not delete tarball from /staging
 # 2021/11/08 Make plots, too.
-# 2021/12/17 UTMs are made on submit-2 but plots are made here back on Center server (e.g. Ajska)
+# 2021/12/17 UTMs and plots are made here back on SSEC server (e.g. Ajska)
+# 2022/01/28 Try cleaning up /staging 
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}
     site=`echo ${2} | awk '{print tolower($1)}'`
@@ -40,22 +41,7 @@ else
 fi
 echo "DATADIR is $DATADIR"
 
-# get the output files
-# We need to make this smarter.  It should use our PAIRSmake.txt to be more selective in the transfer.
-# Alternatively, or in addition, once confident in the output, we could delete after transfer to leave a clean sheet.
 
-#rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
-rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In*" .
-
-# get and remove the log files. It would be better to pull these by names
-# rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.log" .
-# rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.out" .
-# rsync --remove-source-files -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.err" .
-# get the log files. It would be better to pull these by names
-rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.log" .
-rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.out" .
-rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${SITE}*.err" .
- 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair
 # a         b         c      d      e                    f                    g    h    i    j       k          l      m       n      o      p      q    r                       s
 # ref       sec       orb1   orb2   doy_mast             doy_slav             dt   nan  trk  orbdir  swath      site   wv      bpar   bperp  burst  sat  dem                     filter_wv   
@@ -82,6 +68,19 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     demf=$r
     filter_wv=$s
 
+
+    # set name of tarball
+    tgz1="In${ref}_${sec}.tgz"
+    echo "tgz1 is now ${tgz1}"
+
+    # find out what is there
+    ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/${tgz1}"
+
+    # copy tarball 
+    rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
+    # copy tarball and delete
+    #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
+ 
     # directory for this pair
     pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
     echo "in retrive_pairs.sh main loop, pairdir is now set to $pairdir"
@@ -89,35 +88,29 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     #echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In${ref}_${sec}*.tgz" .
 
-    #ssh ${ruser}@transfer.chtc.wisc.edu 'ls -l /staging/groups/geoscience/insar/In*.tgz'
-    #ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/In${ref}_${sec}.tgz"
-
+  
     # find retrieved tarballs, looking everywhere below PWD
     #tgzs=`find . -name "In${ref}_${sec}*.tgz"`
     # find retrieved tarballs, looking only inside PWD, i.e. don't try too hard
-    tgzs=`find . -maxdepth 1 -name "In${ref}_${sec}*.tgz"`
+    #tgzs=`find . -maxdepth 1 -name "In${ref}_${sec}*.tgz"`
+  
 
-    # extract contents from tar files
-    if [[ ${#tgzs} -gt 0 ]]; then
-        echo "output tar file tgzs is $tgzs"
-        for tgz1 in $tgzs; do
-            if [[ ! -d "In${ref}_${sec}" ]]; then
-                tar -xzvf $tgz1
-            fi
-        done
+    if [[ ! -d "${tgz1}" ]]; then
+        tar -xzvf ${tgz1}
     else
-        echo "Did not find an ouput tar file named: ${tgzs}, for making In${ref}_${sec}"
+        echo "Did not find an ouput tar file named: ${tgz1}, for making In${ref}_${sec}"
     fi
 
-    ## make UTM grids -- No, this now happens on submit-2.
-    #echo "as we start prepare_grids_for_gift6.sh we are in PWD=${PWD}"
-    #echo "and ref=${ref} with sec=${sec}" 
-    #prepare_grids_for_gipht6.sh $site
-   
     # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
     if [[ -d In${ref}_${sec} ]]; then
 	echo "entering directory In${ref}_${sec}"
         cd In${ref}_${sec}
+
+        # get the log files by names - next step is to delete
+        rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.log" .
+        rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.out" .
+        rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.err" .
+
         if [[ -f phasefilt_mask_utm.grd ]]; then   
             # make plot
             # plot_pair6.sh TSX T30 forge forge_TSX_T30_strip004_20200324_20210311 phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 97.6 feigl 80 999. "dem" $PWD

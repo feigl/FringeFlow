@@ -121,6 +121,8 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
         fi
         echo "Completed In${ref}_${sec}"
         cd ..
+        echo "now in directory ${PWD}"
+        ls -l ${pairlist}
     else
             echo "Did not find directory In${ref}_${sec}"
     fi

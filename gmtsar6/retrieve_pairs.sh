@@ -52,7 +52,7 @@ echo 'ref       sec       orb1   orb2   doy_ref             doy_sec             
 
 # syntax must be exactly as on follwing line. No quotes around special characters. No "if" statement. 
 # ignore commented lines
-while read -r a b c d e f g h i j k l m n o p q r s; do
+while read -r a b c d e f g h i j k l m n o p q r s ; do
    [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
     ref=$a
     sec=$b

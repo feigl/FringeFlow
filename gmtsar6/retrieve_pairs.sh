@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash -ve
 # retrieve pairs
 # 2021/07/09 Kurt Feigl
 # 2021/11/04 edit batzli Added some comments and commented-out line 101 for making UTMs since that is already done on submit-2. Changed mast-->ref and slav-->sec on line 56.
@@ -103,7 +103,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
 
     # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
     if [[ -d In${ref}_${sec} ]]; then
-	echo "entering directory In${ref}_${sec}"
+	    echo "entering directory In${ref}_${sec}"
         cd In${ref}_${sec}
 
         # get the log files by names - next step is to delete

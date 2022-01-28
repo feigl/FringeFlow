@@ -83,7 +83,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     # copy tarball and delete
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
 
-    if [[ ! -f "${tgz1}" ]]; then
+    if [[ -f "${tgz1}" ]]; then
         echo "extracting files from tarball named ${tgz1}"
         tar -xzf ${tgz1}
     

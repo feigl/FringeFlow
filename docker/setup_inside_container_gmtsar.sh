@@ -5,7 +5,7 @@
 
 #
 if [[ ! -w "$HOME" ]]; then
-    echo "Resetting HOME from $HOME to $PWD"
+    echo "Resetting HOME from $HOME to $PWD because cannot write to $HOME"
     export HOME=$PWD
 fi
 
@@ -42,9 +42,11 @@ fi
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
+    echo "found directory ${HOME}/siteinfo"
     export PATH=${HOME}/siteinfo:${PATH}
     export SITE_TABLE="${HOME}/siteinfo/site_dims.txt"
-elif [[ -d ${PWD}/siteinfo ]]; then 
+elif [[ -d ${PWD}/siteinfo ]]; then
+    echo "found directory ${PWD}/siteinfo"
     export PATH=${PWD}/siteinfo:${PATH}
     export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
 else

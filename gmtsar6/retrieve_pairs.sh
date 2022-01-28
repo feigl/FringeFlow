@@ -71,6 +71,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     demf=$r
     filter_wv=$s
 
+    echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
     # set name of tarball
     tgz1="In${ref}_${sec}.tgz"
     echo "tgz1 is now ${tgz1}"
@@ -79,11 +80,11 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/${tgz1}"
 
     # copy tarball 
-    #rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
+    rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
     # copy tarball and delete
     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
  
-    #echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
+    
   
     if [[ ! -d "${tgz1}" ]]; then
         echo "extracting files from tarball named ${tgz1}"

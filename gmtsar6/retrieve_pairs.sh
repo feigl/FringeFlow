@@ -76,7 +76,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     echo "tgz1 is now ${tgz1}"
 
     # find out what is there
-    ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/${tgz1}"
+    ssh ${ruser}@transfer.chtc.wisc.edu "ls -l /staging/groups/geoscience/insar/${tgz1}" 
 
     # copy tarball 
     rsync -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} . 
@@ -90,7 +90,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
         # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
         if [[ -d In${ref}_${sec} ]]; then
             echo "entering directory In${ref}_${sec}"
-            cd In${ref}_${sec}
+            \cd In${ref}_${sec}
 
             # name of input directory for this pair
             pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
@@ -118,7 +118,7 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
                 echo "could not find UTM file named phasefilt_mask_utm.grd"
             fi
             echo "Completed In${ref}_${sec}"
-            cd ..
+            \cd ..
             echo "now in directory ${PWD}"
         else
             echo "Did not find directory In${ref}_${sec}"

@@ -86,17 +86,11 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
     echo "in retrive_pairs.sh main loop, pairdir is now set to $pairdir"
 
     #echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
-    #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/"In${ref}_${sec}*.tgz" .
-
-  
-    # find retrieved tarballs, looking everywhere below PWD
-    #tgzs=`find . -name "In${ref}_${sec}*.tgz"`
-    # find retrieved tarballs, looking only inside PWD, i.e. don't try too hard
-    #tgzs=`find . -maxdepth 1 -name "In${ref}_${sec}*.tgz"`
   
 
     if [[ ! -d "${tgz1}" ]]; then
-        tar -xzvf ${tgz1}
+        echo "extracting files from tarball named ${tgz1}"
+        tar -xzf ${tgz1}
     else
         echo "Did not find an ouput tar file named: ${tgz1}, for making In${ref}_${sec}"
     fi

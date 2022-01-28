@@ -119,14 +119,10 @@ while read -r a b c d e f g h i j k l m n o p q r s; do
 
             echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
         fi
+        echo "Completed In${ref}_${sec}"
         cd ..
     else
             echo "Did not find directory In${ref}_${sec}"
     fi
 
 done < ${pairlist}   # end of "while read" loop from above
-
-
-
-
-

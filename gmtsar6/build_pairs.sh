@@ -115,7 +115,7 @@ let "kount+=1"
   # Next line of code will try to process a blank line
   # [[ $a =~ ^#.* ]] && continue
   # Next line of code will skip over blank lines
-  [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
+   [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
    let "ngood+=1"  
    ref=$a
    sec=$b

@@ -80,18 +80,19 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
         tgz1=In${ref}_${sec}.tgz
         echo "tgz1 is now ${tgz1}"
 
-        # copy tarball and delete
-        rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
-        exit_status=$?
-        if [ $exit_status -ne 0 ]; then
-            continue
-        else
-           if [[ ! -f ${tgz1} ]]; then
-                echo "missing tarball named ${tgz1}"
-            else
-                echo "extracting files from tarball named ${tgz1}"
-                tar -xvzf ${tgz1}
+        if [[ ! -f ${tgz1} ]]; then
+            # copy tarball and delete
+            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
+            exit_status=$?
+            if [ $exit_status -ne 0 ]; then
+                continue
             fi
+        fi 
+        
+        if [[ -f ${tgz1} ]]; then
+                       echo "extracting files from tarball named ${tgz1}"
+                tar -xvzf ${tgz1}
+        fi
 
             
             #     # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.

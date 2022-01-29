@@ -80,60 +80,60 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
         tgz1=In${ref}_${sec}.tgz
         echo "tgz1 is now ${tgz1}"
 
-        if [[ ! -f ${tgz1} ]]; then
-            # copy tarball and delete
-            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
-            exit_status=$?
-            if [ $exit_status -ne 0 ]; then
-                continue
-            fi
-        fi 
+        # if [[ ! -f ${tgz1} ]]; then
+        #     # copy tarball and delete
+        #     rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
+        #     exit_status=$?
+        #     if [ $exit_status -ne 0 ]; then
+        #         echo "Could not retrieve tarball named ${tgz1}"
+        #     fi
+        # fi 
         
         if [[ -f ${tgz1} ]]; then
-                       echo "extracting files from tarball named ${tgz1}"
-                tar -xvzf ${tgz1}
+            echo "extracting files from tarball named ${tgz1}"
+            tar -xvzf ${tgz1}
         fi
 
             
-            #     # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
-            #     if [[ -d In${ref}_${sec} ]]; then
-            #         echo "entering directory In${ref}_${sec}"
-            #         \cd In${ref}_${sec}
-            #         echo "now in directory ${PWD}"
+        # make plots -- Yes, if UTMs are correctly made on submit-2, then this should work.
+        if [[ -d In${ref}_${sec} ]]; then
+            echo "entering directory In${ref}_${sec}"
+            \cd In${ref}_${sec}
+            echo "now in directory ${PWD}"
 
-            #         # # name of input directory for this pair
-            #         # pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
-            #         # echo "pairdir is now set to $pairdir"
+            # # name of input directory for this pair
+            pairdir=${site}_${sat}_${trk}_${swath}_${ref}_${sec}
+            echo "pairdir is now set to $pairdir"
 
-            #         # # get the log files by names - next step is to delete
-            #         # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.log" .
-            #         # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.out" .
-            #         # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.err" .
+            # # get the log files by names - next step is to delete
+            # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.log" .
+            # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.out" .
+            # # rsync -rav ${ruser}@submit-2.chtc.wisc.edu:"${pairdir}*.err" .
 
-            #         # if [[ -f phasefilt_mask_utm.grd ]]; then   
-            #         #     # make plot
-            #         #     # plot_pair6.sh TSX T30 forge forge_TSX_T30_strip004_20200324_20210311 phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 97.6 feigl 80 999. "dem" $PWD
-            #         #     # echo "plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf"
-            #         #     # plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf
-            #         #     #plot_pair6.sh  TSX T30 forge "title" phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 $USER 80 999 In20181115_20190418
-            #         #     plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
-                        
-            #         #     # make an exceptionally well documented CSV file;-)
-            #         #     gmt grdinfo phasefilt_mask_utm.grd     | awk '{print "#",$0}' > phasefilt_mask_utm.csv
-            #         #     gmt grd2xyz -s -fo phasefilt_mask_utm.grd   | awk '{printf("%.0f,%.0f,%.3f\n",$1,$2,$3)}' >> phasefilt_mask_utm.csv
+            if [[ -f phasefilt_mask_utm.grd ]]; then   
+                # make plot
+                # plot_pair6.sh TSX T30 forge forge_TSX_T30_strip004_20200324_20210311 phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 97.6 feigl 80 999. "dem" $PWD
+                # echo "plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf"
+                # plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+                #plot_pair6.sh  TSX T30 forge "title" phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 $USER 80 999 In20181115_20190418
+                plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+                
+                # make an exceptionally well documented CSV file;-)
+                gmt grdinfo phasefilt_mask_utm.grd     | awk '{print "#",$0}' > phasefilt_mask_utm.csv
+                gmt grd2xyz -s -fo phasefilt_mask_utm.grd   | awk '{printf("%.0f,%.0f,%.3f\n",$1,$2,$3)}' >> phasefilt_mask_utm.csv
 
-            #         #     echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
-            #         # else
-            #         #     echo "could not find UTM file named phasefilt_mask_utm.grd"
-            #         # fi
-            #         echo "Completed In${ref}_${sec}"
-            #         \cd ..
-            #         echo "now in directory ${PWD}"
-            #     else
-            #         echo "Did not find directory In${ref}_${sec}"
-            #     fi
-            # else
-            #     echo "Did not find an ouput tar file named: ${tgz1}, for making In${ref}_${sec}"
-         fi
+                echo $a $b $c $d $e $f $g $h $i $j $k $l $m $n $o $p $q $r $s >> ../goodpairs.txt 
+            else
+                echo "could not find UTM file named phasefilt_mask_utm.grd"
+            fi
+            echo "Completed In${ref}_${sec}"
+            \cd ..
+            echo "now in directory ${PWD}"
+                #     else
+                #         echo "Did not find directory In${ref}_${sec}"
+                #     fi
+                # else
+                #     echo "Did not find an ouput tar file named: ${tgz1}, for making In${ref}_${sec}"
+            fi
 done < "$1"  # end of "while read" loop from above
 echo "Processed $ngood good lines of $kount lines total in file $1"

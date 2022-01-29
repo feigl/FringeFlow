@@ -80,14 +80,14 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
         tgz1=In${ref}_${sec}.tgz
         echo "tgz1 is now ${tgz1}"
 
-        # if [[ ! -f ${tgz1} ]]; then
-        #     # copy tarball and delete
-        #     rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
-        #     exit_status=$?
-        #     if [ $exit_status -ne 0 ]; then
-        #         echo "Could not retrieve tarball named ${tgz1}"
-        #     fi
-        # fi 
+        if [[ ! -f ${tgz1} ]]; then
+            # copy tarball and delete
+            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
+            exit_status=$?
+            if [ $exit_status -ne 0 ]; then
+                echo "Could not retrieve tarball named ${tgz1}"
+            fi
+        fi 
         
         if [[ -f ${tgz1} ]]; then
             echo "extracting files from tarball named ${tgz1}"

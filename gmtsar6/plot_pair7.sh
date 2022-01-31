@@ -64,7 +64,12 @@ echo "site is " ${site}
 #cp -v $HOME/FringeFlow/gmtsar-aux/${site}/* .   
 #  fi
 #fi
-cp -v $HOME/siteinfo/${site}/* .
+# Following line fails in a ht_condor slot because you can't go home again
+#cp -v $HOME/siteinfo/${site}/* .
+# use environment variable 
+siteinfodir=`echo $SITE_TABLE | sed 's/site_dims.txt//'`
+echo siteinfodir is now $siteinfodir
+cp -v ${siteinfodir}/${site}/* .
 
 # set gmt environment varibles
 #gmt gmtset PS_MEDIA = letter

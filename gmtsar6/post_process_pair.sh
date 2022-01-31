@@ -1,5 +1,6 @@
 #!/bin/bash -vx
 # 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
+# 2022/01/31 make the plots in the ht_condor job in the slot
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
@@ -101,6 +102,12 @@ if [[ ! $# -eq 3 ]] ; then
     # make plots (depends on having makefile)
     # make -f plotting.make plot_pha_utm
 
+    # 2022/01/31 make the plots in the ht_condor job in the slot
+    # here is the old example
+#       plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+#      plot_pair7.sh  TSX T91 sanem $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "_" ../dem/sanem_dem_3dep_10m.grd 
+#      inside this script, we do not know much. Leave T
+       plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"
     cd ..
     
     # make a tar file

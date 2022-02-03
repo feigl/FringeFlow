@@ -107,7 +107,7 @@ if [[ ! $# -eq 3 ]] ; then
 #       plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
 #      plot_pair7.sh  TSX T91 sanem $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "_" ../dem/sanem_dem_3dep_10m.grd 
 #      inside this script, we do not know much. Leave T
-       #2022/02/03 remove ploting to its own line in run.sh (written by write_run_script)
+       #2022/02/03 remove plotting to its own line in run.sh (written by write_run_script)
        #plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"
     cd ..
     

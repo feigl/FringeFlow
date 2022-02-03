@@ -225,6 +225,9 @@ fi
 # handle post-processing
 echo "post_process_pair.sh ${site} ${ref} ${sec}" >> run.sh
 
+# set up to make a plot
+echo plot_pair7.sh  ${sat} "track" ${site} ${inpairdir} ${inpairdir}/phasefilt_mask_utm.grd ${inpairdir}/phasefilt_mask_utm.ps "mmperfringe" "bperp" ${USER} $filter_wv "dt" ${demgrd} >> run.sh
+
 # make run.sh executable 
 chmod +x run.sh
 

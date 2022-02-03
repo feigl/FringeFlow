@@ -33,6 +33,7 @@
 # edit 20201202 Sam and Kurt adapt for running on Askja
 # edit 20210308 Sam added optional unwrap variable to pass through to pair2e.sh for editing config.tsx.txt file "threshold_snaphu = 0.12" if unset or empty (default = 0)
 # edit 20211028 Kurt and Sam improve error reporting
+# edit 20220203 Kurt and Sam pass variables needed for ploting down the line
 
 if [ "$#" -eq 1 ]; then
 	unwrap=0
@@ -158,7 +159,10 @@ let "kount+=1"
    # make a directory for this pair
    pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 
-   
+   # get time difference in days
+   dt=$g
+
+   ## TODO - add DT to this
    echo ""
    echo ""
    echo "LAUNCHING PAIR ${ngood} on ${pairdir}"

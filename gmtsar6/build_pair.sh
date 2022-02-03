@@ -37,6 +37,7 @@
 # 2021/11/03 Kurt and Sam add siteinfo to tarball
 # 2021/11/16 Kurt and Sam designed (but not implemented auto-submit in four places in if statements at end of this file)
 # 2021/12/09 Sam attempted to implement auto-submit
+# 2022/02/03 Kurt and Sam, update to make plots
 
 if [[ ! $# -eq 14 ]] ; then
     echo '	ERROR: $0 requires 14 arguments.'
@@ -47,7 +48,7 @@ if [[ ! $# -eq 14 ]] ; then
     echo '	$3=ref (reference image date in YYYYMMDD) formerly mast' 
     echo '	$4=sec (secondary image date in YYYYMMDD) formerly slav'
     echo '	$5=user'
-    echo '	$6=satparam (for TSX this is strip number)'
+    echo '	$6=satparam (for TSX this is swath number)'
     echo '	$7=demf (DEM filename)'
     echo '	$8=filter_wv (filter wavelength)'
     echo '	$9,${10},${11},${12} are xmin xmax ymin ymax'
@@ -144,6 +145,7 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     cd ../
 
     # run a script to write a script (run.sh)
+    # TODO - add track to this command line 
     write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
 
     # copy the FringeFlow scripts, excluding source code control stuff in .git folder

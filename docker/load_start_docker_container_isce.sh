@@ -85,13 +85,13 @@ cd $runname
 cp -v $HOME/magic.tgz .
 cp -v $HOME/.ssh/id_rsa .
 
-# # 2021/01/10 siteinfo is no longer in repo
-# if [[ -d $HOME/siteinfo ]]; then
-#    cp -r $HOME/siteinfo .
-# else
-#    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
-#    exit -1
-# fi
+# 2021/01/10 siteinfo is no longer in repo
+if [[ -d $HOME/siteinfo ]]; then
+   cp -r $HOME/siteinfo .
+else
+   echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
+   exit -1
+fi
 
 # copy input files
 #cp /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv .
@@ -110,10 +110,7 @@ cp -rfv FringeFlow.tgz $runname
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then
-  
-   #cp -rfv $HOME/siteinfo .
-   # 2022/01/24 copy into run folder
-   cp -rfv $HOME/siteinfo $runname
+   cp -rfv $HOME/siteinfo .
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
    exit -1
@@ -134,6 +131,7 @@ echo '  '
 echo "Starting image in container..."
 echo "Once container starts, consider the following commands"
 echo 'tar -C $HOME -xzvf FringeFlow.tgz '
+echo 'cp -rv siteinfo $HOME/siteinfo'
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '

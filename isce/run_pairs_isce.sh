@@ -47,6 +47,9 @@ tar -C ${HOME} -xzvf ssh.tgz
 # uncompress files for shell scripts and add to search path
 tar -C ${HOME} -xzvf FringeFlow.tgz
 
+# uncompress siteinfo
+tar -C ${HOME} -xzvf siteinfo.tgz
+
 # set up paths and environment
 source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 

@@ -9,18 +9,20 @@ universe = docker
 #docker_image = docker.io/nbearson/isce_mintpy:latest 
 #docker_image = docker.io/isce/isce2:latest
 #docker_image = docker.io/benjym/insar
- docker_image = docker.io/nbearson/isce_chtc2
+#docker_image = docker.io/nbearson/isce_mintpy:20211110
+#docker_image = docker.io/nbearson/chtctest:latest
+ docker_image = docker.io/nbearson/isce_chtc:20220204
 
 # files
 #log    = run_pairs_isce.$(Cluster).$(Process).log 
 #output = run_pairs_isce.$(Cluster).$(Process).out
 #error  = run_pairs_isce.$(Cluster).$(Process).err
-log    = run_pairs_isce.$BASENAME($SUBMIT_FILE).$(Cluster).$(Process).log
-output = run_pairs_isce.$BASENAME($SUBMIT_FILE).$(Cluster).$(Process).out
-error  = run_pairs_isce.$BASENAME($SUBMIT_FILE).$(Cluster).$(Process).err
+log    = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).log
+output = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).out
+error  = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).err
 
 
-executable = run_pairs_isce.sh
+executable = run_isce_chtc.sh
 
 ### prepare large data file on askja with a name like this:
     # mkdir S1_144_SANEM_20190110_20190122
@@ -35,7 +37,7 @@ executable = run_pairs_isce.sh
     # condor_submit run_pairs_isce.sub
 
 
-transfer_input_files = FringeFlow.tgz, magic.tgz, ssh.tgz
+transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz
 
 #arguments = $(Process)
 #arguments = "S1 144 SANEM 20190110  20190122"

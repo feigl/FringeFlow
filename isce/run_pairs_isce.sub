@@ -17,9 +17,9 @@ universe = docker
 #log    = run_pairs_isce.$(Cluster).$(Process).log 
 #output = run_pairs_isce.$(Cluster).$(Process).out
 #error  = run_pairs_isce.$(Cluster).$(Process).err
-log    = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).log
-output = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).out
-error  = run_isce_chtc.$BASENAME($(SUBMIT_FILE)).$(Cluster).$(Process).err
+log    = run_isce_chtc.$BASENAME(SUBMIT_FILE).$(Cluster).$(Process).log
+output = run_isce_chtc.$BASENAME(SUBMIT_FILE).$(Cluster).$(Process).out
+error  = run_isce_chtc.$BASENAME(SUBMIT_FILE).$(Cluster).$(Process).err
 
 
 executable = run_isce_chtc.sh

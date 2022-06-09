@@ -26,11 +26,12 @@
 
 if [[ $# -eq 0 ]]; then
     echo "script for plotting 1 pair with footer information"
-    echo "plot_pair6.sh [sat] [track] [site] [plot title] [grdfile] [outfile] [mmperfringe] [bperp] [user] [filter_wv] [time span] [pair name]"
-    echo "plot_pair6.sh  TSX T30 forge title phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 feigl 80 999 In20181115_20190418"
-    echo "pair_name is used as title for plot"
-    echo "mmperfringe is used as colorbar label when plotting unwrapped range change"
-    echo "arguments  [bperp] [user] [filter_wv] [time span] [DEM file name with path] are used for comments only"
+#    echo "plot_pair7.sh [sat] [track] [site] [plot title] [grdfile] [outfile] [mmperfringe] [bperp] [user] [filter_wv] [time span] [pair name]"
+#    echo "plot_pair7.sh  TSX T30 forge title phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 feigl 80 999 In20181115_20190418"
+     echo "plot_pair7.sh sat trk site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps 15.5 bperp user filter_wv dt UTM"
+     echo "current directory is used as title for plot"
+#    echo "mmperfringe is used as colorbar label when plotting unwrapped range change"
+     echo "arguments [bperp] [user] [filter_wv] [dt] [demf -- actually hard-coded as UTM] are used for comments only"
     exit 1
 fi
 

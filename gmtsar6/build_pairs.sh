@@ -33,7 +33,9 @@
 # edit 20201202 Sam and Kurt adapt for running on Askja
 # edit 20210308 Sam added optional unwrap variable to pass through to pair2e.sh for editing config.tsx.txt file "threshold_snaphu = 0.12" if unset or empty (default = 0)
 # edit 20211028 Kurt and Sam improve error reporting
+# edit 20220302 Sam added dt=$g and others (trk already defined) to capture that variable from the PAIRSmake.txt and pass it to build_pair.sh->write_run_script.sh->post_process_pair.sh->plot_pair7.sh
 # edit 20220203 Kurt and Sam pass variables needed for ploting down the line
+
 
 if [ "$#" -eq 1 ]; then
 	unwrap=0
@@ -77,10 +79,10 @@ demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 
 ### check variables
 #I believe next will be: 
-#~/bin_htcondor/run_pair_gmtsarv60.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site
+#~/bin_htcondor/run_pair_gmtsarv60.sh $sat $trk $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site
 # but some variables are missing: ($satparam) need to find source
 # echo "Currently defined Variables:"
-# echo "sat=$sat track=$track ref=$ref sec=$sec"
+# echo "sat=$sat trk=$trk ref=$ref sec=$sec"
 # echo "user=$user" 
 # echo "satparam=$satparam"
 # echo "dem=$demf"
@@ -120,7 +122,7 @@ let "kount+=1"
    let "ngood+=1"  
    ref=$a
    sec=$b
-
+   dt=$g
 
    if [ -z ${ref+x} ]; then 
       echo "variable ref is NOT set"; 
@@ -134,7 +136,7 @@ let "kount+=1"
       echo "variable sec is set to $sec"; 
    fi
 
-   track=$i
+   trk=$i
    sat=$q
    if [[ "$sat" == "TDX" ]]; then
       sat="TSX"
@@ -143,7 +145,7 @@ let "kount+=1"
    # remove underscore
    swath=`echo $satparam | sed 's/_//'`
    #echo "swath is $swath"
-
+   bperp=$o
    demf=$r
    filter_wv=$s #added by Kurt and Sam 2021/07/02
 
@@ -166,8 +168,8 @@ let "kount+=1"
    echo ""
    echo ""
    echo "LAUNCHING PAIR ${ngood} on ${pairdir}"
-   echo "build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap"
-   build_pair.sh $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap | tee ${pairdir}.log 
+   echo "build_pair.sh $sat $trk $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site $unwrap $dt $bperp"
+   build_pair.sh ${sat} ${trk} ${ref} ${sec} ${user} ${satparam} ${demf} ${filter_wv} ${xmin} ${xmax} ${ymin} ${ymax} ${site} ${unwrap} ${dt} ${bperp} | tee ${pairdir}.log 
 done < "$1"   # end of "while read" loop from above
 echo ""
 echo ""

@@ -2,7 +2,7 @@
 # To set up paths inside container, source this file
 # 2021/07/08 Kurt Feigl
 # 2021/11/03 Kurt and Sam add some documentation
-
+# 2022/01/24 Kurt and Sam clarifing SITE_TABLE logic
 #
 if [[ ! -w "$HOME" ]]; then
     echo "Resetting HOME from $HOME to $PWD because cannot write to $HOME"
@@ -43,11 +43,11 @@ fi
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
     echo "found directory ${HOME}/siteinfo"
-    export PATH=${HOME}/siteinfo:${PATH}
+#    export PATH=${HOME}/siteinfo:${PATH}
     export SITE_TABLE="${HOME}/siteinfo/site_dims.txt"
 elif [[ -d ${PWD}/siteinfo ]]; then
     echo "found directory ${PWD}/siteinfo"
-    export PATH=${PWD}/siteinfo:${PATH}
+#    export PATH=${PWD}/siteinfo:${PATH}
     export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
 else
     echo "WARNING the logic in setup_inside_container_gmtsar.sh cannot find directory named siteinfo in ${home} or ${PWD} but maybe we are looking in the wrong place or maybe the paths are exported in the wrong shell?"

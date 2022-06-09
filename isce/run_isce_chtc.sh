@@ -18,6 +18,7 @@ export trk=$2
 export sit=$3
 export t0=$4
 export t1=$5
+export STACK_SENTINEL_NUM_CONNECTIONS=${6:=all} # passed to stackSentinel as number of interferograms between each date and subsequent dates
 
 WORKDIR=$PWD
 
@@ -45,7 +46,7 @@ $HOME/FringeFlow/docker/domagic.sh magic.tgz
 
 export timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
-export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
+export runname="${sat}_${trk}_${sit}_${t0}_${t1}_c${STACK_SENTINEL_NUM_CONNECTIONS}"
 echo runname is ${runname}
 
 RUNDIR="$WORKDIR/$runname"

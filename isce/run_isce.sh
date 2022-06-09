@@ -29,6 +29,8 @@ else
     exit -1
 fi
 
+STACK_SENTINEL_NUM_CONNECTIONS=${STACK_SENTINEL_NUM_CONNECTIONS:=all}
+
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 echo slcdir is $slcdir
@@ -76,7 +78,7 @@ if [[ ! -f $dem ]]; then
 fi
 
 # TODO: check that -b should not be --box or other
-stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
+stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c "$STACK_SENTINEL_NUM_CONNECTIONS" \
 -C geometry -d ${dem} \
 -b "${bbox}" \
 --start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \

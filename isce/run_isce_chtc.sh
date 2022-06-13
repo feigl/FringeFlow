@@ -84,17 +84,22 @@ popd
 # S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip download time: 146.04 secs (28.55 MB/sec)
 
 
-echo "Copying input ORBIT files from askja"
+# echo "Copying input ORBIT files from askja"
 # mkdir -p ORBITS
 # cd ORBITS
 # get_orbits_from_askja.sh | tee -a ../orbits.log
 # cd ..
-cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
-tar xf orbits.tar.xz
+# cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
+# tar xf orbits.tar.xz
 # [chtc-nickb@bearson-9818685 ORBITS]$ get_orbits_from_askja.sh | tee -a ../orbits.log
 # ssh: connect to host askja.ssec.wisc.edu port 22: Connection refused
 # NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
 # above: leaning towards FIX WITH STAGING right now
+# 20220613 above requires all orbits - instead try getting only orbits for which we have an SLC
+mkdir -p ORBITS
+pushd ORBITS
+get_orbits.sh
+popd
 
 echo "Making a DEM"
 mkdir -p DEM

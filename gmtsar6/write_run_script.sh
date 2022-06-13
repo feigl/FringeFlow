@@ -20,9 +20,10 @@
 # 20210318 Kurt and Sam added self-documentation.
 # 20210707 Kurt and Sam adapt for docker. "region_cut" must be empty
 # 20211217 Sam added 'export SITE_TABLE=${PWD}/siteinfo/site_dims.txt' to run.sh file
+# 20220303 Sam added variables received from build_pair.sh to add to post_process_pair.sh in the run.sh file written here 
 
-if [ ! "$#" -eq 12 ]; then
-	echo "$0 needs 12 arguments. Found only $#"
+if [ ! "$#" -eq 16 ]; then
+	echo "$0 needs 16 arguments. Found only $#"
    	exit 1
 fi
 
@@ -38,6 +39,10 @@ xmax=${9}
 ymin=${10}
 ymax=${11}
 unwrap=${12}
+trk=${13}
+dt=${14}
+bperp=${15}
+user=${16}
 
 if [[ "$sat" == "ERS2" || "$sat" == "ERS1" ]] ; then
 	sat=ERS
@@ -223,7 +228,7 @@ else
 fi
 
 # handle post-processing
-echo "post_process_pair.sh ${site} ${ref} ${sec}" >> run.sh
+echo "post_process_pair.sh ${sat} ${trk} ${site} ${ref} ${sec} ${bperp} ${user} ${filter_wv} ${dt}" >> run.sh
 
 # set up to make a plot
 # TODO edit to pass in dt and track; 

@@ -37,12 +37,13 @@
 # 2021/11/03 Kurt and Sam add siteinfo to tarball
 # 2021/11/16 Kurt and Sam designed (but not implemented auto-submit in four places in if statements at end of this file)
 # 2021/12/09 Sam attempted to implement auto-submit
+# 2022/03/02 Sam added ${15} and ${16} to bring dt and bperp forward from build_pairs.sh and beyond to plot_pair7.sh and write_run_script.sh
 # 2022/02/03 Kurt and Sam, update to make plots
 
-if [[ ! $# -eq 14 ]] ; then
-    echo '	ERROR: $0 requires 14 arguments.'
+if [[ ! $# -eq 16 ]] ; then
+    echo '	ERROR: $0 requires 16 arguments.'
     echo "  Number of arguments actually received ${#}"
-    echo '	Usage: $0 sat trk ref sec user satparam demf filter_wv xmin xmax ymin ymax site'
+    echo '	Usage: $0 sat trk ref sec user satparam demf filter_wv xmin xmax ymin ymax site unwrap dt bperp'
     echo '	$1=sat'
     echo '	$2=trk'
     echo '	$3=ref (reference image date in YYYYMMDD) formerly mast' 
@@ -54,7 +55,9 @@ if [[ ! $# -eq 14 ]] ; then
     echo '	$9,${10},${11},${12} are xmin xmax ymin ymax'
     echo '	${13}=site'
     echo '	${14}=unwrap (value or empty) default empty will not unwrap)'
-    echo '	Example: $0 TSX T144 20180724 20181203 feigl strip_007R tusca_dem_3dep_10m.grd 80 -116.1900101030447 -116.0749982018097 41.41245177646995 41.49864121097495 tusca y'
+    echo '      ${15}=dt (days between ref and sec)'
+    echo '      ${16}=bperp (baseline in meters)'
+    echo '	Example: $0 TSX T144 20180724 20181203 feigl strip_007R tusca_dem_3dep_10m.grd 80 -116.1900101030447 -116.0749982018097 41.41245177646995 41.49864121097495 tusca 0.12 132 -6.0'
     exit 0
 fi
 
@@ -84,6 +87,8 @@ ymax=${12}
 site=${13}
 SITE=`echo ${site} | awk '{ print toupper($1) }'`
 unwrap=${14}
+dt=${15}
+bperp=${16}
 
 # set remote user on chtc
 if [[ ${USER} = "batzli" ]]; then
@@ -145,6 +150,7 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     cd ../
 
     # run a script to write a script (run.sh)
+    write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap} ${trk} ${dt} ${bperp} ${user}
     # TODO - add track to this command line 
     write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
 

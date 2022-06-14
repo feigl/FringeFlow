@@ -99,7 +99,7 @@ popd
 # 20220613 above requires all orbits - instead try getting only orbits for which we have an SLC
 mkdir -p ORBITS
 pushd ORBITS
-get_orbits.sh
+get_orbits.sh tee -a ../orbits.log
 popd
 
 echo "Making a DEM"
@@ -107,7 +107,7 @@ mkdir -p DEM
 pushd DEM
 # make the DEM
 echo "dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c" | tee -a ../dem.log
-dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c
+dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
 popd
 
 echo "Running ISCE"
@@ -117,15 +117,16 @@ run_isce.sh ${sit} | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output
-find  baselines -type f -ls | tee baselines.lst
-find  merged    -type f -ls | tee merged.lst
+find  baselines -type f -ls | tee ../baselines.lst
+find  merged    -type f -ls | tee ../merged.lst
 popd
 
 
 # transfer output back to /staging/
 cd $WORKDIR/$runname # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
-tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+# 2022/06/14 Kurt - keep the DEM and the ORBITS too
+tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 mkdir -p "/staging/groups/geoscience/isce/output/"
 cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
 

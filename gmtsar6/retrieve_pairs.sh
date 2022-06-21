@@ -63,7 +63,7 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
         sec=$b
         dt=$g
         trk=$i
-        bperp=$n
+        bperp=$o
         sat=$q
         if [[ "$sat" == "TDX" ]]; then
             sat="TSX"
@@ -116,7 +116,7 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
                 # echo "plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf"
                 # plot_pair.sh $sat $trk $site $pair $pair/${pha1}.grd ${pair}_${pha1}.ps $mmperfringe $bperp $user $filter_wv $dt $demf
                 #plot_pair6.sh  TSX T30 forge "title" phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 $USER 80 999 In20181115_20190418
-                plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
+                plot_pair7.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
                 
                 # make an exceptionally well documented CSV file;-)
                 gmt grdinfo phasefilt_mask_utm.grd     | awk '{print "#",$0}' > phasefilt_mask_utm.csv

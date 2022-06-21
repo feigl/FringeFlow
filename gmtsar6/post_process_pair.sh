@@ -1,22 +1,30 @@
 #!/bin/bash -vx
 # 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
 # 2022/01/31 make the plots in the ht_condor job in the slot
+# 2022/03/02 Sam: added passing in of variables needed by plot_pair7.sh
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
 # move output from DOY_DOY folder into InYYYYMMDD_YYYYMMDD
 
-if [[ ! $# -eq 3 ]] ; then
+if [[ ! $# -eq 9 ]] ; then
     bname=`basename ${0}`
     echo "${bname} will move GMTSAR output from DOY_DOY folder into InYYYYMMDD_YYYYMMDD"
-    echo "Usage: $bname site5 ref sec"
-    echo "$bname forge 20200415 20210505"
+    echo "Usage: $bname sat trk site5 ref sec bperp user filter_wv dt"
+    echo "$bname TSX T30 forge 20200415 20210505 -6.5 batzli 80 327"
     exit -1
  else
-    site=${1}
-    ref=${2}
-    sec=${3}
+    sat=${1}
+    trk=${2}
+    site=${3}
+    ref=${4}
+    sec=${5}
+    bperp=${6}
+    user=${7}
+    filter_wv=${8}
+    dt=${9}
+
     SITE=`echo $site | awk '{ print toupper($1) }'`
 
     # clean up afterwards
@@ -107,6 +115,12 @@ if [[ ! $# -eq 3 ]] ; then
 #       plot_pair6.sh  $sat $trk $site $pairdir phasefilt_mask_utm.grd phasefilt_mask_utm.ps $mmperfringe $bperp $user $filter_wv $dt $demf
 #      plot_pair7.sh  TSX T91 sanem $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "_" ../dem/sanem_dem_3dep_10m.grd 
 #      inside this script, we do not know much. Leave T
+#    What plot_pair7.sh expects:
+#    echo "plot_pair7.sh [sat]* [track] [site] [plot title] [grdfile] [outfile] [mmperfringe]* [bperp] [user] [filter_wv] [time span] [label]*"
+#    Note: * are hard-coded: mmperfringe=15.5, label=UTM
+#    echo "plot_pair7.sh  TSX T30 forge title phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 feigl 80 999 UTM"
+
+    plot_pair7.sh ${sat} ${trk} ${site} $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "15.5" ${bperp} ${user} ${filter_wv} ${dt} "UTM"
        #2022/02/03 remove plotting to its own line in run.sh (written by write_run_script)
        #plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"
     cd ..

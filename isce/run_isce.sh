@@ -29,6 +29,8 @@ else
     exit -1
 fi
 
+STACK_SENTINEL_NUM_CONNECTIONS=${STACK_SENTINEL_NUM_CONNECTIONS:=all}
+
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 echo slcdir is $slcdir
@@ -69,13 +71,14 @@ echo "Bounding box bbox is $bbox"
 #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
 # TODO update this
 #dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
-dem=`ls dem*.wgs84 | head -1`
+dem=`ls ../DEM/dem*.wgs84 | head -1`
 echo "DEM file name dem is $dem"
 if [[ ! -f $dem ]]; then
     echo "ERROR: could not find DEM file named $dem"
 fi
 
-stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
+# TODO: check that -b should not be --box or other
+stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c "$STACK_SENTINEL_NUM_CONNECTIONS" \
 -C geometry -d ${dem} \
 -b "${bbox}" \
 --start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \
@@ -86,6 +89,12 @@ stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c all \
 # set up a script to run all the scripts
 ls -1 run_files/* | grep -v job | awk '{print "bash",$1}' > run_isce_jobs.sh
 chmod a+x run_isce_jobs.sh
+
+# NICKB: encountered this during run_isce_jobs.sh:
+# Warning 1: Recode from CP437 to UTF-8 failed with the error: "Invalid argument".
+# according to this ticket this should fix it:
+# https://github.com/conda-forge/gdal-feedstock/issues/83
+export CPL_ZIP_ENCODING=UTF-8
 
 #run the script
 echo "starting script named ./run_isce_jobs.sh" | tee run_isce_jobs.log 

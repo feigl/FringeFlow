@@ -126,7 +126,35 @@ popd
 cd $WORKDIR/$runname # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
 # 2022/06/14 Kurt - keep the DEM and the ORBITS too
-tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+#tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+# 2022/08/01 Kurt - add more folders
+tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/reference ISCE/secondarys ISCE/stacks ISCE/aux ISCE/dem* ISCE/*.log *.log 
+
+# ./ISCE/aux
+# ../ISCE/baselines
+# ../ISCE/baselines.txt
+# ../ISCE/bperp.csv
+# ../ISCE/configs
+# ../ISCE/coreg_secondarys
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem.vrt
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem.wgs84
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem.wgs84.vrt
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem.wgs84.xml
+# ../ISCE/demLat_N40_N41_Lon_W120_W119.dem.xml
+# ../ISCE/geom_reference
+# ../ISCE/interferograms
+# ../ISCE/isce.log
+# ../ISCE/merged
+# ../ISCE/prepareStack.log
+# ../ISCE/reference
+# ../ISCE/run_files
+# ../ISCE/run_isce_jobs.log
+# ../ISCE/run_isce_jobs.sh
+# ../ISCE/SAFE_files.txt
+# ../ISCE/secondarys
+# ../ISCE/stack
+
 mkdir -p "/staging/groups/geoscience/isce/output/"
 cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
 

@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash 
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
@@ -66,6 +66,20 @@ if [[ (( "$#" -eq 3) || ( "$#" -eq 5 )) ]]; then
   esac
 fi
 
+pushd $PWD
+
+# pull scripts and make a tar file
+if [[ -d $HOME/FringeFlow ]]; then
+  cd $HOME/FringeFlow
+  git pull 
+  tar --exclude ./.git -cvzf $HOME/FringeFlow.tgz ./
+  popd
+else
+    echo Could not find $HOME/FringeFlow 
+    exit -1
+fi
+
+# make directory
 echo "directory name dirname is $dirname"
 mkdir -p $dirname
 cd $dirname
@@ -101,20 +115,16 @@ cp -v $HOME/.ssh/id_rsa .
 # make a copy of executable scripts
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
-# ## pull scripts and make a tar file
-cd $HOME
-# cd FringeFlow
-# git pull 
-# cd ..
-tar --exclude FringeFlow/.git -chzvf FringeFlow.tgz FringeFlow
-cp -rfv FringeFlow.tgz $runname
+# copy code
+echo Copying $HOME/FringeFlow.tgz to $PWD
+cp -rfv $HOME/FringeFlow.tgz .
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then
-  
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
-   cp -rfv $HOME/siteinfo $runname
+   echo Copying $HOME/siteinfo to $PWD
+   cp -rf $HOME/siteinfo $PWD
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
    exit -1
@@ -137,7 +147,7 @@ docker pull docker.io/nbearson/isce_chtc:latest
 echo '  '
 echo "Starting image in container..."
 echo "Once container starts, consider the following commands"
-echo 'tar -C $HOME -xzvf FringeFlow.tgz '
+echo 'tar -C $HOME -xzf FringeFlow.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '

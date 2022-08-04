@@ -3,6 +3,7 @@
 # Set up keys for ISCE, GMTSAR, MINTPY, and SSARA
 # 2021/07/05 Kurt Feigl
 # 2021/12/01 Kurt, Nick, Sam modifying
+# 2022/08/04 Kurt
 
 if [[  ( "$#" -ne 1)  ]]; then
     bname=`basename $0`

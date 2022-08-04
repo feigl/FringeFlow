@@ -1,8 +1,9 @@
-#!/bin/bash 
+#!/bin/bash -vx
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
 # 2021/11/29 Kurt Feigl 
+# 2022/08/04 Kurt Feigl
 
 if [[ (( "$#" -ne 1 ) && ( "$#" -ne 5 ) && ("$#" -ne 3)) ]]; then
     bname=`basename $0`
@@ -125,7 +126,10 @@ fi
 
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
-docker pull docker.io/nbearson/isce_mintpy:20211110
+#docker pull docker.io/nbearson/isce_mintpy:20211110
+#docker pull docker.io/nbearson/isce_mintpy:20211110
+#docker pull docker.io/nbearson/isce_chtc:20220204
+docker pull docker.io/nbearson/isce_chtc:latest
 
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
@@ -165,7 +169,8 @@ cd $runname
 #https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
 #docker run --rm -it -v ~/.ssh:/root/.ssh:ro
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
-docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
+#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
+docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
 
 
 

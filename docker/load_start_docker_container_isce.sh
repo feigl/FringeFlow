@@ -72,7 +72,8 @@ pushd $PWD
 if [[ -d $HOME/FringeFlow ]]; then
   cd $HOME/FringeFlow
   git pull 
-  tar --exclude ./.git -cvzf $HOME/FringeFlow.tgz ./
+  cd $HOME
+  tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
   popd
 else
     echo Could not find $HOME/FringeFlow 

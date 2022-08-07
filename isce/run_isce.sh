@@ -67,15 +67,15 @@ echo "number of SLC files nSLC is $nSLC"
 bbox="$(get_site_dims.sh ${site} S) $(get_site_dims.sh ${site} N) $(get_site_dims.sh ${site} W) $(get_site_dims.sh ${site} E)"
 echo "Bounding box bbox is $bbox"
 
-# get DEM 
-#dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
-# TODO update this
-#dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
+# # get DEM 
+# #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
+# # TODO update this
+# #dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
 dem=`ls ../DEM/dem*.wgs84 | head -1`
-echo "DEM file name dem is $dem"
-if [[ ! -f $dem ]]; then
-    echo "ERROR: could not find DEM file named $dem"
-fi
+# echo "DEM file name dem is $dem"
+# if [[ ! -f $dem ]]; then
+#     echo "ERROR: could not find DEM file named $dem"
+# fi
 
 # TODO: check that -b should not be --box or other
 stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c "$STACK_SENTINEL_NUM_CONNECTIONS" \

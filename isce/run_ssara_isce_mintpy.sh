@@ -5,8 +5,9 @@ set -v # verbose
 set -x # for debugging
 #set -e # exit on error
 #set -u # error on unset variables
-
 # S1  20 FORGE 20200101  20200130
+# S1 144 SANEM 20190301  20190401 1  
+# 
 
 # NICKB: hardcoding some run_pairs_isce.sh bits for running interactive
 # export sat=S1
@@ -63,6 +64,21 @@ mkdir -p $RUNDIR
 cd $RUNDIR
 pwd
 
+echo "Setting the DEM"
+mkdir -p DEM
+pushd DEM
+dem=`ls ${SITE_DIR}/${sit}/dem* | head -1`
+if [[ -f  $dem ]]; then
+    echo "Copying a DEM"
+    cp -vf $dem .
+else
+# make the DEM
+    echo "Getting a DEM from NASA"
+    echo dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c 
+    dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
+fi
+popd
+
 echo "Downloading SLC files"
 mkdir -p SLC
 pushd SLC
@@ -106,13 +122,6 @@ tar xf orbits.tar.xz
 # NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
 # above: leaning towards FIX WITH STAGING right now
 
-echo "Making a DEM"
-mkdir -p DEM
-pushd DEM
-# make the DEM
-echo "dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c" | tee -a ../dem.log
-dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c
-popd
 
 echo "Running ISCE"
 mkdir -p ISCE

@@ -65,14 +65,18 @@ fi
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -d ${HOME}/siteinfo ]]; then
-    export PATH=${HOME}/siteinfo:${PATH}
-    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+    #export PATH=${HOME}/siteinfo:${PATH}
+    export SITE_DIR=${HOME}/siteinfo  
 elif [[ -d ${PWD}/siteinfo ]]; then 
-    export PATH=${PWD}/siteinfo:${PATH}
-    export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
+    #export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_DIR=${PWD}/siteinfo
 else
     echo "WARNING cannot find directory named siteinfo"
 fi
+echo SITE_DIR is $SITE_DIR
+export SITE_TABLE=${SITE_DIR}/site_dims.txt
+echo SITE_TABLE is $SITE_TABLE
+
 
 
 

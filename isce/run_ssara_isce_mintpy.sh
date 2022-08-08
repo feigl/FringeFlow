@@ -76,6 +76,8 @@ else
     echo "Getting a DEM from NASA"
     echo dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c 
     dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
+    echo "cannot find DEM $dem"
+    exit -1
 fi
 popd
 
@@ -110,17 +112,22 @@ popd
 # S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip download time: 146.04 secs (28.55 MB/sec)
 
 
-echo "Copying input ORBIT files from askja"
+echo "Handling orbits"
 # mkdir -p ORBITS
 # cd ORBITS
 # get_orbits_from_askja.sh | tee -a ../orbits.log
 # cd ..
-cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
-tar xf orbits.tar.xz
 # [chtc-nickb@bearson-9818685 ORBITS]$ get_orbits_from_askja.sh | tee -a ../orbits.log
 # ssh: connect to host askja.ssec.wisc.edu port 22: Connection refused
 # NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
 # above: leaning towards FIX WITH STAGING right now
+
+if [[ $ISCONDOR -eq 1]]; then 
+    cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
+else
+    rsync -rav transfer00.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz
+fi
+tar xf orbits.tar.xz
 
 
 echo "Running ISCE"
@@ -138,12 +145,18 @@ popd
 # transfer output back to /staging/
 cd $WORKDIR/$runname # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
-tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
-mkdir -p "/staging/groups/geoscience/isce/output/"
-cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
+#tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+# 2022/08/08 Kurt - add folders only
 
-# delete working dir contents to avoid transfering files back to /home/ on submit2
-rm -rf $WORKDIR/*
+if [[ $ISCONDOR -eq 1]]; then 
+    tar -czf "$runname.tgz" DEM ORBITS ISCE 
+    mkdir -p "/staging/groups/geoscience/isce/output/"
+    cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
+    # delete working dir contents to avoid transfering files back to /home/ on submit2
+    rm -rf $WORKDIR/*
+else
+    echo keeping everything
+fi
 
 # exit cleanly
 exit 0

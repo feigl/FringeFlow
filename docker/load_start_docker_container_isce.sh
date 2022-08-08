@@ -189,7 +189,8 @@ docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:late
 cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
 if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
-    sudo chown -R ${USER}:'domain users' $runname 
+    echo consider following command
+    echo sudo chown -R ${USER}:'domain users' $runname 
 fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

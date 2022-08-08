@@ -81,6 +81,16 @@ else
 fi
 popd
 
+echo "Retrieving AUX files"
+if [[ $ISCONDOR -eq 1 ]]; then 
+    cp /staging/groups/geoscience/isce/input/aux.tgz .
+    tar -xzf aux.tgz
+else
+    rsync -rav feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/aux.tgz .
+    tar -xzf aux.tgz
+fi
+
+
 echo "Downloading SLC files"
 mkdir -p SLC
 pushd SLC
@@ -122,12 +132,16 @@ echo "Handling orbits"
 # NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
 # above: leaning towards FIX WITH STAGING right now
 
-if [[ $ISCONDOR -eq 1]]; then 
+if [[ $ISCONDOR -eq 1 ]]; then 
     cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
+    tar xf orbits.tar.xz
 else
-    rsync -rav transfer00.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz
+   if [[ ! -d ORBITS ]]; then
+   rsync -rav transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz .
+   tar xf orbits.tar.xz
+   fi
 fi
-tar xf orbits.tar.xz
+
 
 
 echo "Running ISCE"

@@ -153,6 +153,9 @@ echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '
 echo '  '
+echo '# Also consider: '
+echo 'run_ssara_isce_mintpy.sh S1 144 SANEM 20190301  20190401 1'
+
 ## arrange permissions
 # go directory above container
 cd $dirname

@@ -19,18 +19,17 @@ set -x # for debugging
 export sat=$1
 export trk=$2
 export sit=$3
+export SIT=`echo $sit | awk '{print tolower($1)}'`
 export t0=$4
 export t1=$5
 
 WORKDIR=$PWD
 
-# are we running under condor ?
-if [[ ! -d /staging/groups/geoscience/isce/ ]]; then
-    export ISCONDOR=1
-else
-    export ISCONDOR=0 
-fi
-echo ISCONDOR is $ISCONDOR
+echo sat is $sat
+echo trk is $trk
+echo sit is $sit
+echo t0 is $t0
+echo t1 is $t1
 
 # NICKB: this comes from run_pairs_isce.sh
 # not currently necessary when using /staging/ or /groups/ for orbits and other input/output
@@ -67,7 +66,7 @@ pwd
 echo "Setting the DEM"
 mkdir -p DEM
 pushd DEM
-dem=`ls ${SITE_DIR}/${sit}/dem* | head -1`
+dem=`ls ${SITE_DIR}/${SIT}/dem* | head -1`
 if [[ -f  $dem ]]; then
     echo "Copying a DEM"
     cp -vf $dem .

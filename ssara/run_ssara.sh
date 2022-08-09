@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 ## 2021/06/21 Kurt Feigl
 
 ## SSARA for downloading data
@@ -102,13 +102,13 @@ ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout
 
 if [[ ! ${action} == "print" ]]; then
 
-    # make KML file
-    echo "Making KML file"
-    #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59"  --kml
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
-    --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
-    --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --kml | tee ssara_${timetag}.kml
+    # # make KML file
+    # echo "Making KML file"
+    # #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59"  --kml
+    # ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
+    # --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+    # --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
+    # --kml | tee ssara_${timetag}.kml
 
 
     # download data  # requires keys
@@ -116,10 +116,22 @@ if [[ ! ${action} == "print" ]]; then
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59" --download
 
     echo "Downloading data"
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
-    --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
-    --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --download | tee -a ssara_$timetag}.log
+    # ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
+    # --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+    # --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
+    # --download | tee -a ssara_${timetag}.log
+    
+    # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+cURL+And+Wget
+
+    cat ssara_${timetag}.csv | grep http | grep zip | awk -F, '{print $14}' > urls.txt
+    filename='urls.txt'
+    while read -r line; do
+        echo $line
+        curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
+    done < $filename
+
+# fetch_urls <<'EDSCEOF'
+
 
 fi
 echo "$0 ended normally"

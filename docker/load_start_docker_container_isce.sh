@@ -140,7 +140,7 @@ fi
 #docker pull docker.io/nbearson/isce_mintpy:20211110
 #docker pull docker.io/nbearson/isce_mintpy:20211110
 #docker pull docker.io/nbearson/isce_chtc:20220204
-docker pull docker.io/nbearson/isce_chtc:latest
+#docker pull docker.io/nbearson/isce_chtc:latest
 
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
@@ -193,7 +193,7 @@ cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
 if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
     echo consider following command
-    echo sudo chown -R ${USER}:'domain users' $runname 
+    echo sudo chown -R ${USER}:"'"domain users"'" $runname 
 fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

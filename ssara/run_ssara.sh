@@ -1,5 +1,6 @@
 #!/bin/bash -ex
-## 2021/06/21 Kurt Feigl
+# 2021/06/21 Kurt Feigl
+# 2022/08/09 Kurt Feigl handle cookies
 
 ## SSARA for downloading data
 
@@ -12,6 +13,7 @@ else
     echo "$bname will calculate an interferometric pair "
     echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
     echo "example: $bname S1 144 SANEM 20190110  20190122"
+    echo "example: $bname S1 144 SANEM 20190110  20190122 download"
     echo "example: $bname S1  20 FORGE 20190101  20191231"
     exit -1
 fi
@@ -131,7 +133,7 @@ if [[ ! ${action} == "print" ]]; then
     filename='urls.txt'
     while read -r line; do
         echo $line
-        curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || exit_with_error "Command failed with error. Please retrieve the data manually."
+        curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || exit_with_error "Command failed with error on $line . Please retrieve the data manually."
     done < $filename
 
 fi

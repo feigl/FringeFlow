@@ -18,8 +18,7 @@ set -x # for debugging
 
 export sat=$1
 export trk=$2
-export sit=$3
-export SIT=`echo $sit | awk '{print tolower($1)}'`
+export site5=`echo $3 | awk '{print tolower($1)}'`
 export t0=$4
 export t1=$5
 
@@ -27,7 +26,7 @@ WORKDIR=$PWD
 
 echo sat is $sat
 echo trk is $trk
-echo sit is $sit
+echo site5 is $site5
 echo t0 is $t0
 echo t1 is $t1
 
@@ -66,18 +65,7 @@ pwd
 echo "Setting the DEM"
 mkdir -p DEM
 pushd DEM
-dem=`ls ${SITE_DIR}/${SIT}/dem* | head -1`
-if [[ -f  $dem ]]; then
-    echo "Copying a DEM"
-    cp -vf $dem .
-else
-# make the DEM
-    echo "Getting a DEM from NASA"
-    echo dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c 
-    dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
-    echo "cannot find DEM $dem"
-    exit -1
-fi
+get_dem_isce.sh $site5
 popd
 
 echo "Retrieving AUX files"
@@ -95,7 +83,7 @@ mkdir -p SLC
 pushd SLC
 echo PWD is now ${PWD}
 which run_ssara.sh
-run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
+run_ssara.sh $sat $trk $site5 $t0 $t1 download | tee -a ../slc.log
 # this created dir: /var/lib/condor/execute/slot1/dir_22406/S1_20_FORGE_20200101_20200130/SLC/SLC_20200101_20200130/
 # containing files like: S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip
 
@@ -146,7 +134,7 @@ fi
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh ${sit} | tee -a ../isce.log
+run_isce.sh ${site5} | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output

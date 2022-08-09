@@ -161,7 +161,7 @@ cd $WORKDIR/$runname # I think we should already be there, but just in case
 #tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
 
-if [[ $ISCONDOR -eq 1]]; then 
+if [[ $ISCONDOR -eq 1 ]]; then 
     tar -czf "$runname.tgz" DEM ORBITS ISCE 
     mkdir -p "/staging/groups/geoscience/isce/output/"
     cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"

@@ -68,16 +68,21 @@ fi
 
 pushd $PWD
 
-# pull scripts and make a tar file
-if [[ -d $HOME/FringeFlow ]]; then
-  cd $HOME/FringeFlow
-  git pull 
-  cd $HOME
-  tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
-  popd
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
+   echo Will mount $HOME/FringeFlow
 else
-    echo Could not find $HOME/FringeFlow 
-    exit -1
+  # pull scripts and make a tar file
+  if [[ -d $HOME/FringeFlow ]]; then
+    echo Copying $HOME/FringeFlow
+    cd $HOME/FringeFlow
+    git pull 
+    cd $HOME
+    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+    popd
+  else
+      echo Could not find $HOME/FringeFlow 
+      exit -1
+  fi
 fi
 
 # make directory
@@ -117,8 +122,10 @@ cp -v $HOME/.ssh/id_rsa .
 #cp -vr /s12/insar/SANEM/SENTINEL/bin .
 
 # copy code
-echo Copying $HOME/FringeFlow.tgz to $PWD
-cp -rfv $HOME/FringeFlow.tgz .
+if [[ ! $(hostname) == "brady.geology.wisc.edu" ]]; then
+  echo Copying $HOME/FringeFlow.tgz to $PWD
+  cp -rfv $HOME/FringeFlow.tgz .
+fi
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then
@@ -148,13 +155,17 @@ fi
 echo '  '
 echo "Starting image in container..."
 echo "Once container starts, consider the following commands"
-echo 'tar -C $HOME -xzf FringeFlow.tgz '
+
+if [[ ! $(hostname) == "brady.geology.wisc.edu" ]]; then 
+   echo 'tar -C $HOME -xzf FringeFlow.tgz '
+fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '
 echo '  '
 echo '# Also consider: '
-echo 'run_ssara_isce_mintpy.sh S1 144 SANEM 20190301  20190401 1'
+echo '  run_ssara_isce_mintpy.sh S1 144 SANEM 20190301  20190401 1'
+echo '  '
 
 ## arrange permissions
 # go directory above container
@@ -184,7 +195,12 @@ cd $runname
 #docker run --rm -it -v ~/.ssh:/root/.ssh:ro
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
-docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
+
+if [[ -d $HOME/FringeFlow ]]; then
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":"/home/ops/FringeFlow" -w $PWD docker.io/nbearson/isce_mintpy:latest
+else
+   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
+fi
 
 
 

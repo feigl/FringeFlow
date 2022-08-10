@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash 
 # 2021/06/21 Kurt Feigl
 # 2022/08/09 Kurt Feigl handle cookies
 

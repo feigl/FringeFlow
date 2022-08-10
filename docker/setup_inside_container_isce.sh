@@ -25,6 +25,7 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/isce
     export PATH=${PATH}:${HOME}/FringeFlow/mintpy
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
+    export PATH=${PATH}:${HOME}/FringeFlow/aria
     #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
 fi
 

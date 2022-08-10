@@ -39,7 +39,9 @@ echo ISCONDOR is $ISCONDOR
 #rm -vf ssh.tgz
 
 # uncompress files for shell scripts and add to search path
-tar -C ${HOME} -xzvf FringeFlow.tgz
+if [[ ISCONDOR -eq 1 ]]; then
+  tar -C ${HOME} -xzvf FringeFlow.tgz
+fi
 
 # uncompress siteinfo
 tar -C ${HOME} -xzvf siteinfo.tgz
@@ -76,7 +78,7 @@ if [[ $ISCONDOR -eq 1 ]]; then
     tar -xzf aux.tgz
 else
     # FIX ME - need keys for this
-    rsync -rav feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/aux.tgz .
+    #rsync -rav feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/aux.tgz .
     tar -xzf aux.tgz
 fi
 
@@ -121,16 +123,16 @@ echo "Handling orbits"
 # ssh: connect to host askja.ssec.wisc.edu port 22: Connection refused
 # NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
 # above: leaning towards FIX WITH STAGING right now
-
-if [[ $ISCONDOR -eq 1 ]]; then 
-    cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
-    tar xf orbits.tar.xz
-else
-   if [[ ! -d ORBITS ]]; then
-   rsync -rav transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz .
-   tar xf orbits.tar.xz
-   fi
-fi
+# 2022/08/10 - ISCE can retrieve its own orbits
+# if [[ $ISCONDOR -eq 1 ]]; then 
+#     cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
+#     tar xf orbits.tar.xz
+# else
+#    if [[ ! -d ORBITS ]]; then
+#    rsync -rav transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz .
+#    tar xf orbits.tar.xz
+#    fi
+# fi
 
 
 

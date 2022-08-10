@@ -116,7 +116,7 @@ echo "DEM file name dem is $dem"
 #     --useGPU
 
 if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
-   cp $HOME/FringeFlow/isce/ion_param.txt
+   cp $HOME/FringeFlow/isce/ion_param.txt .
 else
    echo error cannot fine ion_param.txt
    exit -1

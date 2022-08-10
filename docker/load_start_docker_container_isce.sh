@@ -125,6 +125,7 @@ cp -v $HOME/.ssh/id_rsa .
 if [[ ! $(hostname) == "brady.geology.wisc.edu" ]]; then
   echo Copying $HOME/FringeFlow.tgz to $PWD
   cp -rfv $HOME/FringeFlow.tgz .
+  tar -xzf FringeFlow.tgz
 fi
 
 # 2021/01/10 siteinfo is no longer in repo

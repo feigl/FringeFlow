@@ -37,12 +37,27 @@ if [[ $# -eq 1 ]]; then
     exit 1
 fi
 
+
+if [[ -d ${HOME}/siteinfo ]]; then
+    #export PATH=${HOME}/siteinfo:${PATH}
+    export SITE_DIR=${HOME}/siteinfo  
+elif [[ -d ${PWD}/siteinfo ]]; then 
+    #export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_DIR=${PWD}/siteinfo
+else
+    echo "WARNING cannot find directory named siteinfo"
+fi
+#echo SITE_DIR is $SITE_DIR
+export SITE_TABLE=${SITE_DIR}/site_dims.txt
+#echo SITE_TABLE is $SITE_TABLE
+
 if [[ ! -f $SITE_TABLE ]]; then
 	echo "ERROR: $0 cannot find SITE_TABLE file named site_dims.txt (currently defined as: $SITE_TABLE)"
     echo "consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo $HOME"
     echo "export SITE_TABLE=$HOME/siteinfo/site_dims.txt"  
     exit -1
 fi
+
 
 # get site ame
 #site=$1

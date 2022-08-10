@@ -36,7 +36,7 @@ export t1=$5
 WORKDIR=$PWD
 
 ## are we running under condor ?
-if [[  -d /staging/groups/geoscience/isce/ ]]; then
+if [[  -d /staging/groups/geoscience ]]; then
     export ISCONDOR=1
 else
     export ISCONDOR=0 
@@ -162,10 +162,10 @@ cd $WORKDIR/$runname # I think we should already be there, but just in case
 #tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
 
-if [[ $ISCONDOR -eq 1 ]]; then 
+if [[  -d /staging/groups/geoscience ]]; then
     tar -czf "$runname.tgz" DEM ORBITS ISCE 
     mkdir -p "/staging/groups/geoscience/isce/output/"
-    cp "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
+    cp -fv "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2
     rm -rf $WORKDIR/*
 else

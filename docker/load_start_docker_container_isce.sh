@@ -113,6 +113,15 @@ else
   cp -rfv $HOME/FringeFlow.tgz .
 fi
 
+# copy aux files
+if [[ -f $HOME/aux.tgz ]]; then
+   cp $HOME/aux.tgz .
+else
+   echo error could not find $HOME/aux.tgz 
+   echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
+   echo consider wget https://qc.sentinel1.groupcls.com/product/S1A/AUX_CAL/2014/09/08/S1A_AUX_CAL_V20140908T000000_G20190626T100201.SAFE.TGZ
+fi
+
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -d $HOME/siteinfo ]]; then
    #cp -rfv $HOME/siteinfo .

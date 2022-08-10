@@ -162,7 +162,7 @@ echo '  '
 ## arrange permissions
 # go directory above container
 cd $dirname
-if [[ $(hostname) == "askja.ssec.wisc.edu" || $(hostname) == "maule.ssec.wisc.edu" || $(hostname) == "porotomo.geology.wisc.edu" ]]; then
+if [[ $(hostname) == "askja.ssec.wisc.edu" || $(hostname) == "maule.ssec.wisc.edu" ]]; then
   #echo "unsharing"
   podman unshare chown -R 1000:1000 $runname
 else
@@ -191,6 +191,9 @@ cd $runname
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204  
+elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
+   #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
+   docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
 else 
    docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi

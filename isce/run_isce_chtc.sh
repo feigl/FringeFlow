@@ -102,21 +102,12 @@ pushd ORBITS
 get_orbits.sh tee -a ../orbits.log
 popd
 
-echo "Setting the DEM"
+echo "Making a DEM"
 mkdir -p DEM
 pushd DEM
-dem=`ls ${SITE_DIR}/${SIT}/dem* | head -1`
-if [[ -f  $dem ]]; then
-    echo "Copying a DEM"
-    cp -vf $dem .
-else
 # make the DEM
-    echo "Getting a DEM from NASA"
-    echo dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c 
-    dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
-    echo "cannot find DEM $dem"
-    exit -1
-fi
+echo "dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c" | tee -a ../dem.log
+dem.py -a stitch -b $(get_site_dims.sh $sit i) -r -s 1 -c | tee -a ../dem.log
 popd
 
 echo "Running ISCE"
@@ -137,8 +128,8 @@ cd $WORKDIR/$runname # I think we should already be there, but just in case
 # 2022/06/14 Kurt - keep the DEM and the ORBITS too
 #tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/01 Kurt - add more folders
-#tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/reference ISCE/secondarys ISCE/stacks ISCE/aux ISCE/dem* ISCE/*.log *.log 
-tar -czf "$runname.tgz" DEM ORBITS ISCE 
+tar czf "$runname.tgz" DEM ORBITS ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/reference ISCE/secondarys ISCE/stacks ISCE/aux ISCE/dem* ISCE/*.log *.log 
+
 # ./ISCE/aux
 # ../ISCE/baselines
 # ../ISCE/baselines.txt

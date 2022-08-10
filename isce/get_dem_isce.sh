@@ -4,11 +4,12 @@
 ## get a DEM from somewhere
 
 if [ "$#" -eq 1 ]; then
-    export site5=`echo $3 | awk '{print tolower($1)}'`  
+    export site5=`echo $1 | awk '{print tolower($1)}'`  
 else
     bname=`basename $0`
     echo "$bname fetch a DEM "
-    echo "usage:   $bname ./"
+    echo "usage:   $bname site5"
+    echo "example:   $bname sanem"
     exit -1
 fi
 

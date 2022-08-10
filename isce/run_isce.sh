@@ -4,7 +4,7 @@
 # 20211006 fix SLCdir
 
 if [[  ( "$#" -eq 1)  ]]; then
-    site5=$1
+    site=$1
     # launch date of Sentinel 1-A is April 3, 2014
     YYYYMMDD1="2014-04-03"
     YYYYMMDD2="2029-12-31" # T23:59:59.999999"
@@ -12,7 +12,7 @@ if [[  ( "$#" -eq 1)  ]]; then
     echo YYYYMMDD2 is ${YYYYMMDD2}
     slcdir="../SLC"
 elif [[  ( "$#" -eq 3)  ]]; then
-    site5=$1
+    site=$1
     t0=$2
     t1=$3
     YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
@@ -64,14 +64,14 @@ echo "number of SLC files nSLC is $nSLC"
 
 # get bounding box
 #bbox="$(get_site_dims.sh cosoc S) $(get_site_dims.sh cosoc N) $(get_site_dims.sh cosoc W) $(get_site_dims.sh cosoc E)"
-bbox="$(get_site_dims.sh ${site5} S) $(get_site_dims.sh ${site5} N) $(get_site_dims.sh ${site5} W) $(get_site_dims.sh ${site5} E)"
+bbox="$(get_site_dims.sh ${site} S) $(get_site_dims.sh ${site} N) $(get_site_dims.sh ${site} W) $(get_site_dims.sh ${site} E)"
 echo "Bounding box bbox is $bbox"
 
 # # get DEM 
-# #dem=`grep ${site5} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
+# #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
 # # TODO update this
-# #dem=`grep ${site5} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
-dem=`ls ../DEM/dem*.wgs84 | head -1`
+# #dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
+dem=`ls dem*.wgs84 | head -1`
 # echo "DEM file name dem is $dem"
 # if [[ ! -f $dem ]]; then
 #     echo "ERROR: could not find DEM file named $dem"

@@ -18,17 +18,19 @@ set -x # for debugging
 
 export sat=$1
 export trk=$2
-export site5=`echo $3 | awk '{print tolower($1)}'`
+export sit=$3
 export t0=$4
 export t1=$5
 
 WORKDIR=$PWD
 
-echo sat is $sat
-echo trk is $trk
-echo site5 is $site5
-echo t0 is $t0
-echo t1 is $t1
+# are we running under condor ?
+if [[  -d /staging/groups/geoscience/isce/ ]]; then
+    export ISCONDOR=1
+else
+    export ISCONDOR=0 
+fi
+echo ISCONDOR is $ISCONDOR
 
 # NICKB: this comes from run_pairs_isce.sh
 # not currently necessary when using /staging/ or /groups/ for orbits and other input/output
@@ -62,10 +64,10 @@ mkdir -p $RUNDIR
 cd $RUNDIR
 pwd
 
-echo "Setting the DEM"
+echo "Getting DEM"
 mkdir -p DEM
 pushd DEM
-get_dem_isce.sh $site5
+get_dem_isce.sh $sit
 popd
 
 echo "Retrieving AUX files"
@@ -73,6 +75,7 @@ if [[ $ISCONDOR -eq 1 ]]; then
     cp /staging/groups/geoscience/isce/input/aux.tgz .
     tar -xzf aux.tgz
 else
+    # FIX ME - need keys for this
     rsync -rav feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/aux.tgz .
     tar -xzf aux.tgz
 fi
@@ -83,7 +86,7 @@ mkdir -p SLC
 pushd SLC
 echo PWD is now ${PWD}
 which run_ssara.sh
-run_ssara.sh $sat $trk $site5 $t0 $t1 download | tee -a ../slc.log
+run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
 # this created dir: /var/lib/condor/execute/slot1/dir_22406/S1_20_FORGE_20200101_20200130/SLC/SLC_20200101_20200130/
 # containing files like: S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip
 
@@ -134,7 +137,7 @@ fi
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh ${site5} | tee -a ../isce.log
+run_isce.sh ${sit} | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output

@@ -68,12 +68,11 @@ fi
 
 pushd $PWD
 
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
-   echo Will mount $HOME/FringeFlow
+# pull scripts and make a tar file
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+  echo NOT tarring FringeFlow
 else
-  # pull scripts and make a tar file
   if [[ -d $HOME/FringeFlow ]]; then
-    echo Copying $HOME/FringeFlow
     cd $HOME/FringeFlow
     git pull 
     cd $HOME
@@ -106,26 +105,12 @@ cd $runname
 cp -v $HOME/magic.tgz .
 cp -v $HOME/.ssh/id_rsa .
 
-# # 2021/01/10 siteinfo is no longer in repo
-# if [[ -d $HOME/siteinfo ]]; then
-#    cp -r $HOME/siteinfo .
-# else
-#    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
-#    exit -1
-# fi
-
-# copy input files
-#cp /s12/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv .
-#cp -r ../TEMPLATE/* .
-#rsync -rav feigl@askja.ssec.wisc.edu:/s12/insar/$sit/S1/ISCE/"dem*" ISCE
-# make a copy of executable scripts
-#cp -vr /s12/insar/SANEM/SENTINEL/bin .
-
 # copy code
-if [[ ! $(hostname) == "brady.geology.wisc.edu" ]]; then
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+  echo NOT copying FringeFlow
+else
   echo Copying $HOME/FringeFlow.tgz to $PWD
   cp -rfv $HOME/FringeFlow.tgz .
-  tar -xzf FringeFlow.tgz
 fi
 
 # 2021/01/10 siteinfo is no longer in repo
@@ -154,20 +139,17 @@ fi
 #export MYDIR=`basename $PWD`
 
 echo '  '
-echo "Starting image in container..."
+echo "Starting Docker image in container..."
 echo "Once container starts, consider the following commands"
-
-if [[ ! $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   echo 'tar -C $HOME -xzf FringeFlow.tgz '
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+   Using personal FringeFlow
+else
+    echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '
 echo '  '
-echo '# Also consider: '
-echo '  run_ssara_isce_mintpy.sh S1 144 SANEM 20190301  20190401 1'
-echo '  '
-
 ## arrange permissions
 # go directory above container
 cd $dirname
@@ -196,12 +178,14 @@ cd $runname
 #docker run --rm -it -v ~/.ssh:/root/.ssh:ro
 #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
-
-if [[ -d $HOME/FringeFlow ]]; then
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":"/home/ops/FringeFlow" -w $PWD docker.io/nbearson/isce_mintpy:latest
-else
-   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
+#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
+# mount FringeFlow instead of copying it
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
+else 
+  docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi
+
 
 
 
@@ -210,7 +194,7 @@ cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
 if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
     echo consider following command
-    echo sudo chown -R ${USER}:"'"domain users"'" $runname 
+    echo sudo chown -R ${USER}:'domain users' $runname 
 fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

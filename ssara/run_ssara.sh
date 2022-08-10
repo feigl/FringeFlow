@@ -1,6 +1,5 @@
-#!/bin/bash 
-# 2021/06/21 Kurt Feigl
-# 2022/08/09 Kurt Feigl handle cookies
+#!/bin/bash -e
+## 2021/06/21 Kurt Feigl
 
 ## SSARA for downloading data
 
@@ -13,7 +12,6 @@ else
     echo "$bname will calculate an interferometric pair "
     echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
     echo "example: $bname S1 144 SANEM 20190110  20190122"
-    echo "example: $bname S1 144 SANEM 20190110  20190122 download"
     echo "example: $bname S1  20 FORGE 20190101  20191231"
     exit -1
 fi
@@ -118,23 +116,10 @@ if [[ ! ${action} == "print" ]]; then
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59" --download
 
     echo "Downloading data"
-    # ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
-    # --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
-    # --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    # --download | tee -a ssara_${timetag}.log
-    
-    # 2022/08/08 add cookies to curl 
-    # https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+cURL+And+Wget
-    if [[ ! -f ~/.urs_cookies ]]; then
-       touch  ~/.urs_cookies
-    fi
-
-    cat ssara_${timetag}.csv | grep http | grep zip | awk -F, '{print $14}' > urls.txt
-    filename='urls.txt'
-    while read -r line; do
-        echo $line
-        curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || exit_with_error "Command failed with error on $line . Please retrieve the data manually."
-    done < $filename
+    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
+    --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+    --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
+    --download | tee -a ssara_$timetag}.log
 
 fi
 echo "$0 ended normally"

@@ -35,12 +35,12 @@ export t1=$5
 
 WORKDIR=$PWD
 
-# # are we running under condor ?
-# if [[  -d /staging/groups/geoscience/isce/ ]]; then
-#     export ISCONDOR=1
-# else
-#     export ISCONDOR=0 
-# fi
+## are we running under condor ?
+if [[  -d /staging/groups/geoscience/isce/ ]]; then
+    export ISCONDOR=1
+else
+    export ISCONDOR=0 
+fi
 echo ISCONDOR is $ISCONDOR
 
 # NICKB: this comes from run_pairs_isce.sh

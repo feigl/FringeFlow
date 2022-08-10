@@ -9,6 +9,17 @@ set -x # for debugging
 # S1 144 SANEM 20190301  20190401 1  
 # 
 
+if [[ ( "$#" -ne 5 ) ]]; then
+    bname=`basename $0`
+    echo "$bname will run ssara, isce, and eventually mintpy"
+    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+    exit -1
+fi
+
+
 # NICKB: hardcoding some run_pairs_isce.sh bits for running interactive
 # export sat=S1
 # export trk=20
@@ -24,12 +35,12 @@ export t1=$5
 
 WORKDIR=$PWD
 
-# are we running under condor ?
-if [[  -d /staging/groups/geoscience/isce/ ]]; then
-    export ISCONDOR=1
-else
-    export ISCONDOR=0 
-fi
+# # are we running under condor ?
+# if [[  -d /staging/groups/geoscience/isce/ ]]; then
+#     export ISCONDOR=1
+# else
+#     export ISCONDOR=0 
+# fi
 echo ISCONDOR is $ISCONDOR
 
 # NICKB: this comes from run_pairs_isce.sh

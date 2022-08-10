@@ -195,12 +195,10 @@ elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   uid=`id -u`
   gid=`id -g`
-   docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 --uidmap "$uid":1000 --gidmap "$gid":1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
+  podman run -it --rm -v "$PWD":"$PWD" --user 1000:1000 --uidmap "$uid":1000 --gidmap "$gid":1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
 else 
    docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi
-
-
 
 
 # change permissions back again

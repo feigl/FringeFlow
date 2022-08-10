@@ -40,7 +40,7 @@ echo ISCONDOR is $ISCONDOR
 
 # uncompress files for shell scripts and add to search path
 if [[ ISCONDOR -eq 1 ]]; then
-  tar -C ${HOME} -xzvf FringeFlow.tgz
+    tar -C ${HOME} -xzvf FringeFlow.tgz
 fi
 
 # uncompress siteinfo

@@ -142,7 +142,7 @@ echo '  '
 echo "Starting Docker image in container..."
 echo "Once container starts, consider the following commands"
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   Using personal FringeFlow
+   echo Using personal FringeFlow
 else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi

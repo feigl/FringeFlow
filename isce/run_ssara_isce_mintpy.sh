@@ -84,13 +84,10 @@ get_dem_isce.sh $sit
 popd
 
 echo "Retrieving AUX files"
-if [[ $ISCONDOR -eq 1 ]]; then 
-    cp /staging/groups/geoscience/isce/input/aux.tgz .
-    tar -xzf aux.tgz
+if [[ -f ../aux.tgz ]]; then
+   tar -xzf ../aux.tgz
 else
-    # FIX ME - need keys for this
-    #rsync -rav feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/aux.tgz .
-    tar -xzf aux.tgz
+   echo error cannot find ../aux.tgz
 fi
 
 

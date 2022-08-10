@@ -2,6 +2,7 @@
 # run ISCE inside container
 # 20210809 update SLCdir
 # 20211006 fix SLCdir
+# 20220810 clean up
 
 if [[  ( "$#" -eq 1)  ]]; then
     site=$1
@@ -53,7 +54,7 @@ which stackSentinel.py
 # very clean start
 #rm -rf orbits ORBITS isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 # clean start
-rm -rf isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
+\rm -rfv isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
 # count SLC
 nSLC=`ls ${slcdir} | wc -l`
@@ -71,18 +72,73 @@ echo "Bounding box bbox is $bbox"
 # #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
 # # TODO update this
 # #dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
-dem=`ls dem*.wgs84 | head -1`
-# echo "DEM file name dem is $dem"
+dem=`ls ../DEM/dem*.wgs84 | head -1`
+echo "DEM file name dem is $dem"
 # if [[ ! -f $dem ]]; then
 #     echo "ERROR: could not find DEM file named $dem"
 # fi
 
-# TODO: check that -b should not be --box or other
-stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c "$STACK_SENTINEL_NUM_CONNECTIONS" \
--C geometry -d ${dem} \
--b "${bbox}" \
---start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \
--W interferogram
+# # TODO: check that -b should not be --box or other
+# stackSentinel.py -w ./ -s ${slcdir} -a ../AUX/ -o ../ORBITS/ -z 2 -r 6 -c "$STACK_SENTINEL_NUM_CONNECTIONS" \
+# -C geometry -d ${dem} \
+# -b "${bbox}" \
+# --start "${YYYYMMDD1}" --stop "${YYYYMMDD2}" \
+# -W interferogram
+# # -W slc only first two steps would calculate all baselines
+
+## https://github.com/yuankailiu/hpc_isce_stack/blob/main/stack_sentinel_cmd.sh
+# CPUS_PER_TASK_TOPO=4  # For each python process in the pool, how many CPUs to use
+# NUM_PROCESS_4_TOPO=12 # MAX limited by no. of CPUs per node on HPC
+# # It looks like this variable gets passed to a python multiprocessing pool, where it's used to process the number of bursts we have in the reference SLC (see topsStack/topo.py). In theory this means we'll get the fastest speeds if we set it equal to the number of bursts
+# # But NOTE - the relevant step (run_01_unpack_topo_reference) has to be run on a single node, so we can't use more than 28 (or 32?) CPUs
+# # If CPUS_PER_TASK=4, max NUM_PROCESS_4_TOPO=7 or 8
+# # This variable gets passed to python multiprocess pool. We should give it the same number of CPUs I think?
+# # If we don't set it, it's automatically set to NUM_PROCESS by ISCE
+# AZIMUTH_LOOKS=5
+# RANGE_LOOKS=20
+# # c=No. of pairs per slc in igram network
+# # num_connections_ion=no. of pairs in ionospehre igram network
+# stackSentinel.py -s $SLC_DIR \
+#     -d $DEM \
+#     -o $ORBITS_DIR \
+#     -a $AUX_DIR \
+#     -b '26.5 33.1 33 38' \
+#     -c 3 \
+#     -x '20150807,20160215' \
+#     --filter_strength 0 \
+#     --azimuth_looks $AZIMUTH_LOOKS \
+#     --range_looks $RANGE_LOOKS \
+#     --num_process4topo $NUM_PROCESS_4_TOPO \
+#     --stop_date 2022-07-01 \
+#     --reference_date 20220102 \
+#     --param_ion ./ion_param.txt \
+#     --num_connections_ion 3 \
+#     --useGPU
+
+if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
+   cp $HOME/FringeFlow/isce/ion_param.txt
+else
+   echo error cannot fine ion_param.txt
+   exit -1
+fi
+
+stackSentinel.py -w ./ \
+    -s ${slcdir}   \
+    -a ../AUX/     \
+    -o ../ORBITS/  \
+    -c "$STACK_SENTINEL_NUM_CONNECTIONS" \
+    --filter_strength 0 \
+    --azimuth_looks 5 \
+    --range_looks 20 \
+    --num_process4topo 1 \
+    -C geometry -d ${dem} \
+    -b "${bbox}" \
+    --start "${YYYYMMDD1}" \
+    --stop "${YYYYMMDD2}" \
+    -W interferogram
+
+# ionospheric correction not available yet
+# --param_ion ./ion_param.txt \
 # -W slc only first two steps would calculate all baselines
 
 

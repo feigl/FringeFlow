@@ -163,7 +163,7 @@ cd $WORKDIR/$runname # I think we should already be there, but just in case
 # 2022/08/08 Kurt - add folders only
 
 if [[  -d /staging/groups/geoscience ]]; then
-    tar -czf "$runname.tgz" DEM ORBITS ISCE 
+    tar -czf "$runname.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference
     mkdir -p "/staging/groups/geoscience/isce/output/"
     cp -fv "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2

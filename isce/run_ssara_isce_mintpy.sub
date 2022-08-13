@@ -44,7 +44,7 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 #arguments = "S1 144 SANEM 20190301  20190401 1"
 #arguments = "S1 144 SANEM 20190110  20190301"
 #arguments = "S1 144 SANEM 20190302  20190630"
-#arguments = "S1 144 SANEM 20220401  20220531"
+arguments = "S1 144 SANEM 20220401  20220531 1"
 #arguments = "S1  64 COSOC 20200101  20200130"
 #arguments = "S1  20 FORGE 20200101  20200130"
 
@@ -58,16 +58,16 @@ request_disk = 200GB
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
 
-#queue
+queue
 
 # try multiple inputs
-queue arguments from (
-    S1 144 SANEM 20200101  20201231 5
-    S1 144 SANEM 20200101  20201231 5
-    S1 144 SANEM 20210101  20211231 5  
-    S1 144 SANEM 20220101  20220531 5
-    S1  20 FORGE 20220101  20220630 5
-)
+#queue arguments from (
+#    S1 144 SANEM 20200101  20201231 5
+#    S1 144 SANEM 20200101  20201231 5
+#    S1 144 SANEM 20210101  20211231 5  
+#    S1 144 SANEM 20220101  20220531 5
+#    S1  20 FORGE 20220101  20220630 5
+#)
 
 ### Think about multiple runs
     #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html

@@ -9,13 +9,18 @@ set -x # for debugging
 # S1 144 SANEM 20190301  20190401 1  
 # 
 
-if [[ ( "$#" -ne 5 ) ]]; then
+if [[ (( "$#" -ne 5 ) && ( "$#" -ne 6 )) ]]; then
     bname=`basename $0`
     echo "$bname will run ssara, isce, and eventually mintpy"
-    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
+    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD nConnections"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+    echo "example: $bname S1 144 SANEM 20190110 20190122"
+    echo "example: $bname S1 144 SANEM 20190110 20190122 -all "
+    echo "example: $bname S1 144 SANEM 20190110 20190122 1"
+    echo "example: $bname S1 144 SANEM 20190110 20190122 5"
     exit -1
 fi
 
@@ -32,6 +37,13 @@ export trk=$2
 export sit=$3
 export t0=$4
 export t1=$5
+
+# set number of connections for stackig
+if [[ ( "$#" -eq 6 )  ]]; then
+   export STACK_SENTINEL_NUM_CONNECTIONS=$6
+else
+   export STACK_SENTINEL_NUM_CONNECTIONS=1
+fi
 
 WORKDIR=$PWD
 
@@ -147,7 +159,7 @@ echo "Handling orbits"
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh ${sit} | tee -a ../isce.log
+run_isce.sh ${sit} STACK_SENTINEL_NUM_CONNECTIONS | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output

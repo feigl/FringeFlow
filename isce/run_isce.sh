@@ -30,7 +30,9 @@ else
     exit -1
 fi
 
+# set number of connections
 STACK_SENTINEL_NUM_CONNECTIONS=${STACK_SENTINEL_NUM_CONNECTIONS:=all}
+echo STACK_SENTINEL_NUM_CONNECTIONS is ${STACK_SENTINEL_NUM_CONNECTIONS}
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
@@ -134,7 +136,7 @@ stackSentinel.py -w ./ \
     -C geometry -d ${dem} \
     -b "${bbox}" \
     --start "${YYYYMMDD1}" \
-    --stop "${YYYYMMDD2}" \
+    --stop  "${YYYYMMDD2}" \
     -W interferogram
 
 # ionospheric correction not available yet

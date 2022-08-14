@@ -56,6 +56,12 @@ if [[ -d /home/ops/PyAPS ]]; then
     export PYTHONPATH=${PYTHONPATH}:/home/ops/PyAPS/pyaps3
 fi
 
+if [[ -d /home/ops/ARIA-tools ]]; then
+   export PYTHONPATH=${PYTHONPATH}:/home/ops/ARIA-tools/tools/ARIAtools
+   export PYTHONPATH=${PYTHONPATH}:/home/ops/ARIA-tools
+   export PATH=${PATH}:/home/ops/ARIA-tools/tools/bin
+fi
+
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
 if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
     export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH

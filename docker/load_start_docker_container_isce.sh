@@ -128,6 +128,7 @@ if [[ -f $HOME/siteinfo.tgz ]]; then
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to $PWD
    cp -rf $HOME/siteinfo.tgz $PWD
+   #tar -xzvf siteinfo.tgz
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
    exit -1
@@ -157,6 +158,7 @@ else
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
+echo 'get_site_info.sh .'
 echo '  '
 echo '  '
 ## arrange permissions
@@ -209,7 +211,7 @@ cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
 if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
     echo consider following command
-    echo sudo chown -R ${USER}:'domain users' $runname 
+    echo sudo chown -R ${USER}:"'"domain users"'" $runname 
 fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

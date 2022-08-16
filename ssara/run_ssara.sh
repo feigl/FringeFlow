@@ -1,5 +1,7 @@
-#!/bin/bash -e
-## 2021/06/21 Kurt Feigl
+#!/bin/bash 
+# 2021/06/21 Kurt Feigl
+# 2022/08/15 Kurt Feigl - make it work everywhere
+
 
 ## SSARA for downloading data
 
@@ -16,27 +18,27 @@ else
     exit -1
 fi
 
-# # make a copy of the ssara client so that we can have permissions to set the password file
-# # required to download
-# if [[ ! -d $HOME/ssara_client ]]; then
-#     cp -rpv /home/ops/ssara_client/ $HOME
-# fi
-# if [[ -d /home/ops/ssara_client ]]; then
-#     chmod -R +w $HOME/ssara_client/password_config.py
-#     cp -fv $HOME/magic/password_config.py /home/ops/ssara_client/
-#     export PATH=$HOME/ssara_client:${PATH}
-#     export PYTHONPATH=$HOME/ssara_client:${PYTHONPATH}
-# fi
-
-
-#export SSARA_HOME=$( dirname $(which ssara_federated_query.py ) )
-echo "Checking for file named password_config.py in ${SSARA_HOME}"
-if [[ -f ${SSARA_HOME}/password_config.py ]]; then
-    ls -l ${SSARA_HOME}/password_config.py
-else
-   echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
-   exit -1
+# make a copy of the ssara client so that we can have permissions to set the password file
+# required to download
+if [[ ! -d $HOME/ssara_client ]]; then
+    cp -rpv /home/ops/ssara_client/ .
 fi
+if [[ -d /home/ops/ssara_client ]]; then
+    cp -fv $HOME/magic/password_config.py ./ssara_client
+    export PATH=$PWD/ssara_client:${PATH}
+    export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
+    export SSARA_HOME=${PWD}
+fi
+
+
+# #export SSARA_HOME=$( dirname $(which ssara_federated_query.py ) )
+# echo "Checking for file named password_config.py in ${SSARA_HOME}"
+# if [[ -f ${SSARA_HOME}/password_config.py ]]; then
+#     ls -l ${SSARA_HOME}/password_config.py
+# else
+#    echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
+#    exit -1
+# fi
 
 #export YYYYMMDD1="2019-10-02"
 #export YYYYMMDD2="2019-11-16"
@@ -50,7 +52,7 @@ echo HOME is ${HOME}
 # export t1=20190122
 export sat=$1
 export trk=$2
-export sit=$3
+export sit=`echo $3 | awk '{print tolower($1)}'`
 export t0=$4
 export t1=$5
 
@@ -69,7 +71,7 @@ cd "${slcdir}"
 
 # get working version of ssara client
 #cp -rp /home/feigl/SSARA-master $HOME
-export PYTHONPATH=$HOME/ssara_client
+# export PYTHONPATH=$HOME/ssara_client
 
 # export YYYYMMDD1="2018-01-01"
 # export YYYYMMDD2="2021-12-31"
@@ -80,15 +82,18 @@ export YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",su
 echo YYYYMMDD1 is ${YYYYMMDD1}
 echo YYYYMMDD2 is ${YYYYMMDD2}
 
-get_site_dims.sh $sit -1 | tee tmp.wesn
-# export SIT=`echo $sit | tr '[:lower:]' '[:upper:]'`
-# echo SIT is $SIT
-#get_site_dims.sh $SIT -1 | tee tmp.wesn
+#get_site_dims.sh $sit i | tee tmp.wesn
 
-export LATMIN=`grep S tmp.wesn | awk '{print $3}'`
-export LATMAX=`grep N tmp.wesn | awk '{print $3}'`
-export LONMIN=`grep W tmp.wesn | awk '{print $3}'`
-export LONMAX=`grep E tmp.wesn | awk '{print $3}'`
+# export LATMIN=`grep S tmp.wesn | awk '{print $3}'`
+# export LATMAX=`grep N tmp.wesn | awk '{print $3}'`
+# export LONMIN=`grep W tmp.wesn | awk '{print $3}'`
+# export LONMAX=`grep E tmp.wesn | awk '{print $3}'`
+# 2022/08/15 finally repair above to read as below
+export LATMIN=$(get_site_dims.sh ${sit} S)
+export LATMAX=$(get_site_dims.sh ${sit} N)
+export LONMIN=$(get_site_dims.sh ${sit} W)
+export LONMAX=$(get_site_dims.sh ${sit} E)
+
 
 export POLYGON="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))"
 echo POLYGON is $POLYGON

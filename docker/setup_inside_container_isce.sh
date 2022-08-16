@@ -1,6 +1,7 @@
-#!/bin/bash -e
+#!/bin/bash 
 # 2021/07/08 Kurt Feigl
 # 2021/12/07 Kurt and Nick
+# 2022/08/15 Kurt handle only environment variables here
 
 # set up paths and environment variables inside container
 # source this file
@@ -27,7 +28,6 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
     #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
     export PATH=${PATH}:${HOME}/FringeFlow/aria
- 
 fi
 
 
@@ -35,12 +35,12 @@ if [[ -d ${HOME}/gipht/csh ]]; then
     export PATH=${PATH}:${HOME}/gipht/csh
 fi
 
-# set up for SSARA
-if [[ -d ${HOME}/ssara_ops ]]; then
-    export SSARA_HOME=${HOME}/ssara_ops
-    export PATH=${PATH}:${SSARA_HOME}
-    export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
-fi 
+# # set up for SSARA
+# if [[ -d ${HOME}/ssara_client ]]; then
+#     export SSARA_HOME=${HOME}/ssara_client
+#     export PATH=${PATH}:${SSARA_HOME}
+#     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+# fi 
 
 # set up for MintPy
 if [[ -d /home/ops/MintPy ]]; then
@@ -69,11 +69,7 @@ if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
     export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH
 fi
 
-# SiteInfo is no longer in repo
-#export PATH=${HOME}/FringeFlow/siteinfo:${PATH}
-# will need to carry this with us
-# Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
-# rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
+
 if [[ -d ${HOME}/siteinfo ]]; then
     #export PATH=${HOME}/siteinfo:${PATH}
     export SITE_DIR=${HOME}/siteinfo  
@@ -82,6 +78,7 @@ elif [[ -d ${PWD}/siteinfo ]]; then
     export SITE_DIR=${PWD}/siteinfo
 else
     echo "WARNING cannot find directory named siteinfo"
+    exit -1
 fi
 echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt

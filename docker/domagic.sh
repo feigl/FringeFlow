@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -vx
 
 # Set up keys for ISCE, GMTSAR, MINTPY, and SSARA
 # 2021/07/05 Kurt Feigl
@@ -48,8 +48,9 @@ else
             echo "File named $HOME/magic/password_config.py exists."
             if [ -d $HOME/ssara_client ]; then
                 #export SSARA_HOME=$HOME/ssara_ops
-                cp -r $HOME/ssara_client $SSARA_HOME
-                cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py
+                cp -rvf $HOME/ssara_client $PWD
+                cp -vf $HOME/magic/password_config.py ${PWD}/password_config.py
+                export SSARA_HOME=$PWD/ssara_client
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"
                 if [[ -f ${SSARA_HOME}/password_config.py ]]; then
                     ls -l ${SSARA_HOME}/password_config.py

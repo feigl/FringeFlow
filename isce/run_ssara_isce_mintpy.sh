@@ -74,7 +74,8 @@ if [[ ISCONDOR -eq 1 ]]; then
 
     # uncompress siteinfo
     #tar -C ${HOME} -xzvf siteinfo.tgz
-    get_siteinfo.sh .
+    #get_siteinfo.sh .
+    tar -xzvf siteinfo.tgz
 fi
 
 

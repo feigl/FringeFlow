@@ -112,12 +112,12 @@ else
   cd $HOME/FringeFlow; git pull;cd $HOME
   cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
   echo Copying $HOME/FringeFlow.tgz to $PWD
-  cp -rfv $HOME/FringeFlow.tgz .
+  \cp -rfv $HOME/FringeFlow.tgz .
 fi
 
 # copy aux files
 if [[ -f $HOME/aux.tgz ]]; then
-   cp -rfv $HOME/aux.tgz .
+   \cp -rfv $HOME/aux.tgz .
 else
    echo error could not find $HOME/aux.tgz 
    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md

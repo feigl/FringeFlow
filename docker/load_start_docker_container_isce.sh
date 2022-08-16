@@ -112,8 +112,8 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
 else
   cd $HOME/FringeFlow; git pull;cd $HOME
   cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
-  echo Copying $HOME/FringeFlow.tgz to $PWD
-  \cp -rfv $HOME/FringeFlow.tgz .
+  echo Copying $HOME/FringeFlow.tgz to $runname
+  \cp -rfv $HOME/FringeFlow.tgz $runname
 fi
 
 # copy aux files

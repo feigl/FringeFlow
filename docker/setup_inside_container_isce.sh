@@ -36,13 +36,15 @@ if [[ -d ${HOME}/gipht/csh ]]; then
 fi
 
 # set up for SSARA
-export SSARA_HOME=${HOME}/ssara_ops
-export PATH=${PATH}:${SSARA_HOME}
-export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+if [[ -d ${HOME}/ssara_ops ]]; then
+    export SSARA_HOME=${HOME}/ssara_ops
+    export PATH=${PATH}:${SSARA_HOME}
+    export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+fi
 
 # set up for MintPy
-if [[ -d /home/ops/MintPy ]]; then
-    export MINTPY_HOME=/home/ops/MintPy
+if [[ -d ${HOME}/MintPy ]]; then
+    export MINTPY_HOME=${HOME}/MintPy
     export PATH=${PATH}:${MINTPY_HOME}/mintpy
     export PATH=${PATH}:${MINTPY_HOME}/sh
     export PATH=${PATH}:${MINTPY_HOME}/simulation
@@ -51,15 +53,15 @@ if [[ -d /home/ops/MintPy ]]; then
     export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/PyAPS
 fi
 
-if [[ -d /home/ops/PyAPS ]]; then
-    export PYTHONPATH=${PYTHONPATH}:/home/ops/PyAPS
-    export PYTHONPATH=${PYTHONPATH}:/home/ops/PyAPS/pyaps3
+if [[ -d ${HOME}/PyAPS ]]; then
+    export PYTHONPATH=${PYTHONPATH}:${HOME}/PyAPS
+    export PYTHONPATH=${PYTHONPATH}:${HOME}/PyAPS/pyaps3
 fi
 
-if [[ -d /home/ops/ARIA-tools ]]; then
-   export PYTHONPATH=${PYTHONPATH}:/home/ops/ARIA-tools/tools/ARIAtools
-   export PYTHONPATH=${PYTHONPATH}:/home/ops/ARIA-tools
-   export PATH=${PATH}:/home/ops/ARIA-tools/tools/bin
+if [[ -d ${HOME}ARIA-tools ]]; then
+   export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
+   export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
+   export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
 fi
 
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
@@ -72,6 +74,10 @@ fi
 # will need to carry this with us
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
+if [[ -f ${HOME}/siteinfo.tgz ]]; then
+    tar -C ${HOME} -xzf  ${HOME}/siteinfo.tgz 
+fi
+
 if [[ -d ${HOME}/siteinfo ]]; then
     #export PATH=${HOME}/siteinfo:${PATH}
     export SITE_DIR=${HOME}/siteinfo  

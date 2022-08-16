@@ -36,7 +36,7 @@ else
         # FIXME: /home/ops/PyAPS/pyaps3/model.cfg is not writable    
         if [[ -f $HOME/magic/model.cfg ]]; then
             echo "File named $HOME/magic/model.cfg exists. Copying it to /home/ops/PyAPS/pyaps3/model.cfg "
-            cp -fv $HOME/magic/model.cfg /home/ops/PyAPS/pyaps3/model.cfg
+            cp -fv $HOME/magic/model.cfg ${HOME}/PyAPS/pyaps3/model.cfg
         else
             echo "ERROR: missing key file named model.cfg"
             exit -1
@@ -46,9 +46,9 @@ else
        # For memory: after the first execution of password_config.py, we get a .pyc file that is compiled.
         if [[ -f $HOME/magic/password_config.py ]]; then
             echo "File named $HOME/magic/password_config.py exists."
-            if [ -d /home/ops/ssara_client ]; then
+            if [ -d $HOME/ssara_client ]; then
                 #export SSARA_HOME=$HOME/ssara_ops
-                cp -r /home/ops/ssara_client $SSARA_HOME
+                cp -r $HOME/ssara_client $SSARA_HOME
                 cp -vf $HOME/magic/password_config.py ${SSARA_HOME}/password_config.py
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"
                 if [[ -f ${SSARA_HOME}/password_config.py ]]; then

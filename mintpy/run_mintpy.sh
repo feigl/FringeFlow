@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash 
 ## 2021/08/05 Kurt Feigl
 
 # Run epochs for MINTPY

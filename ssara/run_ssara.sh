@@ -20,15 +20,18 @@ fi
 
 # make a copy of the ssara client so that we can have permissions to set the password file
 # required to download
-if [[ ! -d $HOME/ssara_client ]]; then
-    cp -rpv /home/ops/ssara_client/ .
-fi
-if [[ -d /home/ops/ssara_client ]]; then
-    cp -fv $HOME/magic/password_config.py ./ssara_client
-    export PATH=$PWD/ssara_client:${PATH}
+#if [[ -d $HOME/ssara_client ]]; then
+    \rm -rfv ssara_client
+    \cp -rvf /home/ops/ssara_client/ .
+#fi
+#if [[ -d /home/ops/ssara_client ]]; then
+    \cp -fv $HOME/magic/password_config.py ssara_client/
+    export PATH=${PATH}:${PWD}/ssara_client
     export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
     export SSARA_HOME=${PWD}
-fi
+#fi
+
+echo SSARA_HOME is $SSARA_HOME
 
 
 # #export SSARA_HOME=$( dirname $(which ssara_federated_query.py ) )

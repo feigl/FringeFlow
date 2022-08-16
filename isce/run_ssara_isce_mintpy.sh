@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # 2022/08/04 Kurt Feigl 
 
-set -v # verbose
-set -x # for debugging
-#set -e # exit on error
+# set -v # verbose
+# set -x # for debugging
+# set -e # exit on error
 #set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
@@ -61,21 +61,22 @@ echo ISCONDOR is $ISCONDOR
 #tar -C ${HOME} -xzvf ssh.tgz
 #rm -vf ssh.tgz
 
-# uncompress files for shell scripts and add to search path
+# uncompress files for shell scripts 
 if [[ ISCONDOR -eq 1 ]]; then
     tar -C ${HOME} -xzvf FringeFlow.tgz
+
+    # set up paths and environment
+    # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+    source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+
+    # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
+    $HOME/FringeFlow/docker/domagic.sh magic.tgz
+
+    # uncompress siteinfo
+    #tar -C ${HOME} -xzvf siteinfo.tgz
+    get_siteinfo.sh .
 fi
 
-# uncompress siteinfo
-tar -C ${HOME} -xzvf siteinfo.tgz
-
-# set up paths and environment
-
-# NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
-source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
-
-# NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
-$HOME/FringeFlow/docker/domagic.sh magic.tgz
 
 # FIXME: domagic.sh cannot write $HOME/magic/model.cfg to the PyAPS install in /home/ops/PyAPS/pyaps3/model.cfg
 
@@ -107,7 +108,6 @@ echo "Downloading SLC files"
 mkdir -p SLC
 pushd SLC
 echo PWD is now ${PWD}
-which run_ssara.sh
 run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
 # this created dir: /var/lib/condor/execute/slot1/dir_22406/S1_20_FORGE_20200101_20200130/SLC/SLC_20200101_20200130/
 # containing files like: S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip
@@ -122,17 +122,6 @@ mv $slcdir/*.zip .
 
 ls -ltr | tee -a ../slc.log
 popd
-
-# SSARA API query: 3.528266 seconds
-# Found 3 scenes
-# Downloading data now, 1 at a time.
-# ASF Download: S1B_IW_SLC__1SDV_20200127T012610_20200127T012637_019996_025D37_EAFF.zip
-# S1B_IW_SLC__1SDV_20200127T012610_20200127T012637_019996_025D37_EAFF.zip download time: 108.41 secs (38.78 MB/sec)
-# ASF Download: S1B_IW_SLC__1SDV_20200115T012610_20200115T012637_019821_0257A0_EBC9.zip
-# S1B_IW_SLC__1SDV_20200115T012610_20200115T012637_019821_0257A0_EBC9.zip download time: 125.94 secs (33.08 MB/sec)
-# ASF Download: S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip
-# S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip download time: 146.04 secs (28.55 MB/sec)
-
 
 echo "Handling orbits"
 # mkdir -p ORBITS

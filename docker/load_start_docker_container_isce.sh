@@ -158,7 +158,7 @@ else
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
-echo 'get_site_info.sh .'
+echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
 ## arrange permissions

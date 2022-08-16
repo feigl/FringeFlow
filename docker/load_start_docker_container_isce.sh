@@ -190,9 +190,10 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -v"/Users/feigl/ARIA-tools":/home/ops/ARIA-tools -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -v"/Users/feigl/ARIA-tools":/home/ops/ARIA-tools -w $PWD docker.io/nbearson/isce_chtc:20220204 
    # Try adding ARIA-tools to running container https://www.dataset.com/blog/create-docker-image/
    #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD  isce_chtc_aria 
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow-w $PWD feigl/mintpy_aria-tools
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`

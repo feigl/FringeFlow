@@ -60,6 +60,11 @@ echo TTAG is ${TTAG}
 echo "Starting smallbaselineApp.py now "
 smallbaselineApp.py  ${CFG} --start ${STEP} | tee smallbaselineApp_${CFG}_${TTAG}.log
 
+if [[ ! -f inputs/ifgramStack.h5 ]]; then
+   echo error no output created
+   exit -1
+fi
+
 echo "Dumping dates"
 h5dump -d date inputs/ifgramStack.h5 | tee smallbaselineApp_${CFG}_${TTAG}.log
 
@@ -74,12 +79,17 @@ view.py --dpi 150 --noverbose --nodisplay --update maskConnComp.h5 -c gray -v 0 
 view.py --dpi 150 --noverbose --nodisplay --update timeseries.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
 view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
 view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
-view.py --dpi 150 --noverbose --nodisplay --update geo/geo_maskTempCoh.h5 -c gray
-view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
-view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 velocity
-view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
 view.py --dpi 150 --noverbose --nodisplay --update velocityERA5.h5 --mask no
 view.py --dpi 150 --noverbose --nodisplay --update numInvIfgram.h5 --mask no
+
+# ARIA products are already geocoded
+if [[ -d geo ]]; then
+   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_maskTempCoh.h5 -c gray
+   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
+   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 velocity
+   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+fi
+
 #copy *.txt files into ./pic directory.
 #move *.png/pdf/kmz files to ./pic directory.
 #time used: 03 mins 3.7 secs.

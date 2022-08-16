@@ -42,15 +42,18 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGARL"}'` # must be one word
 #cat /Users/feigl/t31/insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat ../../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat /insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
-cat ../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
+#cat ../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cp ../../wells.lalo .
+touch wells.lalo
 
 
 ## average velocity
 #fvel='geo_velocity_ERA5_ramp_demErr'
-fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
+#fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
+# for ARIA 
+fvel="velocityERA5"
 echo fvel is $fvel
-\cp -v geo_velocity.h5 ${fvel}.h5
+#\cp -v geo_velocity.h5 ${fvel}.h5
 ls -l ${fvel}.h5
 
 # make KMZ file for Google Earth

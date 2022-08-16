@@ -20,8 +20,6 @@ if [[ -d /opt/isce2/src/isce2/applications ]]; then
 fi
 
 if [[ -d ${HOME}/FringeFlow ]]; then
-    cd ${HOME}/FringeFlow
-    git pull
     export PATH=${PATH}:${HOME}/FringeFlow/sh
     export PATH=${PATH}:${HOME}/FringeFlow/docker
     export PATH=${PATH}:${HOME}/FringeFlow/isce
@@ -29,6 +27,7 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
     #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
     export PATH=${PATH}:${HOME}/FringeFlow/aria
+ 
 fi
 
 
@@ -41,11 +40,11 @@ if [[ -d ${HOME}/ssara_ops ]]; then
     export SSARA_HOME=${HOME}/ssara_ops
     export PATH=${PATH}:${SSARA_HOME}
     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
-fi
+fi 
 
 # set up for MintPy
-if [[ -d ${HOME}/MintPy ]]; then
-    export MINTPY_HOME=${HOME}/MintPy
+if [[ -d /home/ops/MintPy ]]; then
+    export MINTPY_HOME=/home/ops/MintPy
     export PATH=${PATH}:${MINTPY_HOME}/mintpy
     export PATH=${PATH}:${MINTPY_HOME}/sh
     export PATH=${PATH}:${MINTPY_HOME}/simulation
@@ -54,12 +53,12 @@ if [[ -d ${HOME}/MintPy ]]; then
     export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/PyAPS
 fi
 
-if [[ -d ${HOME}/PyAPS ]]; then
-    export PYTHONPATH=${PYTHONPATH}:${HOME}/PyAPS
-    export PYTHONPATH=${PYTHONPATH}:${HOME}/PyAPS/pyaps3
+if [[ -d /home/ops/PyAPS ]]; then
+    export PYTHONPATH=${PYTHONPATH}:/home/ops/PyAPS
+    export PYTHONPATH=${PYTHONPATH}:/home/ops/PyAPS/pyaps3
 fi
 
-if [[ -d ${HOME}ARIA-tools ]]; then
+if [[ -d $HOME/ARIA-tools ]]; then
    export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
    export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
    export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
@@ -75,10 +74,6 @@ fi
 # will need to carry this with us
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
-if [[ -f ${HOME}/siteinfo.tgz ]]; then
-    tar -C ${HOME} -xzf  ${HOME}/siteinfo.tgz 
-fi
-
 if [[ -d ${HOME}/siteinfo ]]; then
     #export PATH=${HOME}/siteinfo:${PATH}
     export SITE_DIR=${HOME}/siteinfo  

@@ -20,6 +20,8 @@ if [[ -d /opt/isce2/src/isce2/applications ]]; then
 fi
 
 if [[ -d ${HOME}/FringeFlow ]]; then
+    cd ${HOME}/FringeFlow
+    git pull
     export PATH=${PATH}:${HOME}/FringeFlow/sh
     export PATH=${PATH}:${HOME}/FringeFlow/docker
     export PATH=${PATH}:${HOME}/FringeFlow/isce
@@ -27,7 +29,6 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
     #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
     export PATH=${PATH}:${HOME}/FringeFlow/aria
- 
 fi
 
 

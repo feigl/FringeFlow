@@ -109,6 +109,8 @@ cp -v $HOME/.ssh/id_rsa .
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT copying FringeFlow
 else
+  cd $HOME/FringeFlow; git pull;cd $HOME
+  cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
   echo Copying $HOME/FringeFlow.tgz to $PWD
   cp -rfv $HOME/FringeFlow.tgz .
 fi

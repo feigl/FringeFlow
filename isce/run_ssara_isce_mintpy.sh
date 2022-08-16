@@ -149,7 +149,7 @@ echo "Handling orbits"
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh ${sit} STACK_SENTINEL_NUM_CONNECTIONS | tee -a ../isce.log
+run_isce.sh ${sit} | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output

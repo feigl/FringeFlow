@@ -76,6 +76,7 @@ else
     cd $HOME/FringeFlow
     git pull 
     cd $HOME
+    \rm $HOME/FringeFlow.tgz
     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
     popd
   else

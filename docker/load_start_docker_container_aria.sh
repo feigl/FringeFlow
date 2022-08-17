@@ -155,7 +155,7 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
 else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
-echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_aria.sh'
 echo 'domagic.sh magic.tgz'
 echo '  '
 echo '  '

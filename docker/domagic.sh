@@ -66,6 +66,23 @@ else
             echo "ERROR: Could not find magic SSARA password file named $HOME/magic/password_config.py"
             exit -1
         fi
+
+        # Copy authentification files for ARIA-tools
+        # https://github.com/aria-tools/ARIA-tools/blob/dev/README.md
+        # REQUIRED: Acquire API key to access/download DEMs
+        # Follow instructions listed here to generate and access API key through OpenTopography: 
+        # https://opentopography.org/blog/introducing-api-keys-access-opentopography-global-datasets.
+        # Add this API key to your '~/.topoapi' file and set permissions as so
+        # echo "myAPIkey" > ~/.topoapi
+        # chmod 600 ~/.topoapi
+        if [[ -f $HOME/magic/.topoapi ]]; then
+            echo "File named $HOME/magic/.topoapi exists. Copying it to /home/ops/ "
+            cp -fv $HOME/magic/.topoapi ${HOME}
+        else
+            echo "ERROR: missing key file named model.cfg"
+            exit -1
+        fi
+
     else
         echo "ERROR: could not find file named magic.tgz"
         echo "To make one, consider the following command"

@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -vx
 # 2022/08/09 Kurt Feigl handle cookies
 
 ## get data from URLs

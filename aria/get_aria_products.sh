@@ -15,8 +15,8 @@ echo bbox is $bbox
 do_download=1
 if [[ do_download -eq 1 ]]; then
     #ariaDownload.py --bbox "${bbox}" --output url --start 20210401 --end 20210515 --track 144
-    #ariaDownload.py --bbox "${bbox}" --output url --start 20160101 --end 20220601 --track 144
-    ariaDownload.py --bbox "${bbox}" --output url --start 20220101 --end 20220601 --track 137
+     ariaDownload.py --bbox "${bbox}" --output url --start 20160101 --end 20220601 --track 144 -l 400 -m 36
+    #ariaDownload.py --bbox "${bbox}" --output url --start 20220101 --end 20220601 --track 137
     pushd products
 
     urllist=`ls -tr *.txt | tail -1`

@@ -73,9 +73,9 @@ if [[ ISCONDOR -eq 1 ]]; then
     $HOME/FringeFlow/docker/domagic.sh magic.tgz
 
     # uncompress siteinfo
-    #tar -C ${HOME} -xzvf siteinfo.tgz
+    tar -C ${HOME} -xzvf siteinfo.tgz
     #get_siteinfo.sh .
-    tar -xzvf siteinfo.tgz
+    #tar -xzvf siteinfo.tgz
 fi
 
 

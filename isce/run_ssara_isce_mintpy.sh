@@ -47,6 +47,11 @@ else
 fi
 
 WORKDIR=$PWD
+# set up time tags
+export timetag=`date +"%Y%m%dT%H%M%S"`
+echo timetag is ${timetag}
+export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
+echo runname is ${runname}
 
 ## are we running under condor ?
 if [[  -d /staging/groups/geoscience ]]; then
@@ -63,65 +68,66 @@ echo ISCONDOR is $ISCONDOR
 #rm -vf ssh.tgz
 
 # uncompress files for shell scripts 
-if [[ ISCONDOR -eq 1 ]]; then
+#if [[ ISCONDOR -eq 1 ]]; then
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+    echo FringeFlow should be mounted
+    ls -l /home/ops/FringeFlow
+else
     tar -C ${HOME} -xzvf FringeFlow.tgz
-
-    # set up paths and environment
-    # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
-    source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
-
-    # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
-    $HOME/FringeFlow/docker/domagic.sh magic.tgz
-
-    # uncompress siteinfo
-    tar -C ${HOME} -xzvf siteinfo.tgz
-    #get_siteinfo.sh .
-    #tar -xzvf siteinfo.tgz
 fi
 
+# set up paths and environment
+# NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 
+# NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
 # FIXME: domagic.sh cannot write $HOME/magic/model.cfg to the PyAPS install in /home/ops/PyAPS/pyaps3/model.cfg
+$HOME/FringeFlow/docker/domagic.sh magic.tgz
 
-export timetag=`date +"%Y%m%dT%H%M%S"`
-echo timetag is ${timetag}
-export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
-echo runname is ${runname}
+# uncompress siteinfo
+tar -C ${HOME} -xzvf siteinfo.tgz
 
+# set up directory for this run
 RUNDIR="$WORKDIR/$runname"
 mkdir -p $RUNDIR
-cd $RUNDIR
+pushdir $RUNDIR
 pwd
 
-echo "Getting DEM"
+echo "Getting DEM ..."
 mkdir -p DEM
 pushd DEM
 get_dem_isce.sh $sit
 popd
 
-echo "Retrieving AUX files"
+echo "Retrieving AUX files  ..."
 if [[ -f ../aux.tgz ]]; then
    tar -xzf ../aux.tgz
 else
-   echo error cannot find ../aux.tgz
+   echo ERROR cannot find ../aux.tgz
+   exit -1
 fi
 
 
-echo "Downloading SLC files"
-mkdir -p SLC
-pushd SLC
-echo PWD is now ${PWD}
-run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
-# this created dir: /var/lib/condor/execute/slot1/dir_22406/S1_20_FORGE_20200101_20200130/SLC/SLC_20200101_20200130/
-# containing files like: S1B_IW_SLC__1SDV_20200103T012610_20200103T012637_019646_02520B_864F.zip
-
-# on askja they were in: /s12/nickb/chtc-prep/T144f_askja3/SLC/
-# containing files like: S1A_IW_SLC__1SDV_20181006T135842_20181006T135909_024016_029FBD_1F0D.zip
-
-# NICKB FIXUP - move the SLCs to the SLC/ dir
-slcdir="SLC_${t0}_${t1}"
-mv $slcdir/*.zip .
-# END
-
+echo "Downloading SLC files ..."
+slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
+if [[ -f /staging/groups/geoscience/isce/SLC/${slcdir}.tgz ]]; then
+   cp -vf /staging/groups/geoscience/isce/SLC/${slcdir}.tgz .
+   tar -xzvf ${slcdir}.tgz
+else
+    mkdir -p ${slcdir}
+    pushd ${slcdir}
+    echo PWD is now ${PWD}
+    run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
+    tar -czf ${slcdir}.tgz slcdir
+    if [[  -d /staging/groups/geoscience ]]; then
+        mkdir -p "/staging/groups/geoscience/isce/SLC/"
+        cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC
+    fi
+    if [[ ! -d SLC ]]; then
+       mkdir -p SLC
+    fi
+    mv $slcdir/*.zip SLC
+fi
 ls -ltr | tee -a ../slc.log
 popd
 
@@ -144,7 +150,6 @@ echo "Handling orbits"
 #    tar xf orbits.tar.xz
 #    fi
 # fi
-
 
 
 echo "Running ISCE"

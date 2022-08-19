@@ -68,7 +68,8 @@ timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
 # make a directory to hold these things
-slcdir="SLC_${t0}_${t1}"
+#slcdir="SLC_${t0}_${t1}"
+slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
 mkdir -p "${slcdir}"
 cd "${slcdir}"
 

@@ -45,4 +45,21 @@ else
     exit -1
 fi
 
+if [[ -d /home/ops/siteinfo ]]; then 
+    #export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_DIR=/home/ops/siteinfo
+elif [[ -d ${HOME}/siteinfo ]]; then
+    #export PATH=${HOME}/siteinfo:${PATH}
+    export SITE_DIR=${HOME}/siteinfo  
+elif [[ -d ${PWD}/siteinfo ]]; then 
+    #export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_DIR=${PWD}/siteinfo
+else
+    echo "WARNING cannot find directory named siteinfo"
+    export SITE_DIR=${HOME}/siteinfo 
+fi
+echo SITE_DIR is $SITE_DIR
+export SITE_TABLE=${SITE_DIR}/site_dims.txt
+echo SITE_TABLE is $SITE_TABLE
+
 

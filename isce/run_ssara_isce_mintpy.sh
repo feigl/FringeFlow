@@ -101,8 +101,8 @@ get_dem_isce.sh $sit
 popd
 
 echo "Retrieving AUX files  ..."
-if [[ -f aux.tgz ]]; then
-   tar -xzf aux.tgz
+if [[ -f ../aux.tgz ]]; then
+   tar -xzf ../aux.tgz
 else
    echo ERROR cannot find aux.tgz
    exit -1

@@ -23,9 +23,17 @@ fi
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
 if [[ -f ${HOME}/siteinfo.tgz ]]; then
-    tar -C $HOME -xzf ${HOME}/siteinfo.tgz
+    if [[ -d /home/ops ]]; then
+       tar -C /home/ops -xzf ${HOME}/siteinfo.tgz
+    else
+       tar -C $HOME -xzf ${HOME}/siteinfo.tgz
+    fi
 elif [[ -f ${PWD}/siteinfo.tgz ]]; then 
-    tar -C $HOME -xzf ${PWD}/siteinfo.tgz
+    if [[ -d /home/ops ]]; then
+       tar -C /home/ops -xzf ${PWD}/siteinfo.tgz
+    else
+        tar -C $HOME -xzf ${PWD}/siteinfo.tgz
+    fi
 else
     echo "ERROR cannot find tar file named siteinfo.tgz"
     exit -1

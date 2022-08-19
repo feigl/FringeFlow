@@ -70,7 +70,10 @@ if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
 fi
 
 
-if [[ -d ${HOME}/siteinfo ]]; then
+if [[ -d /home/ops/siteinfo ]]; then 
+    #export PATH=${PWD}/siteinfo:${PATH}
+    export SITE_DIR=/home/ops/siteinfo
+elif [[ -d ${HOME}/siteinfo ]]; then
     #export PATH=${HOME}/siteinfo:${PATH}
     export SITE_DIR=${HOME}/siteinfo  
 elif [[ -d ${PWD}/siteinfo ]]; then 

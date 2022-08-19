@@ -85,7 +85,8 @@ source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 $HOME/FringeFlow/docker/domagic.sh magic.tgz
 
 # uncompress siteinfo
-tar -C ${HOME} -xzvf siteinfo.tgz
+#tar -C ${HOME} -xzvf siteinfo.tgz
+get_site_info.sh 
 
 # set up directory for this run
 RUNDIR="$WORKDIR/$runname"
@@ -100,13 +101,12 @@ get_dem_isce.sh $sit
 popd
 
 echo "Retrieving AUX files  ..."
-if [[ -f ../aux.tgz ]]; then
-   tar -xzf ../aux.tgz
+if [[ -f aux.tgz ]]; then
+   tar -xzf aux.tgz
 else
-   echo ERROR cannot find ../aux.tgz
+   echo ERROR cannot find aux.tgz
    exit -1
 fi
-
 
 echo "Downloading SLC files ..."
 slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"

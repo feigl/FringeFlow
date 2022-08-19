@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # 2022/08/15 Kurt Feigl 
 
-# set -v # verbose
-# set -x # for debugging
+set -v # verbose
+set -x # for debugging
 #set -e # exit on error
 #set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130

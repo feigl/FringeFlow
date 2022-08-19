@@ -112,13 +112,13 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
 else
   cd $HOME/FringeFlow; git pull;cd $HOME
   cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
-  echo Copying $HOME/FringeFlow.tgz to $runname
-  \cp -rfv $HOME/FringeFlow.tgz $runname
+  echo Copying $HOME/FringeFlow.tgz to .
+  \cp -rfv $HOME/FringeFlow.tgz .
 fi
 
 # copy aux files
 if [[ -f $HOME/aux.tgz ]]; then
-   \cp -rfv $HOME/aux.tgz $runname
+   \cp -rfv $HOME/aux.tgz .
 else
    echo error could not find $HOME/aux.tgz 
    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
@@ -130,8 +130,8 @@ fi
 if [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
-   echo Copying $HOME/siteinfo.tgz to $PWD
-   cp -rf $HOME/siteinfo.tgz $PWD
+   echo Copying $HOME/siteinfo.tgz to .
+   cp -rf $HOME/siteinfo.tgz .
    #tar -xzvf siteinfo.tgz
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
@@ -162,7 +162,7 @@ else
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
-#echo 'get_siteinfo.sh .'
+echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
 ## arrange permissions

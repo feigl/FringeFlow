@@ -3,7 +3,7 @@
 
  set -v # verbose
  set -x # for debugging
- set -e # exit on error
+#set -e # exit on error
 # set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
@@ -117,23 +117,23 @@ fi
 
 echo "Downloading SLC files ..."
 slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
-if [[ -f /staging/groups/geoscience/isce/SLC/${slcdir}.tgz ]]; then
-   cp -vf /staging/groups/geoscience/isce/SLC/${slcdir}.tgz .
-   tar -xzvf ${slcdir}.tgz
-else
+# if [[ -f /staging/groups/geoscience/isce/SLC/${slcdir}.tgz ]]; then
+#    cp -vf /staging/groups/geoscience/isce/SLC/${slcdir}.tgz .
+#    tar -xzvf ${slcdir}.tgz
+# else
     mkdir -p ${slcdir}
     pushd ${slcdir}
     echo PWD is now ${PWD}
     run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
-    tar -czf ${slcdir}.tgz $slcdir
-    if [[  -d /staging/groups/geoscience ]]; then
-        mkdir -p "/staging/groups/geoscience/isce/SLC/"
-        cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC
-    fi
-    # if [[ ! -d SLC ]]; then
-    #    mkdir -p SLC
+    # #tar -czf ${slcdir}.tgz $slcdir
+    # if [[  -d /staging/groups/geoscience ]]; then
+    #     mkdir -p "/staging/groups/geoscience/isce/SLC/"
+    #     cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC
     # fi
-    # mv $slcdir/*.zip SLC
+    # # if [[ ! -d SLC ]]; then
+    # #    mkdir -p SLC
+    # # fi
+    # # mv $slcdir/*.zip SLC
 fi
 ls -ltr | tee -a ../slc.log
 popd

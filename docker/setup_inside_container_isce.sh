@@ -78,7 +78,7 @@ elif [[ -d ${PWD}/siteinfo ]]; then
     export SITE_DIR=${PWD}/siteinfo
 else
     echo "WARNING cannot find directory named siteinfo"
-    exit -1
+    export SITE_DIR=${HOME}/siteinfo 
 fi
 echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt

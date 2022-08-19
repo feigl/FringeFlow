@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # 2022/08/04 Kurt Feigl 
 
-# set -v # verbose
-# set -x # for debugging
+ set -v # verbose
+ set -x # for debugging
 # set -e # exit on error
-#set -u # error on unset variables
+# set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
 # 
@@ -35,7 +35,7 @@ fi
 
 export sat=$1
 export trk=$2
-export sit=`echo $3 | awk '{print tolowers($1)}'`
+export sit=`echo $3 | awk '{print tolower($1)}'`
 export t0=$4
 export t1=$5
 
@@ -123,10 +123,10 @@ else
         mkdir -p "/staging/groups/geoscience/isce/SLC/"
         cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC
     fi
-    if [[ ! -d SLC ]]; then
-       mkdir -p SLC
-    fi
-    mv $slcdir/*.zip SLC
+    # if [[ ! -d SLC ]]; then
+    #    mkdir -p SLC
+    # fi
+    # mv $slcdir/*.zip SLC
 fi
 ls -ltr | tee -a ../slc.log
 popd
@@ -152,10 +152,12 @@ echo "Handling orbits"
 # fi
 
 
+
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh ${sit} | tee -a ../isce.log
+#run_isce.sh ${sit} | tee -a ../isce.log
+run_isce.sh ${sat} ${sit} ${trk} ${t0} ${t1} | tee -a ../isce.log
 ls -ltr | tee -a ../isce.log
 
 # check final output

@@ -4,31 +4,48 @@
 # 20211006 fix SLCdir
 # 20220810 clean up
 
+
 if [[  ( "$#" -eq 1)  ]]; then
-    site=$1
-    # launch date of Sentinel 1-A is April 3, 2014
-    YYYYMMDD1="2014-04-03"
-    YYYYMMDD2="2029-12-31" # T23:59:59.999999"
-    echo YYYYMMDD1 is ${YYYYMMDD1}
-    echo YYYYMMDD2 is ${YYYYMMDD2}
-    slcdir="../SLC"
-elif [[  ( "$#" -eq 3)  ]]; then
-    site=$1
-    t0=$2
-    t1=$3
-    YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    #YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    echo YYYYMMDD1 is ${YYYYMMDD1}
-    echo YYYYMMDD2 is ${YYYYMMDD2}
-    slcdir="../SLC_${t0}_${t1}"
+    #test case
+    # S1  20 FORGE 20200101 20200130
+    sat="S1"
+    trk=20
+    site="FORGE"
+    t0=20200101
+    t1=20200130
+     slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
+# elif [[  ( "$#" -eq 3)  ]]; then
+#     #site=$1
+#     site=`echo $1 | awk '{print tolower($1)}'`
+#     t0=$2
+#     t1=$3
+#     slcdir="../SLC_${sit}_${t0}_${t1}"
+elif [[  ( "$#" -eq 5)  ]]; then
+    export sat=$1
+    export trk=$2
+    export sit=`echo $3 | awk '{print tolowers($1)}'`
+    export t0=$4
+    export t1=$5
+    slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
 else
     bname=`basename $0`
-    echo "$bname run ISCE "
-    echo "usage:   $bname site5"
-    echo "usage:   $bname cosoc"
+    echo "$bname will ISCE"
+    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
+    echo "usage:   $bname S1  20 FORGE 20200101 20200130"
     exit -1
 fi
+
+echo slcdir is $slcdir
+
+# make time tags with dashes
+# launch date of Sentinel 1-A is April 3, 2014
+# YYYYMMDD1="2014-04-03"
+# YYYYMMDD2="2029-12-31" # T23:59:59.999999"
+YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+#YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+echo YYYYMMDD1 is ${YYYYMMDD1}
+echo YYYYMMDD2 is ${YYYYMMDD2}
 
 # set number of connections
 STACK_SENTINEL_NUM_CONNECTIONS=${STACK_SENTINEL_NUM_CONNECTIONS:=all}
@@ -36,13 +53,6 @@ echo STACK_SENTINEL_NUM_CONNECTIONS is ${STACK_SENTINEL_NUM_CONNECTIONS}
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
-echo slcdir is $slcdir
-
-
-# get working version of ssara client
-#cp -rp /home/feigl/SSARA-master $HOME
-#export PYTHONPATH=$HOME/ssara_client
-
 
 
 # # configure environment 

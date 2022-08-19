@@ -118,7 +118,7 @@ fi
 
 # copy aux files
 if [[ -f $HOME/aux.tgz ]]; then
-   \cp -rfv $HOME/aux.tgz .
+   \cp -rfv $HOME/aux.tgz $runname
 else
    echo error could not find $HOME/aux.tgz 
    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md

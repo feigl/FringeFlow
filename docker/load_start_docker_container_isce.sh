@@ -131,7 +131,7 @@ if [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to .
-   cp -rf $HOME/siteinfo.tgz .
+   \cp -rfv $HOME/siteinfo.tgz .
    #tar -xzvf siteinfo.tgz
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
@@ -205,7 +205,6 @@ elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
   docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
-
 else 
   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi

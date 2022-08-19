@@ -62,4 +62,8 @@ echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
 
+echo "export SITE_TABLE=$SITE_TABLE" > tmp.sh
+source tmp.sh
+
+
 

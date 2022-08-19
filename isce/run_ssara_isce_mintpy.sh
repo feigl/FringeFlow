@@ -95,8 +95,6 @@ $HOME/FringeFlow/docker/domagic.sh magic.tgz
 source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 
 
-
-
 # set up directory for this run
 RUNDIR="$WORKDIR/$runname"
 mkdir -p $RUNDIR
@@ -127,7 +125,7 @@ else
     pushd ${slcdir}
     echo PWD is now ${PWD}
     run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
-    tar -czf ${slcdir}.tgz slcdir
+    tar -czf ${slcdir}.tgz $slcdir
     if [[  -d /staging/groups/geoscience ]]; then
         mkdir -p "/staging/groups/geoscience/isce/SLC/"
         cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC

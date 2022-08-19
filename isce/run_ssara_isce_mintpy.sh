@@ -85,8 +85,13 @@ source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 $HOME/FringeFlow/docker/domagic.sh magic.tgz
 
 # uncompress siteinfo
-#tar -C ${HOME} -xzvf siteinfo.tgz
-get_site_info.sh 
+if [[ -f siteinfo.tgz ]]; then
+    tar -C ${HOME} -xzvf siteinfo.tgz
+else
+    echo ERROR could not find siteinfo.tgz
+    exit -1 
+fi
+#get_site_info.sh 
 
 # set up directory for this run
 RUNDIR="$WORKDIR/$runname"

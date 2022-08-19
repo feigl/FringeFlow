@@ -66,8 +66,8 @@ else
             if [ -d $HOME/ssara_client ]; then
                 #export SSARA_HOME=$HOME/ssara_ops
                 cp -rvf $HOME/ssara_client $PWD
-                cp -vf $HOME/magic/password_config.py ${PWD}/password_config.py
-                export SSARA_HOME=$PWD/ssara_client
+                cp -vf $HOME/magic/password_config.py ${HOME}/password_config.py
+                export SSARA_HOME=$HOME/ssara_client
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"
                 if [[ -f ${SSARA_HOME}/password_config.py ]]; then
                     ls -l ${SSARA_HOME}/password_config.py

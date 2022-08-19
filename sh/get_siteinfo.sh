@@ -22,7 +22,13 @@ fi
 # will need to carry this with us
 # Current version is on askja.ssec.wisc.edu:/home/feigl/siteinfo
 # rsync -rav siteinfo.tgz transfer00.chtc.wisc.edu:/staging/groups/geoscience/insar
-if [[ -f ${HOME}/siteinfo.tgz ]]; then
+if [[ -f siteinfo.tgz ]]; then
+    if [[ -d /home/ops ]]; then
+       tar -C /home/ops -xzf siteinfo.tgz
+    else
+       tar -C $HOME -xzf siteinfo.tgz
+    fi
+elif [[ -f ${HOME}/siteinfo.tgz ]]; then
     if [[ -d /home/ops ]]; then
        tar -C /home/ops -xzf ${HOME}/siteinfo.tgz
     else

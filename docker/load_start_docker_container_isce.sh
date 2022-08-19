@@ -68,22 +68,22 @@ fi
 
 pushd $PWD
 
-# pull scripts and make a tar file
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-  echo NOT tarring FringeFlow
-else
-  if [[ -d $HOME/FringeFlow ]]; then
-    cd $HOME/FringeFlow
-    git pull 
-    cd $HOME
-    \rm $HOME/FringeFlow.tgz
-    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
-    popd
-  else
-      echo Could not find $HOME/FringeFlow 
-      exit -1
-  fi
-fi
+# # pull scripts and make a tar file
+# if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+#   echo NOT tarring FringeFlow
+# else
+#   if [[ -d $HOME/FringeFlow ]]; then
+#     cd $HOME/FringeFlow
+#     git pull 
+#     cd $HOME
+#     \rm $HOME/FringeFlow.tgz
+#     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+#     popd
+#   else
+#       echo Could not find $HOME/FringeFlow 
+#       exit -1
+#   fi
+# fi
 
 # make directory
 echo "directory name dirname is $dirname"
@@ -96,7 +96,7 @@ cd $dirname
 # fi
 echo runname is $runname
 mkdir -p $runname
-cd $runname
+pushd $runname
 
 ## copy keys here
 # cp -v $HOME/.netrc . 
@@ -110,9 +110,12 @@ cp -v $HOME/.ssh/id_rsa .
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT copying FringeFlow
 else
-  cd $HOME/FringeFlow; git pull;cd $HOME
-  cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
-  echo Copying $HOME/FringeFlow.tgz to .
+  pushd $HOME/FringeFlow; 
+  git pull;
+  pushd $HOME; 
+  tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
+  popd -2
+  echo Copying $HOME/FringeFlow.tgz to $PWD
   \cp -rfv $HOME/FringeFlow.tgz .
 fi
 

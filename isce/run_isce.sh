@@ -23,7 +23,7 @@ if [[  ( "$#" -eq 1)  ]]; then
 elif [[  ( "$#" -eq 5)  ]]; then
     export sat=$1
     export trk=$2
-    export sit=`echo $3 | awk '{print tolowers($1)}'`
+    export sit=`echo $3 | awk '{print tolower($1)}'`
     export t0=$4
     export t1=$5
     slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"

@@ -34,12 +34,12 @@ elif [[ -f ${HOME}/siteinfo.tgz ]]; then
     else
        tar -C $HOME -xzf ${HOME}/siteinfo.tgz
     fi
-elif [[ -f ${PWD}/siteinfo.tgz ]]; then 
-    if [[ -d /home/ops ]]; then
-       tar -C /home/ops -xzf ${PWD}/siteinfo.tgz
-    else
-        tar -C $HOME -xzf ${PWD}/siteinfo.tgz
-    fi
+# elif [[ -f ${PWD}/siteinfo.tgz ]]; then 
+#     if [[ -d /home/ops ]]; then
+#        tar -C /home/ops -xzf ${PWD}/siteinfo.tgz
+#     else
+#         tar -C $HOME -xzf ${PWD}/siteinfo.tgz
+#     fi
 else
     echo "ERROR cannot find tar file named siteinfo.tgz"
     exit -1

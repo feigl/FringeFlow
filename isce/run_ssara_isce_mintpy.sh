@@ -90,7 +90,7 @@ tar -C ${HOME} -xzvf siteinfo.tgz
 # set up directory for this run
 RUNDIR="$WORKDIR/$runname"
 mkdir -p $RUNDIR
-pushdir $RUNDIR
+pushd $RUNDIR
 pwd
 
 echo "Getting DEM ..."

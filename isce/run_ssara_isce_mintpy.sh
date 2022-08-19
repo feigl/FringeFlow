@@ -13,6 +13,7 @@ if [[ (( "$#" -ne 5 ) && ( "$#" -ne 6 )) ]]; then
     bname=`basename $0`
     echo "$bname will run ssara, isce, and eventually mintpy"
     echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD nConnections"
+    echo "usage:   $bname S1  20 FORGE_20200101_20200130 -all"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
     echo "example: $bname S1 144 SANEM 20190110 20190122"
@@ -34,7 +35,7 @@ fi
 
 export sat=$1
 export trk=$2
-export sit=$3
+export sit=`echo $3 | awk '{print tolowers($1)}'`
 export t0=$4
 export t1=$5
 

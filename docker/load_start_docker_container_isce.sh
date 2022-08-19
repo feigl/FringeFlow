@@ -195,7 +195,8 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/feigl/isce_mintpy_aria 
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`

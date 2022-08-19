@@ -193,7 +193,9 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
    #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -v"/Users/feigl/ARIA-tools":/home/ops/ARIA-tools -w $PWD docker.io/nbearson/isce_chtc:20220204 
    # Try adding ARIA-tools to running container https://www.dataset.com/blog/create-docker-image/
    #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD  isce_chtc_aria 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/mambauser/FringeFlow -w $PWD feigl/mintpy_aria-tools
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD  feigl/mintpy_aria-tools
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD feigl/isce_mintpy_aria 
+   # both of the above fail because of authentication
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`
@@ -201,7 +203,6 @@ elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
   docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
-
 else 
   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi

@@ -19,7 +19,7 @@
 # 14102042284        8 -rw-r--r--    1 feigl            staff                 579 Jul 15  2021 magic/.ssh/id_rsa.pub
 # 14102042282        8 -rw-r--r--    1 feigl            staff                2478 Jul 15  2021 magic/.ssh/known_hosts
 # create a zipped tar file with
-# cd; tar -czvf magic.tgz magic
+# cd; tar -czvf magic.tgz
 
 
 if [[  ( "$#" -ne 1)  ]]; then

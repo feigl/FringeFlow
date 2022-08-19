@@ -3,7 +3,7 @@
 
  set -v # verbose
  set -x # for debugging
-# set -e # exit on error
+ set -e # exit on error
 # set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
@@ -72,17 +72,10 @@ echo ISCONDOR is $ISCONDOR
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
     echo FringeFlow should be mounted
     ls -l /home/ops/FringeFlow
-else
+fi
+if [[ -f FringeFlow.tgz ]]; then
     tar -C ${HOME} -xzvf FringeFlow.tgz
 fi
-
-# set up paths and environment
-# NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
-source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
-
-# NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
-# FIXME: domagic.sh cannot write $HOME/magic/model.cfg to the PyAPS install in /home/ops/PyAPS/pyaps3/model.cfg
-$HOME/FringeFlow/docker/domagic.sh magic.tgz
 
 # uncompress siteinfo
 if [[ -f siteinfo.tgz ]]; then
@@ -92,6 +85,17 @@ else
     exit -1 
 fi
 #get_site_info.sh 
+
+# NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
+# FIXME: domagic.sh cannot write $HOME/magic/model.cfg to the PyAPS install in /home/ops/PyAPS/pyaps3/model.cfg
+$HOME/FringeFlow/docker/domagic.sh magic.tgz
+
+# set up paths and environment
+# NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+
+
+
 
 # set up directory for this run
 RUNDIR="$WORKDIR/$runname"

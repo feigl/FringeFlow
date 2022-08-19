@@ -86,7 +86,7 @@ fi
 echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
-if [[ -f $SITE_TABLE ]];
+if [[ ! -f $SITE_TABLE ]]; then
     echo ERROR could not find SITE_TABLE named site_dims.txt in $SITE_DIR $SITE_TABLE 
     exit -1
 fi

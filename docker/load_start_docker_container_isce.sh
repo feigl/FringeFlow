@@ -70,10 +70,15 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
 else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
-echo 'tar -C $HOME -xzf siteinfo.tgz '
-echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
-echo 'domagic.sh magic.tgz'
-
+echo '  '
+echo '  '
+echo '   tar -C $HOME -xzf siteinfo.tgz '
+echo '   source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
+echo '   domagic.sh magic.tgz'
+echo '  '
+echo 'OR '
+echo '  '
+echo '   /home/ops/FringeFlow/isce/run_ssara_isce_mintpy.sh S1 144 SANEM 20220101 20220701 3'
 echo '  '
 echo '  '
 ## arrange permissions

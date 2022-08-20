@@ -22,6 +22,7 @@ if [[ (( "$#" -ne 5 ) && ( "$#" -ne 6 )) ]]; then
     echo "example: $bname S1 144 SANEM 20190110 20190122 -all "
     echo "example: $bname S1 144 SANEM 20190110 20190122 1"
     echo "example: $bname S1 144 SANEM 20190110 20190122 5"
+    echo "example: $bname S1 144 SANEM 20220101 20220701 3"
     exit -1
 fi
 

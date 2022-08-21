@@ -69,9 +69,9 @@ echo timetag is ${timetag}
 
 # make a directory to hold these things
 #slcdir="SLC_${t0}_${t1}"
-slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
-mkdir -p "${slcdir}"
-pushd "${slcdir}"
+# slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
+# mkdir -p "${slcdir}"
+# pushd "${slcdir}"
 
 # get working version of ssara client
 #cp -rp /home/feigl/SSARA-master $HOME
@@ -129,7 +129,8 @@ if [[ ! ${action} == "print" ]]; then
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
     --download | tee -a ssara_$timetag.log
 fi
-echo Created directory named $slcdir
-ls -ls ../$slcdir
+#popd
+#echo Created directory named $slcdir
+ls -ls *.zip
 echo "$0 ended normally"
 exit 0

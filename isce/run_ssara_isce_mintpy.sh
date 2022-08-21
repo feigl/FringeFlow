@@ -118,25 +118,22 @@ fi
 
 echo "Downloading SLC files ..."
 slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
-# if [[ -f /staging/groups/geoscience/isce/SLC/${slcdir}.tgz ]]; then
-#    cp -vf /staging/groups/geoscience/isce/SLC/${slcdir}.tgz .
-#    tar -xzvf ${slcdir}.tgz
-# else
+if [[ -f /staging/groups/geoscience/isce/SLC/${slcdir}.tar ]]; then
+   cp -vf /staging/groups/geoscience/isce/SLC/${slcdir}.tar .
+   tar -xvf ${slcdir}.tar
+elif [[ -d ${slcdir} ]]; then
+   echo Using existing SLC directory $slcdir
+else
     mkdir -p ${slcdir}
     pushd ${slcdir}
     echo PWD is now ${PWD}
-    run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
-    # #tar -czf ${slcdir}.tgz $slcdir
-    # if [[  -d /staging/groups/geoscience ]]; then
-    #     mkdir -p "/staging/groups/geoscience/isce/SLC/"
-    #     cp -fv ${slcdir}.tgz /staging/groups/geoscience/isce/SLC
-    # fi
-    # # if [[ ! -d SLC ]]; then
-    # #    mkdir -p SLC
-    # # fi
-    # # mv $slcdir/*.zip SLC
-#fi
-ls -ltr | tee -a ../slc.log
+    run_ssara.sh $sat $trk $sit $t0 $t1 download 
+    tar -cf ${slcdir}.tar $slcdir
+    if [[  -d /staging/groups/geoscience ]]; then
+        mkdir -p "/staging/groups/geoscience/isce/SLC/"
+        cp -fv ${slcdir}.tar /staging/groups/geoscience/isce/SLC
+    fi
+fi
 popd
 
 #echo "Handling orbits"
@@ -159,31 +156,30 @@ popd
 #    fi
 # fi
 
-
-
 echo "Running ISCE"
 mkdir -p ISCE
 pushd ISCE
-#run_isce.sh ${sit} | tee -a ../isce.log
-run_isce.sh ${sat} ${sit} ${trk} ${t0} ${t1} | tee -a ../isce.log
-ls -ltr | tee -a ../isce.log
-
-# check final output
-find  baselines -type f -ls | tee baselines.lst
-find  merged    -type f -ls | tee merged.lst
+run_isce.sh ${sat} ${sit} ${trk} ${t0} ${t1} 
 popd
 
+echo "Running MintPY"
+mkdir -p MINTPY
+pushd MINTPY
+\cp -vf $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+run_mintpy.sh 
+du -sh *
+popd
 
 # transfer output back to /staging/
-cd $WORKDIR/$runname # I think we should already be there, but just in case
+pushd $WORKDIR/$runname # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
 #tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
 
 if [[  -d /staging/groups/geoscience ]]; then
-    tar -czf "$runname.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference
-    mkdir -p "/staging/groups/geoscience/isce/output/"
-    cp -fv "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
+    tar -czf ${runname}.tgz DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY
+    mkdir -p /staging/groups/geoscience/isce/output/
+    cp -fv ${runname}.tgz /staging/groups/geoscience/isce/output/${runname}.tgz
     # delete working dir contents to avoid transfering files back to /home/ on submit2
     rm -rf $WORKDIR/*
 else

@@ -205,6 +205,14 @@ echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_job
 
 plot_interferograms.sh
 
+echo After ISCE disk use is as follows
+du -sh *
+
+# check final output
+find  ./baselines -type f -ls 
+find  ./merged    -type f -ls 
+
+
 
 
 

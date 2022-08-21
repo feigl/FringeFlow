@@ -29,13 +29,13 @@ rm -rf pic isce.log
 # TODO test on STEP
 #rm -rf inputs
 
-# copy keys for ERA PYAPS
-if [ -f ../model.cfg ]; then
-   cp -v ../model.cfg /home/ops/PyAPS/pyaps3/model.cfg
-fi
-if [ -f model.cfg ]; then
-   cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
-fi
+# # copy keys for ERA PYAPS
+# if [ -f ../model.cfg ]; then
+#    cp -v ../model.cfg /home/ops/PyAPS/pyaps3/model.cfg
+# fi
+# if [ -f model.cfg ]; then
+#    cp -v model.cfg /home/ops/PyAPS/pyaps3/model.cfg
+# fi
 
 # make a directory for storing weather data
 if [ ! -d ${PWD}/../WEATHER ]; then
@@ -58,7 +58,7 @@ export TTAG=`date +"%Y%m%dT%H%M%S"`
 echo TTAG is ${TTAG}
 
 echo "Starting smallbaselineApp.py now "
-smallbaselineApp.py  ${CFG} --start ${STEP} | tee smallbaselineApp_${CFG}_${TTAG}.log
+smallbaselineApp.py  ${CFG} --start ${STEP}
 
 if [[ ! -f inputs/ifgramStack.h5 ]]; then
    echo error no output created

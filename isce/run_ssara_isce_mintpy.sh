@@ -127,7 +127,8 @@ else
     mkdir -p ${slcdir}
     pushd ${slcdir}
     echo PWD is now ${PWD}
-    run_ssara.sh $sat $trk $sit $t0 $t1 download 
+    run_ssara.sh $sat $trk $sit $t0 $t1 download
+    popd
     tar -cf ${slcdir}.tar $slcdir
     if [[  -d /staging/groups/geoscience ]]; then
         mkdir -p "/staging/groups/geoscience/isce/SLC/"

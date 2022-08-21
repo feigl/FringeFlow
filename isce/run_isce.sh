@@ -54,11 +54,6 @@ echo STACK_SENTINEL_NUM_CONNECTIONS is ${STACK_SENTINEL_NUM_CONNECTIONS}
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
-
-# # configure environment 
-# source /opt/isce2/isce_env.sh
-# export PATH=/opt/isce2/src/isce2/contrib/stack/topsStack:$PATH
-
 # test
 which stackSentinel.py
 #stackSentinel.py --help | tee stackSentinel.txt 

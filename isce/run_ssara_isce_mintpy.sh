@@ -135,11 +135,11 @@ slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
     # #    mkdir -p SLC
     # # fi
     # # mv $slcdir/*.zip SLC
-fi
+#fi
 ls -ltr | tee -a ../slc.log
 popd
 
-echo "Handling orbits"
+#echo "Handling orbits"
 # mkdir -p ORBITS
 # cd ORBITS
 # get_orbits_from_askja.sh | tee -a ../orbits.log

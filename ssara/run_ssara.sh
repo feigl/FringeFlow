@@ -127,7 +127,7 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
     --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --download | tee -a ssara_$timetag}.log
+    --download | tee -a ssara_$timetag.log
 fi
 echo Created directory named $slcdir
 ls -ls ../$slcdir

@@ -26,56 +26,26 @@ echo HOME is ${HOME}
 # export trk=144
 # export t0=20190110
 # export t1=20190122
-if [[ "$#" -eq 5 ]]; then
-  echo "Arguments are $1 $2 $3 $4 $5"
-  export sat=$1
-  export trk=$2
-  export sit=$3
-  export t0=$4
-  export t1=$5
-elif [[ "$#" -eq 3 ]]; then
-  echo "Arguments are $1 $2 $3"
-  export sat=$1
-  export trk=$2
-  export sit=$3
-  export t0='';
-  export t1='';
-else
+if [[ "$#" -eq 1 ]]; then
   export dirname=$1
   export runname=$dirname
+else
+  echo ERROR need target directory
+  exit -1
 fi
 
-if [[ (( "$#" -eq 3) || ( "$#" -eq 5 )) ]]; then
-  echo sat is $sat
-  echo trk is $trk
-  echo sit is $sit
-  echo t0 is $t0
-  echo t1 is $t1
-  export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
-
-  case $HOSTNAME in
-      askja.ssec.wisc.edu)
-      dirname=/s12/insar/$sit/$sat
-      ;;
-      maule.ssec.wisc.edu)
-      dirname=/s22/insar/$sit/$sat
-      ;;
-      *)
-      dirname=/System/Volumes/Data/mnt/t31/insar/$sit/$sat
-      ;;
-  esac
-fi
-
-pushd $PWD
+pushd $dirname
 
 # pull scripts and make a tar file
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT tarring FringeFlow
 else
   if [[ -d $HOME/FringeFlow ]]; then
-    cd $HOME/FringeFlow
+    pushd $HOME/FringeFlow
     git pull 
-    cd $HOME
+    popd 
+
+    pushd $HOME
     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
     popd
   else
@@ -87,15 +57,7 @@ fi
 # make directory
 echo "directory name dirname is $dirname"
 mkdir -p $dirname
-cd $dirname
-#runname=`basename $dirname`
-
-# if [ -d $runname ]; then
-#     rm -rf $runname
-# fi
-echo runname is $runname
-mkdir -p $runname
-cd $runname
+pushd $dirname
 
 ## copy keys here
 # cp -v $HOME/.netrc . 
@@ -103,14 +65,11 @@ cd $runname
 # cp -v $HOME/SSARA-master/password_config.py .
 # cp -v $HOME/site_dims.txt .
 cp -v $HOME/magic.tgz .
-cp -v $HOME/.ssh/id_rsa .
 
 # copy code
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT copying FringeFlow
 else
-  cd $HOME/FringeFlow; git pull;cd $HOME
-  cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
   echo Copying $HOME/FringeFlow.tgz to $PWD
   \cp -rfv $HOME/FringeFlow.tgz .
 fi
@@ -136,10 +95,6 @@ else
    exit -1
 fi
 
-# make a tar file
-#tar -czvf ../${runname}.tgz .
-
-
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
 #docker pull docker.io/nbearson/isce_mintpy:20211110
@@ -163,6 +118,7 @@ echo 'domagic.sh magic.tgz'
 echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
+
 ## arrange permissions
 # go directory above container
 cd $dirname
@@ -202,7 +158,6 @@ elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
   docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
-
 else 
   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi

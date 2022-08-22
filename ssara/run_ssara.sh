@@ -68,10 +68,9 @@ timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
 # make a directory to hold these things
-#slcdir="SLC_${t0}_${t1}"
-# slcdir="SLC_${sat}_${sit}_${trk}_${t0}_${t1}"
-# mkdir -p "${slcdir}"
-# pushd "${slcdir}"
+slcdir="SLC_${t0}_${t1}"
+mkdir -p "${slcdir}"
+cd "${slcdir}"
 
 # get working version of ssara client
 #cp -rp /home/feigl/SSARA-master $HOME
@@ -110,6 +109,7 @@ ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout
 --print | tee ssara_${timetag}.csv
 
 if [[ ! ${action} == "print" ]]; then
+
     # make KML file
     echo "Making KML file"
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59"  --kml
@@ -127,10 +127,10 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
     --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --download | tee -a ssara_$timetag.log
+    --download | tee -a ssara_$timetag}.log
+
 fi
-#popd
-#echo Created directory named $slcdir
-ls -ls *.zip
 echo "$0 ended normally"
 exit 0
+
+

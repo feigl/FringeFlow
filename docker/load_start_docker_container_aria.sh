@@ -68,21 +68,21 @@ fi
 
 pushd $PWD
 
-# pull scripts and make a tar file
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-  echo NOT tarring FringeFlow
-else
-  if [[ -d $HOME/FringeFlow ]]; then
-    cd $HOME/FringeFlow
-    git pull 
-    cd $HOME
-    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
-    popd
-  else
-      echo Could not find $HOME/FringeFlow 
-      exit -1
-  fi
-fi
+# # pull scripts and make a tar file
+# if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+#   echo NOT tarring FringeFlow
+# else
+#   if [[ -d $HOME/FringeFlow ]]; then
+#     cd $HOME/FringeFlow
+#     git pull 
+#     cd $HOME
+#     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+#     popd
+#   else
+#     echo Could not find $HOME/FringeFlow 
+#     exit -1
+#   fi
+# fi
 
 # make directory
 echo "directory name dirname is $dirname"
@@ -105,19 +105,17 @@ cd $runname
 cp -v $HOME/magic.tgz .
 cp -v $HOME/.ssh/id_rsa .
 
-# copy code
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-  echo NOT copying FringeFlow
-else
-  cd $HOME/FringeFlow; git pull;cd $HOME
-  cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
-  echo Copying $HOME/FringeFlow.tgz to $PWD
-  \cp -rfv $HOME/FringeFlow.tgz .
-fi
+# # copy code
+# if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+#   echo NOT copying FringeFlow
+# else
+#   echo Copying $HOME/FringeFlow.tgz to $PWD
+#   cp -rfv $HOME/FringeFlow.tgz .
+# fi
 
 # copy aux files
 if [[ -f $HOME/aux.tgz ]]; then
-   \cp -rfv $HOME/aux.tgz .
+   cp -rfv $HOME/aux.tgz .
 else
    echo error could not find $HOME/aux.tgz 
    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
@@ -130,7 +128,6 @@ if [[ -f $HOME/siteinfo.tgz ]]; then
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to $PWD
    cp -rf $HOME/siteinfo.tgz $PWD
-   #tar -xzvf siteinfo.tgz
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
    exit -1
@@ -160,7 +157,6 @@ else
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
-echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
 ## arrange permissions
@@ -194,7 +190,10 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -v"/Users/feigl/ARIA-tools":/home/ops/ARIA-tools -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   # Try adding ARIA-tools to running container https://www.dataset.com/blog/create-docker-image/
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD  isce_chtc_aria 
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/mambauser/FringeFlow -w $PWD feigl/mintpy_aria-tools
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`
@@ -213,7 +212,7 @@ cd ..
 # https://stackoverflow.com/questions/15973184/if-statement-to-check-hostname-in-shell-script/15973255
 if [[ $(hostname) == "askja.ssec.wisc.edu" ]] || [[ $(hostname) == "maule.ssec.wisc.edu" ]]; then
     echo consider following command
-    echo sudo chown -R ${USER}:"'"domain users"'" $runname 
+    echo sudo chown -R ${USER}:'domain users' $runname 
 fi
 
 #podman unshare chown -R feigl:'domain users' $PWD

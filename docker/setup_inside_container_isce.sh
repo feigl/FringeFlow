@@ -70,10 +70,7 @@ if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
 fi
 
 
-if [[ -d /home/ops/siteinfo ]]; then 
-    #export PATH=${PWD}/siteinfo:${PATH}
-    export SITE_DIR=/home/ops/siteinfo
-elif [[ -d ${HOME}/siteinfo ]]; then
+if [[ -d ${HOME}/siteinfo ]]; then
     #export PATH=${HOME}/siteinfo:${PATH}
     export SITE_DIR=${HOME}/siteinfo  
 elif [[ -d ${PWD}/siteinfo ]]; then 
@@ -81,15 +78,11 @@ elif [[ -d ${PWD}/siteinfo ]]; then
     export SITE_DIR=${PWD}/siteinfo
 else
     echo "WARNING cannot find directory named siteinfo"
-    export SITE_DIR=${HOME}/siteinfo 
+    exit -1
 fi
 echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
-if [[ ! -f $SITE_TABLE ]]; then
-    echo ERROR could not find SITE_TABLE named site_dims.txt in $SITE_DIR $SITE_TABLE 
-    exit -1
-fi
 
 if [[ -d /staging/groups/geoscience/insar/isce ]]; then
    export ISCONDOR=1;

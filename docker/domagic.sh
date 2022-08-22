@@ -5,23 +5,6 @@
 # 2021/12/01 Kurt, Nick, Sam modifying
 # 2022/08/04 Kurt
 
-# folder named magic should contain these files
-# (base) brady:~ feigl$ find magic -ls
-# 13928409127        0 drwxrwxr-x    7 feigl            staff                 224 Aug 16 20:05 magic
-# 14116091020        8 -rw-------    1 feigl            staff                  33 Aug 16 20:05 magic/.topoapi
-# 14102042285        8 -rw-r--r--    1 feigl            staff                  75 Jun  9 13:38 magic/.netrc
-# 14102042287        8 -rw-r--r--    1 feigl            staff                1017 Feb 14  2021 magic/model.cfg
-# 14102042286        8 -rwx------    1 feigl            staff                 162 Jun 10  2021 magic/password_config.py
-# 14102042279        0 drwxr-xr-x    7 feigl            staff                 224 Jul 15  2021 magic/.ssh
-# 14102042281        8 -rw-------    1 feigl            staff                2610 Jul 15  2021 magic/.ssh/id_rsa
-# 14102042283        8 -rw-r--r--    1 feigl            staff                 415 Jul 15  2021 magic/.ssh/authorized_keys2
-# 14102042280        8 -rw-r--r--    1 feigl            staff                2166 Jul 15  2021 magic/.ssh/authorized_keys
-# 14102042284        8 -rw-r--r--    1 feigl            staff                 579 Jul 15  2021 magic/.ssh/id_rsa.pub
-# 14102042282        8 -rw-r--r--    1 feigl            staff                2478 Jul 15  2021 magic/.ssh/known_hosts
-# create a zipped tar file with
-# cd; tar -czvf magic.tgz
-
-
 if [[  ( "$#" -ne 1)  ]]; then
     bname=`basename $0`
     echo "$bname will set up authentification keys for ISCE, GMTSAR, MINTPY, and SSARA"
@@ -66,8 +49,8 @@ else
             if [ -d $HOME/ssara_client ]; then
                 #export SSARA_HOME=$HOME/ssara_ops
                 cp -rvf $HOME/ssara_client $PWD
-                cp -vf $HOME/magic/password_config.py ${HOME}/password_config.py
-                export SSARA_HOME=$HOME/ssara_client
+                cp -vf $HOME/magic/password_config.py ${PWD}/password_config.py
+                export SSARA_HOME=$PWD/ssara_client
                 echo "Checking for file named password_config.py in ${SSARA_HOME}"
                 if [[ -f ${SSARA_HOME}/password_config.py ]]; then
                     ls -l ${SSARA_HOME}/password_config.py
@@ -83,23 +66,6 @@ else
             echo "ERROR: Could not find magic SSARA password file named $HOME/magic/password_config.py"
             exit -1
         fi
-
-        # Copy authentification files for ARIA-tools
-        # https://github.com/aria-tools/ARIA-tools/blob/dev/README.md
-        # REQUIRED: Acquire API key to access/download DEMs
-        # Follow instructions listed here to generate and access API key through OpenTopography: 
-        # https://opentopography.org/blog/introducing-api-keys-access-opentopography-global-datasets.
-        # Add this API key to your '~/.topoapi' file and set permissions as so
-        # echo "myAPIkey" > ~/.topoapi
-        # chmod 600 ~/.topoapi
-        if [[ -f $HOME/magic/.topoapi ]]; then
-            echo "File named $HOME/magic/.topoapi exists. Copying it to /home/ops/ "
-            cp -fv $HOME/magic/.topoapi ${HOME}
-        else
-            echo "ERROR: missing key file named model.cfg"
-            exit -1
-        fi
-
     else
         echo "ERROR: could not find file named magic.tgz"
         echo "To make one, consider the following command"

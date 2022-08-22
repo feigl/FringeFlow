@@ -1,19 +1,21 @@
-#!/bin/bash -vx
+#!/bin/bash -x
 # run ISCE inside container
 # 20210809 update SLCdir
 # 20211006 fix SLCdir
 # 20220810 clean up
 
 if [[  ( "$#" -eq 5)  ]]; then
-    SITEUC=$1
+    SITELC=`echo $1 | awk '{ print tolower($1) }'`         
+    SITEUC=`echo $1 | awk '{ print toupper($1) }'`
     MISSION=$2
     TRACK=$3
     YYYYMMDD1=$4
-    YYYYMMDD2=$5
-    date_first=`echo $YYYYMMDD1|  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    #YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-    date_last =`echo $YYYYMMDD2 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-     slcdir="../SLC_${t0}_${t1}"
+    # add one day https://stackoverflow.com/questions/18706823/how-to-increment-a-date-in-a-bash-script
+    YYYYMMDD2=`date +%Y%m%d -d "$5 UTC + 1 day"`
+   
+    #write dates as YYYY-MM-DD
+    date_first=`echo $YYYYMMDD1 | awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+    date_last=`echo $YYYYMMDD2 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
 else
     bname=`basename $0`
     echo "$bname runs ISCE"
@@ -24,6 +26,7 @@ fi
 
 echo YYYYMMDD1 is ${YYYYMMDD1}  date_first is ${date_first}
 echo YYYYMMDD2 is ${YYYYMMDD2}  date_last  is ${date_last}
+
 
 # set number of connections
 if [[ -n ${STACK_SENTINEL_NUM_CONNECTIONS+set} ]]; then
@@ -38,7 +41,7 @@ echo timetag is ${timetag}
 
 # set folder for SLC zip files
 if [[ -n ${SLCDIR+set} ]]; then
-   echo SLCDIR  is $SLCDIR
+   echo SLCDIR is $SLCDIR
 else
    export SLCDIR="../SLC"
 fi
@@ -52,8 +55,8 @@ echo SLCDIR is ${SLCDIR}
 export CPL_ZIP_ENCODING=UTF-8
 
 
-# test
-( which stackSentinel.py 2>&1 ) && ( echo "OK"; exit 0 ) || (err=$?; echo "ERROR $err"; (exit $err))
+# # test
+# ( which stackSentinel.py 2>&1 ) && ( echo "OK"; exit 0 ) || (err=$?; echo "ERROR $err"; (exit $err))
 
 # very clean start
 #rm -rf orbits ORBITS isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
@@ -68,17 +71,19 @@ echo "number of SLC files nSLC is $nSLC"
 # find .. -name "S1*V_*" | grep -v .zip
 
 # get bounding box
-bbox="$(get_site_dims.sh ${site} S) $(get_site_dims.sh ${site} N) $(get_site_dims.sh ${site} W) $(get_site_dims.sh ${site} E)"
+bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
 echo "Bounding box bbox is $bbox"
 
 # # get DEM 
 # #dem=`grep ${site} $HOME/FringeFlow/siteinfo/site_dems.txt | awk '{print $3}'`
 # # TODO update this
 # #dem=`grep ${site} $HOME/siteinfo/site_dems.txt | awk '{print $3}'`
-dem=`ls ../DEM/dem*.wgs84 | head -1`
-echo "DEM file name dem is $dem"
-if [[ ! -f $dem ]]; then
-    echo "ERROR: could not find DEM file named $dem"
+# DEM file must be local
+\cp -vf ../DEM/dem* .
+demfile=`ls dem*.wgs84 | head -1`
+echo "DEM file name dem is $demfile"
+if [[ ! -f ${demfile} ]]; then
+    echo "ERROR: could not find DEM file named $demfile"
     exit -1
 fi
 
@@ -120,6 +125,7 @@ else
 fi
 
 stackSentinel.py -w ./ \
+    -d ${demfile} \
     -s ../${SLCDIR}   \
     -a ../AUX/     \
     -o ../ORBITS/  \
@@ -128,7 +134,7 @@ stackSentinel.py -w ./ \
     --azimuth_looks 5 \
     --range_looks 20 \
     --num_process4topo 1 \
-    -C geometry -d ${dem} \
+    -C geometry \
     -b "${bbox}" \
     --start "${date_first}" \
     --stop  "${date_last}" \

@@ -141,10 +141,11 @@ fi
 
 export TIMETAG=`date +"%Y%m%dT%H%M%S"`
 echo TIMETAG is ${TIMETAG}
-export runname="${NAME}${MISSION}_${trk}_${sit}_${t0}_${t1}"
-echo runname is ${runname}
 
-RUNDIR="$WORKDIR/$runname"
+export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
+echo RUNNAME is ${RUNNAME}
+
+RUNDIR="$WORKDIR/$RUNNAME"
 mkdir -p $RUNDIR
 cd $RUNDIR
 pwd
@@ -207,15 +208,15 @@ popd
 
 echo "Storing results...."
 # transfer output back to /staging/
-pushd $WORKDIR/$runname # I think we should already be there, but just in case
+pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
-#tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+#tar czf "$RUNNAME.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
 
 if [[  -d /staging/groups/geoscience ]]; then
-    tar -czf "$runname.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY
+    tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY
     mkdir -p "/staging/groups/geoscience/isce/output/"
-    cp -fv "$runname.tgz" "/staging/groups/geoscience/isce/output/$runname.tgz"
+    cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2
     rm -rf $WORKDIR/*
 else

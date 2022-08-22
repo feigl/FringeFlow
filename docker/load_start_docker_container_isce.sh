@@ -49,8 +49,8 @@ else
     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
     popd
   else
-      echo Could not find $HOME/FringeFlow 
-      exit -1
+    echo Could not find $HOME/FringeFlow 
+    exit -1
   fi
 fi
 
@@ -115,7 +115,7 @@ else
 fi
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
-echo 'get_siteinfo.sh .'
+#echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
 

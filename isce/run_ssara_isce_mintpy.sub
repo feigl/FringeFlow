@@ -44,9 +44,12 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 #arguments = "S1 144 SANEM 20190301  20190401 1"
 #arguments = "S1 144 SANEM 20190110  20190301"
 #arguments = "S1 144 SANEM 20190302  20190630"
-arguments = "S1 144 SANEM 20220401  20220531 1"
+#arguments = "S1 144 SANEM 20220401  20220531 1"
 #arguments = "S1  64 COSOC 20200101  20200130"
 #arguments = "S1  20 FORGE 20200101  20200130"
+
+# 20220822 # new standard order
+arguments = "SANEM S1 144 20220331 20220506 1"
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

@@ -11,100 +11,81 @@ elif [ "$#" -eq 6 ]; then
     action=$6
 else
     bname=`basename $0`
-    echo "$bname will calculate an interferometric pair "
-    echo "usage:   $bname SAT TRK SITE reference_YYYYMMDD secondary_YYYYMMDD"
-    echo "example: $bname S1 144 SANEM 20190110  20190122"
-    echo "example: $bname S1  20 FORGE 20190101  20191231"
+    echo "$bname will find SLC data using SSARA "
+    echo "usage:   $bname SITELCELC  MISSION TRACK date_first date_last"
+    echo "example: $bname SANEM S1        144  20190110  20190122"
+    echo "example: $bname FORGE S1         20  20190101  20191231"
     exit -1
 fi
 
 # make a copy of the ssara client so that we can have permissions to set the password file
 # required to download
-#if [[ -d $HOME/ssara_client ]]; then
-    \rm -rfv ssara_client
-    \cp -rvf /home/ops/ssara_client/ .
-#fi
-#if [[ -d /home/ops/ssara_client ]]; then
-    \cp -fv $HOME/magic/password_config.py ssara_client/
-    export PATH=${PATH}:${PWD}/ssara_client
-    export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
-    export SSARA_HOME=${PWD}
-#fi
+echo "Setting up local copy of SSARA client with credentials"
+\rm -rf ssara_client
+if [[ -d $HOME/ssara_client ]]; then
+    \cp -rf $HOME/ssara_client .
+elif [[ -d /home/ops/ssara_client/ ]]; then
+    \cp -rf /home/ops/ssara_client/ .
+fi
+if [[ -f $HOME/magic/password_config.py ]]; then
+    \cp -f $HOME/magic/password_config.py ssara_client/
+elif [[ -f /home/ops/magic/password_config.py ]]; then
+    \cp -f /home/ops/magic/password_config.py ssara_client/
+elif [[ -f ../magic/password_config.py ]]; then
+    \cp -f ../magic/password_config.py ssara_client/
+else
+    echo ERROR: cannot find password_config.py 
+    exit -1
+fi
+
+export PATH=${PATH}:${PWD}/ssara_client
+export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
+export SSARA_HOME=${PWD}
 
 echo SSARA_HOME is $SSARA_HOME
-
-
-# #export SSARA_HOME=$( dirname $(which ssara_federated_query.py ) )
-# echo "Checking for file named password_config.py in ${SSARA_HOME}"
-# if [[ -f ${SSARA_HOME}/password_config.py ]]; then
-#     ls -l ${SSARA_HOME}/password_config.py
-# else
-#    echo "ERROR: could not find ile named password_config.py in ${SSARA_HOME}"
-#    exit -1
-# fi
-
-#export YYYYMMDD1="2019-10-02"
-#export YYYYMMDD2="2019-11-16"
 
 echo "Starting script named $0"
 echo "Arguments are $1 $2 $3 $4 $5"
 echo PWD is ${PWD}
 echo HOME is ${HOME} 
 
-# export t0=20190110
-# export t1=20190122
-export sat=$1
-export trk=$2
-export sit=`echo $3 | awk '{print tolower($1)}'`
-export t0=$4
-export t1=$5
+# export YYYYMMDD1=20190110
+# export YYYYMMDD2=20190122
+export SITELC=`echo $1 | awk '{print tolower($1)}'`
+export SITEUC=`echo $1 | awk '{print toupper($1)}'`
+export MISSION=$2
+export TRACK=$3
+export YYYYMMDD1=$4
+export YYYYMMDD2=$5
 
-echo sat is $sat
-echo trk is $trk
-echo sit is $sit
-echo t0 is $t0
-echo t1 is $t1
+echo MISSION is $MISSION
+echo TRACK is $TRACK
+echo SITELC is $SITELC
+echo YYYYMMDD1 is $YYYYMMDD1
+echo YYYYMMDD2 is $YYYYMMDD2
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
-# make a directory to hold these things
-slcdir="SLC_${t0}_${t1}"
-mkdir -p "${slcdir}"
-cd "${slcdir}"
+# make dates with hyphens
+export date_first=`echo $YYYYMMDD1 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+export date_last=` echo $YYYYMMDD2 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
 
-# get working version of ssara client
-#cp -rp /home/feigl/SSARA-master $HOME
-# export PYTHONPATH=$HOME/ssara_client
+echo date_first is ${date_first}
+echo date_last is ${date_last}
 
-# export YYYYMMDD1="2018-01-01"
-# export YYYYMMDD2="2021-12-31"
-
-export YYYYMMDD1=`echo $t0 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-export YYYYMMDD2=`echo $t1 |  awk '{ printf("%4d-%02d-%02dT23:59:59.999999\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
-
-echo YYYYMMDD1 is ${YYYYMMDD1}
-echo YYYYMMDD2 is ${YYYYMMDD2}
-
-#get_site_dims.sh $sit i | tee tmp.wesn
-
-# export LATMIN=`grep S tmp.wesn | awk '{print $3}'`
-# export LATMAX=`grep N tmp.wesn | awk '{print $3}'`
-# export LONMIN=`grep W tmp.wesn | awk '{print $3}'`
-# export LONMAX=`grep E tmp.wesn | awk '{print $3}'`
 # 2022/08/15 finally repair above to read as below
-export LATMIN=$(get_site_dims.sh ${sit} S)
-export LATMAX=$(get_site_dims.sh ${sit} N)
-export LONMIN=$(get_site_dims.sh ${sit} W)
-export LONMAX=$(get_site_dims.sh ${sit} E)
+export LATMIN=$(get_site_dims.sh ${SITELC} S)
+export LATMAX=$(get_site_dims.sh ${SITELC} N)
+export LONMIN=$(get_site_dims.sh ${SITELC} W)
+export LONMAX=$(get_site_dims.sh ${SITELC} E)
 
 
 export POLYGON="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))"
 echo POLYGON is $POLYGON
 
-
 echo "Starting query to print."
-ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
---start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+--start=${date_first} --end=${date_last} \
 --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
 --print | tee ssara_${timetag}.csv
 
@@ -112,20 +93,20 @@ if [[ ! ${action} == "print" ]]; then
 
     # make KML file
     echo "Making KML file"
-    #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59"  --kml
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
-    --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+    #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${date_first} --end="${date_last} 23:59:59"  --kml
+    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+    --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
     --kml | tee ssara_${timetag}.kml
 
 
     # download data  # requires keys
     # switch for ICSE --start 2018-10-01 --stop 2018-11-15
-    #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${YYYYMMDD1} --end="${YYYYMMDD2} 23:59:59" --download
+    #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${date_first} --end="${date_last} 23:59:59" --download
 
     echo "Downloading data"
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${trk} \
-    --start=${YYYYMMDD1} --end=${YYYYMMDD2} \
+    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+    --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
     --download | tee -a ssara_$timetag}.log
 

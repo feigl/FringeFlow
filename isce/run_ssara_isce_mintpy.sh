@@ -18,6 +18,8 @@ Help()
     echo '   -c number of connections in stack'
     echo '   -m mission e.g., S1 for Sentinel-1'
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
+    echo "example:"
+    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
     exit -1
   }
 
@@ -34,7 +36,7 @@ fi
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hn:" option; do
+while getopts ":1:2:c:h:n:m:t:" option; do
     case $option in
         1) # start date YYYYMMDD
             export YYYYMMDD1=$OPTARG
@@ -42,15 +44,15 @@ while getopts ":hn:" option; do
         2) # end date YYYYMMDD
             export YYYYMMDD2=$OPTARG
             ;;
+        c) # number of connections
+            export STACK_SENTINEL_NUM_CONNECTIONS=$OPTARG
+            ;;
         h) # display Help
             Help
             exit;;
-        m) # number of connections
-            export STACK_SENTINEL_NUM_CONNECTIONS=$OPTARG
-            ;;
         n) # Enter a site name
             export SITELC=`echo ${OPTARG} | awk '{ print tolower($1) }'`         
-            export SITEUC=`echo ${OPTARG} | awk '{ print toupper($1) }'`
+            export SITEUC=`echo ${SITELC} | awk '{ print toupper($1) }'`
             ;;
         m) # Enter a satellite mission
             export MISSION=$OPTARG;;
@@ -70,7 +72,7 @@ if [[ -n ${SITELC+set} ]]; then
 else
    export SITELC="sanem"
 fi
-if [[ -n ${SITEUCC+set} ]]; then
+if [[ -n ${SITEUC+set} ]]; then
    echo SITEUC is $SITEUC
 else
    export SITEUC="SANEM"
@@ -86,12 +88,12 @@ else
    export TRACK=144
 fi
 if [[ -n ${YYYYMMDD1+set} ]]; then
-   echo YYYYMMDD1 is $YYYYMMDD1
+    echo YYYYMMDD1 is $YYYYMMDD1
 else
     export YYYYMMDD1="20140403" # start of Sentinel-1A 
 fi
 if [[ -n ${YYYYMMDD2+set} ]]; then
-   echo YYYYMMDD2 is $YYYYMMDD2
+    echo YYYYMMDD2 is $YYYYMMDD2
 else
     export YYYYMMDD2="20240101" # 
 fi
@@ -101,8 +103,6 @@ else
    export STACK_SENTINEL_NUM_CONNECTIONS=1
 fi
 
-
- 
 export WORKDIR=$PWD
 
 # set folder for SLC zip files
@@ -155,21 +155,22 @@ pushd DEM
 get_dem_isce.sh $SITELC
 popd
 
-echo "Retrieving AUX files"
+
+echo "Retrieving AUX files...."
 if [[ -f ../aux.tgz ]]; then
    tar -xzf ../aux.tgz
 else
    echo error cannot find ../aux.tgz
 fi
 
-
-echo "Downloading SLC files"
+echo "Downloading SLC files...."
 mkdir -p ${SLCDIR}
 pushd ${SLCDIR}
 echo PWD is now ${PWD}
-run_ssara.sh $sat $trk $sit $t0 $t1 download | tee -a ../slc.log
+run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
 ls -ltr | tee -a ../slc.log
 popd
+
 
 #echo "Handling orbits"
 # mkdir -p ORBITS
@@ -192,22 +193,21 @@ popd
 # fi
 
 
-echo "Running ISCE"
+echo "Running ISCE...."
 mkdir -p ISCE
 pushd ISCE
 run_isce.sh $SITEUC $MISSION $TRACK $YYYYMMDD1 $YYYYMMDD2 | tee -a ../isce.log
 popd
 
-echo "Running MINTPY"
+echo "Running MINTPY..."
 mkdir -p MINTPY
 pushd MINTPY
 run_mintpy.sh $SITEUC  | tee -a ../mintpy.log
 popd
 
-
-
+echo "Storing results...."
 # transfer output back to /staging/
-cd $WORKDIR/$runname # I think we should already be there, but just in case
+pushd $WORKDIR/$runname # I think we should already be there, but just in case
 # I don't love using *.log here, as with `set -e` we will bail if there are no such log files
 #tar czf "$runname.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
@@ -221,6 +221,7 @@ if [[  -d /staging/groups/geoscience ]]; then
 else
     echo keeping everything
 fi
+popd
 
 # exit cleanly
 exit 0

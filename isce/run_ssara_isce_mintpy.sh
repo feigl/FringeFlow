@@ -203,7 +203,8 @@ popd
 echo "Running MINTPY..."
 mkdir -p MINTPY
 pushd MINTPY
-run_mintpy.sh $SITEUC  | tee -a ../mintpy.log
+cp $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 popd
 
 echo "Storing results...."

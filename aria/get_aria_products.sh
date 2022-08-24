@@ -16,7 +16,7 @@ do_download=1
 if [[ do_download -eq 1 ]]; then
     #ariaDownload.py --bbox "${bbox}" --output url --start 20210401 --end 20210515 --track 144
     #ariaDownload.py --bbox "${bbox}" --output url --start 20160101 --end 20220601 --track 144
-    ariaDownload.py --bbox "${bbox}" --output url --start 20220101 --end 20220601 --track 137
+    ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220630 --track 137
     pushd products
 
     urllist=`ls -tr *.txt | tail -1`
@@ -33,7 +33,7 @@ fi
 #rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack
 ariaTSsetup.py -f 'products/*.nc' --bbox "${bbox}" --mask Download --layers all 
 
-mkdir -p mintpy
-pushd mintpy
-cp $HOME/FringeFlow/mintpy_aria.cfg
-smallbaselineApp.py mintpy_aria.cfg 
+# mkdir -p mintpy
+# pushd mintpy
+# cp $HOME/FringeFlow/mintpy_aria.cfg
+# smallbaselineApp.py mintpy_aria.cfg 

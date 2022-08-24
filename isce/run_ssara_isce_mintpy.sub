@@ -49,7 +49,7 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 #arguments = "S1  20 FORGE 20200101  20200130"
 
 # 20220822 # new standard order
-arguments = "SANEM S1 144 20220331 20220506 1"
+#arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

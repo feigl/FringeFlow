@@ -1,18 +1,25 @@
 #!/usr/bin/bash
 
-# plot output of MINTPY as geocoded maps in UTM projection
+# plot output of MINTPY as geocoded maps 
 # 2021/06/10 Kurt Feigl
+
+# https://mintpy.readthedocs.io/en/latest/FAQs/
+# For line-of-sight (LOS) phase in the unit of radians, i.e. ‘unwrapPhase’ dataset in ifgramStack.h5 file, 
+# positive value represents motion away from the satellite. We assume the “date1_date2” format for the interferogram with “date1” being the earlier acquisition.
+
+# For LOS displacement (velocity) in the unit of meters (m/yr), i.e. ‘timeseries’ dataset in timeseries.h5 file, 
+# positive value represents motion toward the satellite (uplift for pure vertical motion).
 
 # docker run -it --rm -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy
 
-source /opt/isce2/isce_env.sh
-export PATH=$PATH:$HOME/MintPy/mintpy/
-export PATH=$PATH:$HOME/PyAPS/
+# source /opt/isce2/isce_env.sh
+# export PATH=$PATH:$HOME/MintPy/mintpy/
+# export PATH=$PATH:$HOME/PyAPS/
 
-#timeseries2vel.py --help
+# #timeseries2vel.py --help
 
-# need this, too for PyAPS pyaps3
-export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
+# # need this, too for PyAPS pyaps3
+# export PYTHONPATH=$PYTHONPATH:$HOME/MintPy/mintpy/:$HOME/PyAPS
 
 
 #cd /s12/insar/SANEM/SENTINEL/T144f_askja3/MINTPY/geo
@@ -49,11 +56,11 @@ touch wells.lalo
 
 ## average velocity
 #fvel='geo_velocity_ERA5_ramp_demErr'
-#fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
+fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
 # for ARIA 
-fvel="velocityERA5"
+#fvel="velocityERA5"
 echo fvel is $fvel
-#\cp -v geo_velocity.h5 ${fvel}.h5
+\cp -v geo_velocity.h5 ${fvel}.h5
 ls -l ${fvel}.h5
 
 # make KMZ file for Google Earth
@@ -95,14 +102,8 @@ view.py -o ${ftse}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${
 exit
 
 
-
-
-
 # save as GMT grd file for known date. How to get list?
 save_gmt.py geo_timeseries_ERA5_ramp_demErr.h5 20200105 -o geo_timeseries_ERA5_ramp_demErr.20200105.grd
-
-
-
 
 # cbar label cannot contain any spaces
 

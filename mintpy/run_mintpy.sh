@@ -77,8 +77,12 @@ view.py --dpi 150 --noverbose --nodisplay --update avgPhaseVelocity.h5
 view.py --dpi 150 --noverbose --nodisplay --update avgSpatialCoh.h5 -c gray -v 0 1
 view.py --dpi 150 --noverbose --nodisplay --update maskConnComp.h5 -c gray -v 0 1
 view.py --dpi 150 --noverbose --nodisplay --update timeseries.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
-view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
-view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+if [[ -f timeseries_ERA5.h5 ]]; then
+   view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+fi
+if [[ -f timeseries_ERA5_demErr.h5 ]]; then
+   view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+fi
 view.py --dpi 150 --noverbose --nodisplay --update velocityERA5.h5 --mask no
 view.py --dpi 150 --noverbose --nodisplay --update numInvIfgram.h5 --mask no
 
@@ -86,8 +90,10 @@ view.py --dpi 150 --noverbose --nodisplay --update numInvIfgram.h5 --mask no
 if [[ -d geo ]]; then
    view.py --dpi 150 --noverbose --nodisplay --update geo/geo_maskTempCoh.h5 -c gray
    view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
-   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 velocity
-   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+   view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 
+   if [[ -f geo/geo_timeseries_ERA5_demErr.h5 ]];
+      view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+   fi
 fi
 
 #copy *.txt files into ./pic directory.

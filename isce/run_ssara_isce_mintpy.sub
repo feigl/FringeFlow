@@ -22,8 +22,6 @@ log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log
 output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
 error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
 
-
-#executable = run_isce_chtc.sh
 executable = run_ssara_isce_mintpy.sh
 
 ### do this before submitting
@@ -38,16 +36,6 @@ executable = run_ssara_isce_mintpy.sh
 
 transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 
-#arguments = $(Process)
-#arguments = "S1 144 SANEM 20190110  20190122"
-#arguments = "S1 144 SANEM 20190110  20190301 1"
-#arguments = "S1 144 SANEM 20190301  20190401 1"
-#arguments = "S1 144 SANEM 20190110  20190301"
-#arguments = "S1 144 SANEM 20190302  20190630"
-#arguments = "S1 144 SANEM 20220401  20220531 1"
-#arguments = "S1  64 COSOC 20200101  20200130"
-#arguments = "S1  20 FORGE 20200101  20200130"
-
 # 20220822 # new standard order
 #arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
 
@@ -61,16 +49,13 @@ request_disk = 200GB
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
 
-queue
-
 # try multiple inputs
-#queue arguments from (
-#    S1 144 SANEM 20200101  20201231 5
-#    S1 144 SANEM 20200101  20201231 5
-#    S1 144 SANEM 20210101  20211231 5  
-#    S1 144 SANEM 20220101  20220531 5
-#    S1  20 FORGE 20220101  20220630 5
-#)
+#https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
+queue arguments from (
+    "-n FORGE -m S1 --t 20 -1 20220101 -2 20220501 -c 1"
+    "-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1"
+    "-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 3"
+)
 
 ### Think about multiple runs
     #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
@@ -86,3 +71,5 @@ queue
     #  input = file2
     #  arguments = -c -d 92
     #  queue
+
+queue

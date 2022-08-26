@@ -33,7 +33,12 @@ fi
 #rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack
 ariaTSsetup.py -f 'products/*.nc' --bbox "${bbox}" --mask Download --layers all 
 
-# mkdir -p mintpy
-# pushd mintpy
-# cp $HOME/FringeFlow/mintpy_aria.cfg
-# smallbaselineApp.py mintpy_aria.cfg 
+echo "conda deactivate "
+echo "mkdir -p MINTPY"
+echo "pushd MINTPY"
+echo "load_start_container_aria.sh"
+echo "cp $HOME/FringeFlow/mintpy/mintpy_aria.cfg"
+echo "run_mintpy.sh smallbaselineApp.py mintpy_aria.cfg" 
+# Warning 1: Invalid band number. Got 1050, expected 1015. Ignoring provided one, and using 1015 instead
+# Warning 1: Invalid band number. Got 1051, expected 1016. Ignoring provided one, and using 1016 instead
+# More than 1000 errors or warnings have been reported. No more will be reported from now.

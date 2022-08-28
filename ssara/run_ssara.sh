@@ -87,7 +87,7 @@ echo "Starting query to print."
 ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
 --start=${date_first} --end=${date_last} \
 --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
---print | tee ssara_${timetag}.csv
+--print | tee ssara_${timetag}.log
 
 if [[ ! ${action} == "print" ]]; then
 
@@ -97,7 +97,7 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --kml | tee ssara_${timetag}.kml
+    --kml | tee -a ssara_${timetag}.log
 
 
     # download data  # requires keys
@@ -108,7 +108,7 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --download | tee -a ssara_$timetag}.log
+    --download | tee -a ssara_${timetag}.log
 
 fi
 echo "$0 ended normally"

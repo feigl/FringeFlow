@@ -91,7 +91,7 @@ if [[ -d geo ]]; then
    view.py --dpi 150 --noverbose --nodisplay --update geo/geo_maskTempCoh.h5 -c gray
    view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
    view.py --dpi 150 --noverbose --nodisplay --update geo/geo_velocity.h5 
-   if [[ -f geo/geo_timeseries_ERA5_demErr.h5 ]];
+   if [[ -f geo/geo_timeseries_ERA5_demErr.h5 ]]; then
       view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
    fi
 fi

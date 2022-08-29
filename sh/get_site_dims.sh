@@ -100,7 +100,10 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
         ;;
         i) 
             # output integer bounds S, N, W, E
-            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%d %d %d %d\n",$3,$4+1,$1,$2+1)}' 
+            # fails for negative longitude
+            #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%d %d %d %d\n",$3,$4+1,$1,$2+1)}' 
+            # works for negative longitude, untested for negative latitude
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%d %d %d %d\n",$3-1,$4+1,$1-1,$2+1)}' 
             exit 0
             ;;
         b) 

@@ -43,7 +43,20 @@ fi
 
 # Prepare ARIA products for time series processing.
 #rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack
-ariaTSsetup.py -f 'products/*.nc' --bbox "${bbox}" --mask Download --layers all 
+ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all 
+
+
+
+
+# I have downloaded 773 ARIA products with ariaDownload.py. But when I use smallbaselineApp
+# ariaDownload.py --bbox "40.2 40.6 -119.7 -119.3" --output url --start 20140101 --end 20220601 --track 144
+
+# (base) mambauser@25443de73af5:/System/Volumes/Data/mnt/t31/insar/SANEM/ARIA/T144/MINTPY$ ls ../products/*.nc | wc
+#     773     773   69570
+
+# But I only 99 interferograms load.
+
+# WARNING: 672 out of 773 GUNW products rejected for not meeting users bbox spatial criteria
 
 echo "conda deactivate "
 echo "mkdir -p MINTPY"

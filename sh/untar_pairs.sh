@@ -13,6 +13,9 @@ if [ "$#" -eq 0 ]; then
 else
     for fname1 in "$@"; do
         echo fname1 is $fname1
+        bname=`basename $fname` 
+        bname=${bname%.*}
+        echo bname is $bname
         if [ -f $fname ]; then
             tar -xzvf ${fname1}
         fi

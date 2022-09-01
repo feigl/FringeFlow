@@ -33,7 +33,7 @@ bbox="40.137749 41.756149 -120.004097 -116.649643"
 
 # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
 #  ariaAOIassist.py -f test.csv -w work
-do_download=1
+do_download=0
 if [[ do_download -eq 1 ]]; then
     #ariaDownload.py --bbox "${bbox}" --output url --start 20210401 --end 20210515 --track 144
     ariaDownload.py -v --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144 
@@ -51,9 +51,15 @@ if [[ do_download -eq 1 ]]; then
     popd
 fi
 
-#ariaPlot.py -v -f "products/*.nc" -plotall  --figwidth=wide -nt 1
-#mv figures figures_all
-ariaPlot.py -v -f "products/*2019*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt 1
+# clean start
+rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack mask user_bbox.json productBoundingBox amplitude bParallel
+
+ariaPlot.py -v -f "products/*.nc" -plotall  --figwidth=wide -nt 1
+mv -vf figures figures_all
+
+# study area only
+#bbox="40.3480000000 40.4490000000 -119.4600000000 -119.3750000000"
+ariaPlot.py -v -f "products/*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt 1
 
 #ariaPlot.py -v -f "products/*v2_0_2.nc" --bbox "${bbox}"  -plotall -croptounion
 # ariaPlot.py -f "products/*v2_0_4.nc" --bbox "${bbox}" # 0 valid pairs
@@ -61,9 +67,6 @@ ariaPlot.py -v -f "products/*2019*.nc" --bbox "${bbox}"  -plotall --figwidth=wid
 
 
 # Prepare ARIA products for time series processing.
-# clean start
-rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack mask user_bbox.json productBoundingBox
-
 ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v 
 
 #ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v --croptounion

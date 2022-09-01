@@ -80,7 +80,7 @@ queue arguments from (
 # ./SANEM_S1_144_20210101_20211231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
 # ./SANEM_S1_144_20200101_20201231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
 
-[feigl@askja T144]$ display `find . -name geo_velocity_ERA5_ramp_demErr.pdf`
+#  [feigl@askja T144]$ display `find . -name geo_velocity_ERA5_ramp_demErr.pdf`
 #    "-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1" # good short test case
 #    "-n FORGE -m S1 -t 20  -1 20220101 -2 20220501 -c 1" # fails no SLCs
 #    "-n FORGE -m S1 -t 20  -1 20200101 -2 20220501 -c 1" # fails "exceeds disk quota"

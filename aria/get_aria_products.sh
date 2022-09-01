@@ -20,14 +20,24 @@
 #run_ssara.sh sanem S1 144 20190110  20190122 download
 #grep LineString ssara_search_20220828200348.kml
 #<LineString><tessellate>1</tessellate><coordinates>-120.004097,40.137749,0 -119.664558,41.756149,0 -116.649643,41.361141,0 -117.064262,39.741959,0 -120.004097,40.137749,0 </coordinates></LineString>
-#bbox="40.137749 41.756149 -120.004097 -116.649643"
+bbox="40.137749 41.756149 -120.004097 -116.649643"
+# narrow the longitude
+#bbox="40.137749 41.756149 -119.4600000000 -119.3750000000" # cuts off two much
 
+# https://github.com/aria-tools/ARIA-tools/issues/187
 # medium size 
-bbox="40.2 40.6 -119.7 -119.3"
+# bbox="40.2 40.6 -119.7 -119.3"
+# bbox="40.2 40.5 -119.7 -119.3"
+
+#  curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&maxResults=5000&output=CSV" > test.csv
+
+# curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
+#  ariaAOIassist.py -f test.csv -w work
 do_download=1
 if [[ do_download -eq 1 ]]; then
     #ariaDownload.py --bbox "${bbox}" --output url --start 20210401 --end 20210515 --track 144
-    ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144
+    ariaDownload.py -v --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144 
+    #ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144 -v
     #ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220630 --track 137
     pushd products
 
@@ -41,9 +51,22 @@ if [[ do_download -eq 1 ]]; then
     popd
 fi
 
+#ariaPlot.py -v -f "products/*.nc" -plotall  --figwidth=wide -nt 1
+#mv figures figures_all
+ariaPlot.py -v -f "products/*2019*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt 1
+
+#ariaPlot.py -v -f "products/*v2_0_2.nc" --bbox "${bbox}"  -plotall -croptounion
+# ariaPlot.py -f "products/*v2_0_4.nc" --bbox "${bbox}" # 0 valid pairs
+# ariaPlot.py -f "products/*v2_0_5.nc" --bbox "${bbox}"
+
+
 # Prepare ARIA products for time series processing.
-#rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack
-ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all 
+# clean start
+rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack mask user_bbox.json productBoundingBox
+
+ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v 
+
+#ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v --croptounion
 
 
 

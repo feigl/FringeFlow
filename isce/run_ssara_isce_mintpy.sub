@@ -44,7 +44,8 @@ when_to_transfer_output = ON_EXIT
 
 request_cpus = 1
 request_memory = 40GB
-request_disk = 200GB
+#request_disk = 200GB - not big enough for a year with -c 1
+request_disk = 500GB
 
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
@@ -52,18 +53,34 @@ Requirements = (Target.HasCHTCStaging == true)
 # queue
 # try multiple inputs
 #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-queue arguments from (
-"-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1"    
-"-n SANEM -m S1 -t 144 -1 20140101 -2 20141231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20150101 -2 20151231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20160101 -2 20161231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20170101 -2 20171231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 1" 
-"-n SANEM -m S1 -t 144 -1 20220101 -2 20220901 -c 1"    
+queue arguments from (  
+"-n SANEM -m S1 -t 144 -1 20140101 -2 20141231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20150101 -2 20151231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20160101 -2 20161231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20170101 -2 20171231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 5" 
+"-n SANEM -m S1 -t 144 -1 20220101 -2 20220901 -c 5"    
 )
+
+#"-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1"   # not enough data
+#"-n SANEM -m S1 -t 144 -1 20140101 -2 20141231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20150101 -2 20151231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20160101 -2 20161231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20170101 -2 20171231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 1" 
+#"-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 1" # ran to geo
+#"-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 1" # ran
+#"-n SANEM -m S1 -t 144 -1 20220101 -2 20220901 -c 1"   
+
+# [feigl@askja T144]$ find . -name geo_velocity_ERA5_ramp_demErr.pdf
+# ./SANEM_S1_144_20210101_20211231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
+# ./SANEM_S1_144_20200101_20201231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
+
+[feigl@askja T144]$ display `find . -name geo_velocity_ERA5_ramp_demErr.pdf`
 #    "-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1" # good short test case
 #    "-n FORGE -m S1 -t 20  -1 20220101 -2 20220501 -c 1" # fails no SLCs
 #    "-n FORGE -m S1 -t 20  -1 20200101 -2 20220501 -c 1" # fails "exceeds disk quota"

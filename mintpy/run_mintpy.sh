@@ -66,7 +66,7 @@ if [[ ! -f inputs/ifgramStack.h5 ]]; then
 fi
 
 echo "Dumping dates"
-h5dump -d date inputs/ifgramStack.h5 | tee smallbaselineApp_${CFG}_${TTAG}.log
+h5dump -d date inputs/ifgramStack.h5 | tee -a smallbaselineApp_${CFG}_${TTAG}.log
 
 #******************** plot & save to pic ********************
 view.py --dpi 150 --noverbose --nodisplay --update velocity.h5 --dem inputs/geometryRadar.h5 --mask maskTempCoh.h5 -u mm

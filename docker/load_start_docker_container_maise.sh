@@ -4,6 +4,7 @@
 # 2021/07/05 Kurt Feigl
 # 2021/11/29 Kurt Feigl 
 # 2022/08/04 Kurt Feigl
+# 2022/09/12 Kurt Feigl and Nick Bearson
 
 if [[ (( "$#" -ne 1 ) && ( "$#" -ne 5 ) && ("$#" -ne 3)) ]]; then
     bname=`basename $0`
@@ -114,7 +115,7 @@ else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'tar -C $HOME -xzf siteinfo.tgz '
-echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_maise.sh'
 echo 'domagic.sh magic.tgz'
 # echo 'get_siteinfo.sh .'
 echo '  '
@@ -151,16 +152,19 @@ cd $runname
 #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/maise:20220909
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`
   #gid=`id -g`
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
-  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
+  #docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
+  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/maise:20220909
 else 
-  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
+  #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
+  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/maise:20220909
 fi
 
 

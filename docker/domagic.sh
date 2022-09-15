@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash 
 
 # Set up keys for ISCE, GMTSAR, MINTPY, and SSARA
 # 2021/07/05 Kurt Feigl
@@ -35,8 +35,15 @@ else
 
         # FIXME: /home/ops/PyAPS/pyaps3/model.cfg is not writable    
         if [[ -f $HOME/magic/model.cfg ]]; then
-            echo "File named $HOME/magic/model.cfg exists. Copying it to /home/ops/PyAPS/pyaps3/model.cfg "
-            cp -fv $HOME/magic/model.cfg ${HOME}/PyAPS/pyaps3/model.cfg
+            echo "File named $HOME/magic/model.cfg exists. Copying it to the correct place "
+            if [[ -f ${HOME}/PyAPS/pyaps3/model.cfg ]]; then
+                cp -fv $HOME/magic/model.cfg ${HOME}/PyAPS/pyaps3/model.cfg
+            elif [[ -f /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg ]]; then
+                echo "File named $HOME/magic/model.cfg exists. Copying it to opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg "
+                cp -fv $HOME/magic/model.cfg /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg
+            else
+                echo "ERROR $0 cannot find target."
+            fi
         else
             echo "ERROR: missing key file named model.cfg"
             exit -1
@@ -58,6 +65,9 @@ else
                     echo "ERROR: could not find file named password_config.py in ${SSARA_HOME}"
                     exit -1
                 fi
+            elif [[ -d /tools/SSARA/ ]]; then
+                cp -vf $HOME/magic/password_config.py /tools/SSARA/password_config.py
+                export SSARA_HOME=/tools/SSARA
             else
                 echo "ERROR: clean SSARA directory does not exist as $HOME/ssara_client"
                 exit -1

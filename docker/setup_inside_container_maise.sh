@@ -36,8 +36,8 @@ if [[ -d ${HOME}/gipht/csh ]]; then
 fi
 
 # # set up for SSARA
-if [[ -d /utils/SSARA ]]; then
-    export SSARA_HOME=/utils/SSARA
+if [[ -d /tools/SSARA ]]; then
+    export SSARA_HOME=/tools/SSARA
     export PATH=${PATH}:${SSARA_HOME}
     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
 fi 

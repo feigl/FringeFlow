@@ -18,29 +18,30 @@ else
     exit -1
 fi
 
-# make a copy of the ssara client so that we can have permissions to set the password file
-# required to download
-echo "Setting up local copy of SSARA client with credentials"
-\rm -rf ssara_client
-if [[ -d $HOME/ssara_client ]]; then
-    \cp -rf $HOME/ssara_client .
-elif [[ -d /home/ops/ssara_client/ ]]; then
-    \cp -rf /home/ops/ssara_client/ .
-fi
-if [[ -f $HOME/magic/password_config.py ]]; then
-    \cp -f $HOME/magic/password_config.py ssara_client/
-elif [[ -f /home/ops/magic/password_config.py ]]; then
-    \cp -f /home/ops/magic/password_config.py ssara_client/
-elif [[ -f ../magic/password_config.py ]]; then
-    \cp -f ../magic/password_config.py ssara_client/
-else
-    echo ERROR: cannot find password_config.py 
-    exit -1
-fi
+## make a copy of the ssara client so that we can have permissions to set the password file
+# 20220915 moved to setup_inside_container_maise.sh
+# # required to download
+# echo "Setting up local copy of SSARA client with credentials"
+# \rm -rf ssara_client
+# if [[ -d $HOME/ssara_client ]]; then
+#     \cp -rf $HOME/ssara_client .
+# elif [[ -d /home/ops/ssara_client/ ]]; then
+#     \cp -rf /home/ops/ssara_client/ .
+# fi
+# if [[ -f $HOME/magic/password_config.py ]]; then
+#     \cp -f $HOME/magic/password_config.py ssara_client/
+# elif [[ -f /home/ops/magic/password_config.py ]]; then
+#     \cp -f /home/ops/magic/password_config.py ssara_client/
+# elif [[ -f ../magic/password_config.py ]]; then
+#     \cp -f ../magic/password_config.py ssara_client/
+# else
+#     echo ERROR: cannot find password_config.py 
+#     exit -1
+# fi
 
-export PATH=${PATH}:${PWD}/ssara_client
-export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
-export SSARA_HOME=${PWD}
+# export PATH=${PATH}:${PWD}/ssara_client
+# export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
+# export SSARA_HOME=${PWD}
 
 echo SSARA_HOME is $SSARA_HOME
 
@@ -108,6 +109,7 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
+    --parallel=4 \
     --download | tee -a ssara_${timetag}.log
 
 fi

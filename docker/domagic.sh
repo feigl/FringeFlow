@@ -33,6 +33,16 @@ else
             exit -1
         fi
 
+        # Add your Open Topo API key to `~/.topoapi`.Refer to ARIAtools installation instructions.
+        if [[ -f $HOME/magic/.topoapi ]]; then
+            echo "File named $HOME/.topoapi exists"
+            cp -vf $HOME/magic/.topoapi $HOME/.topoapi
+        else
+            echo "ERROR: could not find named $HOME/magic/.topapi"
+            exit -1
+        fi
+
+
         # FIXME: /home/ops/PyAPS/pyaps3/model.cfg is not writable    
         if [[ -f $HOME/magic/model.cfg ]]; then
             echo "File named $HOME/magic/model.cfg exists. Copying it to the correct place "

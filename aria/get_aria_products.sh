@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash -vxe
 
 
 # attempt to download ARIA products and 
@@ -35,8 +35,11 @@ bbox="40.137749 41.756149 -120.004097 -116.649643"
 #  ariaAOIassist.py -f test.csv -w work
 do_download=0
 if [[ do_download -eq 1 ]]; then
+    # clean start
+    \rm -rf products
     #ariaDownload.py --bbox "${bbox}" --output url --start 20210401 --end 20210515 --track 144
-    ariaDownload.py -v --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144 
+    ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20190401 --track 144 
+    #ariaDownload.py -v --bbox "${bbox}" --output url --start 20200101 --end 2020601 --track 144 --version="2_0_4"
     #ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220601 --track 144 -v
     #ariaDownload.py --bbox "${bbox}" --output url --start 20140101 --end 20220630 --track 137
     pushd products
@@ -59,7 +62,7 @@ mv -vf figures figures_all
 
 # study area only
 #bbox="40.3480000000 40.4490000000 -119.4600000000 -119.3750000000"
-ariaPlot.py -v -f "products/*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt 1
+#ariaPlot.py -v -f "products/*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt 1
 
 #ariaPlot.py -v -f "products/*v2_0_2.nc" --bbox "${bbox}"  -plotall -croptounion
 # ariaPlot.py -f "products/*v2_0_4.nc" --bbox "${bbox}" # 0 valid pairs
@@ -69,7 +72,9 @@ ariaPlot.py -v -f "products/*.nc" --bbox "${bbox}"  -plotall --figwidth=wide -nt
 # Prepare ARIA products for time series processing.
 ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v 
 
-#ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v --croptounion
+
+
+#ariaTSsetup.py -f "products/*.nc" --mask Download --layers all -v --croptounion
 
 
 
@@ -84,12 +89,12 @@ ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all 
 
 # WARNING: 672 out of 773 GUNW products rejected for not meeting users bbox spatial criteria
 
-echo "conda deactivate "
-echo "mkdir -p MINTPY"
-echo "pushd MINTPY"
-echo "load_start_container_aria.sh"
-echo "cp $HOME/FringeFlow/mintpy/mintpy_aria.cfg ."
-echo "run_mintpy.sh mintpy_aria.cfg " 
+# echo "conda deactivate "
+mkdir -p MINTPY
+pushd MINTPY
+
+cp $HOME/FringeFlow/mintpy/mintpy_aria.cfg .
+run_mintpy.sh mintpy_aria.cfg 
 # Warning 1: Invalid band number. Got 1050, expected 1015. Ignoring provided one, and using 1015 instead
 # Warning 1: Invalid band number. Got 1051, expected 1016. Ignoring provided one, and using 1016 instead
 # More than 1000 errors or warnings have been reported. No more will be reported from now.

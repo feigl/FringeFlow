@@ -50,10 +50,10 @@ if [[ do_download -eq 1 ]]; then
     #ariaDownload.py --bbox "${bbox}" --output url --start 20200101 --end 20220630 --track 144
 
     # nice test case 
-    ariaDownload.py -v --bbox "${bbox}" --output url --start 20220401 --end 20220515 --track 42
+    #ariaDownload.py -v --bbox "${bbox}" --output url --start 20220401 --end 20220515 --track 42
 
     # for WHOLESCALE
-    #ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20220902 --track 144 
+    ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20220902 --track 42
     
     pushd products
 

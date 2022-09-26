@@ -9,7 +9,7 @@ if [[  "$#" -ne 1  ]]; then
 fi
 
 # 2021/08/09 Kurt Feigl siteinfo is now outside of FringeFlow
-
+# 2022/09/24 Kurt Feigl
 
 source /opt/isce2/isce_env.sh
 export PATH=$PATH:$HOME/MintPy/mintpy/
@@ -78,8 +78,8 @@ for wellname in "GDM-09_060519"; do
 
      txtname1=`echo $wellname | awk '{print "Site_"$1"_ts.txt"}'`
      echo txtname1 is ${txtname1}
-     slope=`grep slope ${txtname1}`
-     echo slope is ${slope}
+     velocity=`grep velocity ${txtname1}`
+     echo velocity is ${velocity}
    
 	# tag it using ImageMagick
 	fileinfo=`convert ${pdfname2} -ping -format "%t" info:`

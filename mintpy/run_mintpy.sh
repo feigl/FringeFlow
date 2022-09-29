@@ -90,7 +90,9 @@ fi
 if [[ -f timeseries_ERA5_demErr.h5 ]]; then
    view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
 fi
-view.py --dpi 150 --noverbose --nodisplay --update velocityERA5.h5 --mask no
+if [[ -f velocityERA5.h5 ]]; then
+   view.py --dpi 150 --noverbose --nodisplay --update velocityERA5.h5 --mask no
+fi
 view.py --dpi 150 --noverbose --nodisplay --update numInvIfgram.h5 --mask no
 
 # ARIA products are already geocoded

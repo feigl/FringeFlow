@@ -1,7 +1,19 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -vex
 
 # plot output of MINTPY as geocoded maps 
 # 2021/06/10 Kurt Feigl
+# 2022/09/29 Kurt Feigl - adapt to MINTPY output from ARIA
+
+if [[ ( "$#" -ne 1 )  ]]; then
+    bname=`basename $0`
+    echo "$bname will make maps of site"
+    echo "usage:   $bname site5"
+    echo "example: $bname SANEM"
+    echo "example: $bname FORGE"
+    exit -1
+fi
+
+SITELC=`echo ${1} | awk '{ print tolower($1) }'`
 
 # https://mintpy.readthedocs.io/en/latest/FAQs/
 # For line-of-sight (LOS) phase in the unit of radians, i.e. ‘unwrapPhase’ dataset in ifgramStack.h5 file, 
@@ -28,11 +40,15 @@
 
 # As for the data download: GARL happens automatically (it is a PBO station).
 # WGS84 plotting coordinates for GARL: 40.4165266  -119.3554565
-reflalo="40.4165266 -119.3554565" # GARL
-sublat="40.348 40.449" # includes GARL
-sublon="-119.46 -119.350" #includes GARL
-#figtitle='SanEmidio_SENTINEL_T144f4_referredToGPSstationGARL' # must be one word 
-figtitle=`echo $PWD | awk '{print $1"_wrtGARL"}'` # must be one word 
+# reflalo="40.4165266 -119.3554565" # GARL
+# sublat="40.348 40.449" # includes GARL
+# sublon="-119.46 -119.350" #includes GARL
+# #figtitle='SanEmidio_SENTINEL_T144f4_referredToGPSstationGARL' # must be one word 
+# figtitle=`echo $PWD | awk '{print $1"_wrtGARL"}'` # must be one word 
+
+reflalo="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)" # NE corner
+sublat="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N)"   
+sublon="$(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
 
 # consider referencing with respect to a well located in valley floor
 
@@ -50,21 +66,63 @@ figtitle=`echo $PWD | awk '{print $1"_wrtGARL"}'` # must be one word
 #cat ../../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat /insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat ../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
+cat $SITE_DIR/sanem/sanem_wells.txt | awk '{print $2,$1}' > wells.lalo
 #cp ../../wells.lalo .
-touch wells.lalo
+#touch wells.lalo
+
+for vfile in `ls *velocity*.h5` ; do
+    echo vfile is $vfile
+    ## average velocity
+    if [[ -f $vfile ]]; then
+        fvel=`echo $vfile | sed 's/.h5//'` 
+        fmask='maskTempCoh'
+    else
+        echo ERROR cannot find $vfile
+        exit -1
+    fi
+    echo fvel is $fvel
+    ls -l ${fvel}.h5
+
+    figtitle=`echo $PWD ${fvel} | awk '{print $1"_"$2"_wrtNEcorner"}'` # must be one word 
+    echo figtitle is $figtitle
+
+    # make KMZ file for Google Earth
+    save_kmz.py   --mask ${fmask}.h5 ${fvel}.h5
+
+    # map of average velocity over whole area
+    view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} --pts-file wells.lalo --pts-marker '>w' \
+    --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year --scalebar 0.3 0.2 0.05  \
+    --cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
 
 
-## average velocity
-#fvel='geo_velocity_ERA5_ramp_demErr'
-fvel=`ls -t geo_timeseries*.h5 | head -1 | sed 's/timeseries/velocity/' | sed 's/.h5//'`
-# for ARIA 
-#fvel="velocityERA5"
-echo fvel is $fvel
-\cp -v geo_velocity.h5 ${fvel}.h5
-ls -l ${fvel}.h5
+    # map of average velocity - study area only
+    view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
+    --unit mm/year --scalebar 0.3 0.2 0.05 --cbar-label LOS_displacement_[mm/year] --sub-lat ${sublat} --sub-lon ${sublon}  \
+    --pts-file wells.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
+done
 
-# make KMZ file for Google Earth
-save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
+## complete time series
+for tfile in `ls *timeseries*.h5` ; do
+    echo tfile is $tfile
+    if [[ -f ${tfile} ]]; then
+        ftse=`echo $tfile | sed 's/.h5//'`
+    else
+        echo ERROR cannot find $tfile
+        exit -1
+    fi
+    echo ftse is $ftse
+
+    # map all pairs w.r.t. reference in study area
+    view.py -o ${ftse}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
+    --pts-file wells.lalo --pts-marker '>w' --figext .pdf ${ftse}.h5
+
+    # map all pairs w.r.t. reference whole area
+    view.py -o ${ftse}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
+    --pts-file wells.lalo --pts-marker '>w' ${ftse}.h5
+done
+
+
+exit
 
 # E-W transect through latitude of well 25A-21
 #(base) bash-4.1$ grep 25A San_Emidio_Wells_2019WithLatLon.csv
@@ -74,33 +132,6 @@ save_kmz.py   --mask geo_maskTempCoh.h5 ${fvel}.h5
 
 plot_transection.py ${fvel}.h5   --coord geo  --start-lalo 40.3676487 -119.9 --end-lalo 40.3676487 -119.0  \
 --figtitle ${figtitle}  -o ${fvel}_transection.pdf
-
-# map of average velocity over whole area
-view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --ref-lalo ${reflalo} --pts-file wells.lalo --pts-marker '>w' \
---lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label --unit mm/year --scalebar 0.3 0.2 0.05  \
---cbar-label LOS_displacement_[mm/year]  ${fvel}.h5 velocity
-
-
-# map of average velocity - study area only
-view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
---unit mm/year --scalebar 0.3 0.2 0.05 --cbar-label LOS_displacement_[mm/year] --sub-lat ${sublat} --sub-lon ${sublon}  \
---pts-file wells.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
-
-## complete time series
-#ftse='geo_timeseries_ERA5_ramp_demErr'
-ftse=`ls -t geo_timeseries*.h5 | head -1 | sed 's/.h5//'`
-echo ftse is $ftse
-
-# map all pairs w.r.t. reference in study area
-view.py -o ${ftse}_sub.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --sub-lat ${sublat} --sub-lon ${sublon}  \
---pts-file wells.lalo --pts-marker '>w' --figext .pdf ${ftse}.h5
-
-# map all pairs w.r.t. reference whole area
-view.py -o ${ftse}.pdf --nodisplay --ref-lalo ${reflalo} --unit mm --figtitle ${figtitle} --figext .pdf \
---pts-file wells.lalo --pts-marker '>w' ${ftse}.h5
-
-exit
-
 
 # save as GMT grd file for known date. How to get list?
 save_gmt.py geo_timeseries_ERA5_ramp_demErr.h5 20200105 -o geo_timeseries_ERA5_ramp_demErr.20200105.grd

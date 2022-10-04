@@ -64,6 +64,10 @@ if [[ -d $HOME/ARIA-tools ]]; then
    export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
 fi
 
+if [[ -d /opt/conda/share/proj ]]; then
+    export PROJ_LIB=/opt/conda/share/proj
+fi
+
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
 if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
     export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH

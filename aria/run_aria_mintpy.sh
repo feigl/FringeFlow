@@ -39,7 +39,7 @@ fi
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":1:2:c:h:n:m:t:" option; do
+while getopts ":1:2:h:n:m:t:" option; do
     case $option in
         1) # start date YYYYMMDD
             export YYYYMMDD1=$OPTARG
@@ -47,7 +47,7 @@ while getopts ":1:2:c:h:n:m:t:" option; do
         2) # end date YYYYMMDD
             export YYYYMMDD2=$OPTARG
             ;;
-         h) # display Help
+        h) # display Help
             Help
             exit;;
         n) # Enter a site name
@@ -122,7 +122,7 @@ if [[ do_download -eq 1 ]]; then
     #ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20220902 --track 42
 
    # for anything
-    ariaDownload.py -v --bbox "${bbox}" --output url --start ${YYMMDD1} --end ${YYMMDD2} --track ${TRACK}
+    ariaDownload.py -v --bbox "${bbox}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK}
     
     pushd products
 

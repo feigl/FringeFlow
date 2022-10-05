@@ -10,7 +10,8 @@
 #conda activate ARIA-tools
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
-# 
+bname=`basename $0`
+
 Help()
 {
    # Display Help
@@ -23,6 +24,7 @@ Help()
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
+    echo "run_aria_mintpy.sh -n FORGE -m S1 -1 20190101 -2 20220901"
     exit -1
   }
 

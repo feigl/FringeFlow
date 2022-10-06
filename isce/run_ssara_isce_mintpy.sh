@@ -7,7 +7,9 @@
 #set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
-# 
+
+bname=`basename $0`
+
 Help()
 {
    # Display Help
@@ -64,6 +66,7 @@ while getopts ":1:2:c:h:n:m:t:" option; do
             exit;;
     esac
 done
+
 
 # test existence of variables
 #https://unix.stackexchange.com/questions/212183/how-do-i-check-if-a-variable-exists-in-an-if-statement

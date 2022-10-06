@@ -1,8 +1,8 @@
-#!/bin/bash -vxe
+#!/bin/bash -xe
 # set -v # verbose
 # set -x # for debugging
 # set -e # exit on error
-#set -u # error on unset variables
+# set -u # error on unset variables
 # download ARIA products and run MINTPY
 # 20221005 Kurt Feigl
 
@@ -22,9 +22,9 @@ Help()
     echo '   -c number of connections in stack'
     echo '   -m mission e.g., S1 for Sentinel-1'
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
-    echo "example:"
-    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
-    echo "run_aria_mintpy.sh -n FORGE -m S1 -1 20190101 -2 20220901"
+    echo "examples:"
+    echo "    $bname -n SANEM -m S1 -1 20220331 -2 20220506 -t 42"
+    echo "    $bname -n FORGE -m S1 -1 20190101 -2 20220901 -t 20"
     exit -1
   }
 
@@ -67,6 +67,10 @@ while getopts ":1:2:h:n:m:t:" option; do
     esac
 done
 
+# TODO set site and bbox
+bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
+
+
 # test existence of variables
 #https://unix.stackexchange.com/questions/212183/how-do-i-check-if-a-variable-exists-in-an-if-statement
 if [[ -n ${SITELC+set} ]]; then
@@ -87,7 +91,7 @@ fi
 if [[ -n ${TRACK+set} ]]; then
    echo TRACK is $TRACK
 else
-   export TRACK=144
+   export TRACK=42
 fi
 if [[ -n ${YYYYMMDD1+set} ]]; then
     echo YYYYMMDD1 is $YYYYMMDD1

@@ -158,4 +158,5 @@ mkdir -p MINTPY
 pushd MINTPY
 
 cp $HOME/FringeFlow/mintpy/mintpy_aria.cfg .
+# TODO choose reference point to be specific to site
 run_mintpy.sh mintpy_aria.cfg 

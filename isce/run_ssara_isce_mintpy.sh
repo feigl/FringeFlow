@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-# 2022/08/04 Kurt Feigl 
+#!/bin/bash
+# 2022/08/04 Kurt Feigl
+# 2022/10/08 
 
 # set -v # verbose
 # set -x # for debugging

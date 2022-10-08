@@ -4,7 +4,7 @@
 # 20211006 fix SLCdir
 # 20220810 clean up
 
-if [[  ( "$#" -eq 5)  ]]; then
+if [[  ( "$#" -eq 5)  || ( "$#" -eq 6) ]]; then
     SITELC=`echo $1 | awk '{ print tolower($1) }'`         
     SITEUC=`echo $1 | awk '{ print toupper($1) }'`
     MISSION=$2
@@ -16,6 +16,10 @@ if [[  ( "$#" -eq 5)  ]]; then
     #write dates as YYYY-MM-DD
     date_first=`echo $YYYYMMDD1 | awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
     date_last=`echo $YYYYMMDD2 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
+
+   if [[  ( "$#" -eq 6) ]]; then
+      SLCDIR=$6
+   fi
 else
     bname=`basename $0`
     echo "$bname runs ISCE"
@@ -26,7 +30,6 @@ fi
 
 echo YYYYMMDD1 is ${YYYYMMDD1}  date_first is ${date_first}
 echo YYYYMMDD2 is ${YYYYMMDD2}  date_last  is ${date_last}
-
 
 # set number of connections
 if [[ -n ${STACK_SENTINEL_NUM_CONNECTIONS+set} ]]; then
@@ -41,11 +44,18 @@ echo timetag is ${timetag}
 
 # set folder for SLC zip files
 if [[ -n ${SLCDIR+set} ]]; then
-   echo SLCDIR is $SLCDIR
+   echo inheriting SLCDIR to be $SLCDIR      
 else
    export SLCDIR="../SLC"
 fi
 echo SLCDIR is ${SLCDIR}
+if [[ -d ${SLCDIR} ]]; then
+   echo SLCDIR named $SLCDIR exists
+else
+   # set folder for SLC zip files
+   mv -fv SLC* SLC
+fi
+
 
 
 # NICKB: encountered this during run_isce_jobs.sh:
@@ -64,7 +74,7 @@ export CPL_ZIP_ENCODING=UTF-8
 \rm -rfv isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
 # count SLC
-nSLC=`ls ../${SLCDIR} | wc -l`
+nSLC=`ls ${SLCDIR} | wc -l`
 echo "number of SLC files nSLC is $nSLC"
 
 # echo "Looking for S1 files that are not zip in SLC folder"
@@ -126,7 +136,7 @@ fi
 
 stackSentinel.py -w ./ \
     -d ${demfile} \
-    -s ../${SLCDIR}   \
+    -s ${SLCDIR}   \
     -a ../AUX/     \
     -o ../ORBITS/  \
     -c "$STACK_SENTINEL_NUM_CONNECTIONS" \

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -veux
 # 2022/08/04 Kurt Feigl
 # 2022/10/08 
 

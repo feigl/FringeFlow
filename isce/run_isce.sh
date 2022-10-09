@@ -1,8 +1,19 @@
-#!/bin/bash -x
+#!/bin/bash -veux
 # run ISCE inside container
 # 20210809 update SLCdir
 # 20211006 fix SLCdir
 # 20220810 clean up
+
+bname=`basename $0`
+
+Help()
+{
+   # Display Help
+    echo "$bname runs ISCE"
+    echo "usage:   $bname SITE MISSION TRACK YYYYMMDD1 YYYYMMDD2"
+    echo "example: $banem SANEM     S1   144  20220331 20220506"
+    exit -1
+  }
 
 if [[  ( "$#" -eq 5)  || ( "$#" -eq 6) ]]; then
     SITELC=`echo $1 | awk '{ print tolower($1) }'`         
@@ -21,11 +32,7 @@ if [[  ( "$#" -eq 5)  || ( "$#" -eq 6) ]]; then
       SLCDIR=$6
    fi
 else
-    bname=`basename $0`
-    echo "$bname runs ISCE"
-    echo "usage:   $bname SITE MISSION TRACK YYYYMMDD1 YYYYMMDD2"
-    echo "example: $banem SANEM     S1   144  20220331 20220506"
-    exit -1
+   Help
 fi
 
 echo YYYYMMDD1 is ${YYYYMMDD1}  date_first is ${date_first}
@@ -46,16 +53,27 @@ echo timetag is ${timetag}
 if [[ -n ${SLCDIR+set} ]]; then
    echo inheriting SLCDIR to be $SLCDIR      
 else
-   export SLCDIR="../SLC"
+   export SLCDIR="SLC"
 fi
 echo SLCDIR is ${SLCDIR}
 if [[ -d ${SLCDIR} ]]; then
    echo SLCDIR named $SLCDIR exists
 else
-   # set folder for SLC zip files
-   mv -fv SLC* SLC
+   echo $banem ERROR 
+   
 fi
 
+# count SLC
+nSLC=`ls ${SLCDIR} | wc -l`
+echo "number of SLC files nSLC is $nSLC"
+
+if [[ ${nSLC} -lt 3 ]]; then
+   echo $bname ERROR need at least 3 SLC files to analyze
+   exit -1
+fi
+
+# echo "Looking for S1 files that are not zip in SLC folder"
+# find .. -name "S1*V_*" | grep -v .zip
 
 
 # NICKB: encountered this during run_isce_jobs.sh:
@@ -73,12 +91,6 @@ export CPL_ZIP_ENCODING=UTF-8
 # clean start
 \rm -rfv isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
-# count SLC
-nSLC=`ls ${SLCDIR} | wc -l`
-echo "number of SLC files nSLC is $nSLC"
-
-# echo "Looking for S1 files that are not zip in SLC folder"
-# find .. -name "S1*V_*" | grep -v .zip
 
 # get bounding box
 bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"

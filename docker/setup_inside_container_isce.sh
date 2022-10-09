@@ -36,11 +36,11 @@ if [[ -d ${HOME}/gipht/csh ]]; then
 fi
 
 # # set up for SSARA
-# if [[ -d ${HOME}/ssara_client ]]; then
-#     export SSARA_HOME=${HOME}/ssara_client
-#     export PATH=${PATH}:${SSARA_HOME}
-#     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
-# fi 
+if [[ -d ${HOME}/ssara_client ]]; then
+    export SSARA_HOME=${HOME}/ssara_client
+    export PATH=${PATH}:${SSARA_HOME}
+    export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+fi 
 
 # set up for MintPy
 if [[ -d /home/ops/MintPy ]]; then

@@ -5,7 +5,7 @@
 # set -v # verbose
 # set -x # for debugging
 # set -e # exit on error
-#set -u # error on unset variables
+# set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
 
@@ -109,14 +109,6 @@ fi
 
 export WORKDIR=$PWD
 
-# set folder for SLC zip files
-if [[ -n ${SLCDIR+set} ]]; then
-   echo SLCDIR is $SLCDIR
-else
-   export SLCDIR="SLC_${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
-fi
-echo SLCDIR is ${SLCDIR}
-
 
 ## are we running under condor ?
 if [[  -d /staging/groups/geoscience ]]; then
@@ -151,8 +143,17 @@ echo RUNNAME is ${RUNNAME}
 
 RUNDIR="$WORKDIR/$RUNNAME"
 mkdir -p $RUNDIR
-cd $RUNDIR
+pushd $RUNDIR
 pwd
+
+# set folder for SLC zip files
+# if [[ -n ${SLCDIR+set} ]]; then
+#    echo SLCDIR is $SLCDIR
+# else
+#    export SLCDIR="${RUNDIR}/SLC_${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
+# fi
+# echo SLCDIR is ${SLCDIR}
+
 
 echo "Getting DEM"
 mkdir -p DEM
@@ -165,10 +166,13 @@ echo "Retrieving AUX files...."
 if [[ -f ../aux.tgz ]]; then
    tar -xzf ../aux.tgz
 else
-   echo error cannot find ../aux.tgz
+   echo error cannot find aux.tgz
+   exit -1
 fi
 
+
 echo "Downloading SLC files...."
+export SLCDIR=${PWD}/SLC
 mkdir -p ${SLCDIR}
 pushd ${SLCDIR}
 echo PWD is now ${PWD}

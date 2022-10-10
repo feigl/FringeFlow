@@ -82,6 +82,8 @@ if [[ -f timeseries.h5 ]]; then
     view.py -o timeseries.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 timeseries.h5
 elif [[ -f geo_timeseries.h5 ]]; then
     view.py -o geo_timeseries.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries.h5
+elif [[ -f geo_timeseries_ERA5_ramp_demErr.h5 ]]; then
+    view.py -o geo_timeseries_ERA5_ramp_demErr.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries_ERA5_ramp_demErr.h5
 else
     echo "ERROR cannot find timeseries file"
 fi

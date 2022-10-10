@@ -215,13 +215,7 @@ pushd MINTPY
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 if [[ -d geo ]]; then
     pushd geo
-    if [[ $SITEUC -eq "SANEM" ]]; then
-        plot_maps_SANEM.sh 
-    elif [[ $SITEUC -eq "FORGE" ]]; then
-        plot_maps_FORGE.sh 
-    else
-        echo "not plotting "
-    fi
+    plot_maps_mintpy.sh $SITEUC
     popd
 fi
 popd

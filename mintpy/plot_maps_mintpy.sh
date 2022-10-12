@@ -1,4 +1,4 @@
-#!/usr/bin/bash -veux
+#!/usr/bin/bash 
 
 # plot output of MINTPY as geocoded maps 
 # 2021/06/10 Kurt Feigl
@@ -71,19 +71,28 @@ for vfile in `ls *velocity*.h5` ; do
     # make KMZ file for Google Earth
     save_kmz.py   --mask ${fmask}.h5 ${fvel}.h5
 
-    # # map of average velocity over whole area
-    view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay  \
+    # map of average velocity over whole area
+    view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --save  \
     --lalo-max-num 4 --fontsize 10   --unit mm \
     --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
+
+    # map of average velocity over study area
+    view.py -o ${fvel}_sub.pdf --figtitle ${figtitle} --nodisplay --save  --sub-lat $sublat --sub-lon $sublon \
+    --lalo-max-num 4 --fontsize 10   --unit mm \
+    --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
+
 done
 
 ## complete time series
 if [[ -f timeseries.h5 ]]; then
-    view.py -o timeseries.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 timeseries.h5
+    view.py -o timeseries.pdf     --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 timeseries.h5
+    view.py -o timeseries_sub.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 --sub-lat $sublat --sub-lon $sublon timeseries.h5
 elif [[ -f geo_timeseries.h5 ]]; then
-    view.py -o geo_timeseries.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries.h5
+    view.py -o geo_timeseries.pdf     --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries.h5
+    view.py -o geo_timeseries_sub.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 --sub-lat $sublat --sub-lon $sublon timeseries.h5 geo_timeseries.h5
 elif [[ -f geo_timeseries_ERA5_ramp_demErr.h5 ]]; then
-    view.py -o geo_timeseries_ERA5_ramp_demErr.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries_ERA5_ramp_demErr.h5
+    view.py -o geo_timeseries_ERA5_ramp_demErr.pdf     --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries_ERA5_ramp_demErr.h5
+    view.py -o geo_timeseries_ERA5_ramp_demErr_sub.pdf --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 --sub-lat $sublat --sub-lon $sublon geo_timeseries_ERA5_ramp_demErr.h5
 else
     echo "ERROR cannot find timeseries file"
 fi

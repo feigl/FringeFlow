@@ -4,6 +4,8 @@
 # 2021/05/28 Nick Bearson and Kurt Feigl
 # 2021/07/20 Kurt Feigl
 # 2022/08/09 Kurt Feigl 
+# 2022/10/12 Kurt Feigl
+
 
 universe = docker
 
@@ -13,9 +15,9 @@ universe = docker
 #docker_image = docker.io/benjym/insar
 #docker_image = docker.io/nbearson/isce_mintpy:20211110
 #docker_image = docker.io/nbearson/chtctest:latest
-#docker_image = docker.io/nbearson/isce_chtc:20220204
+ docker_image = docker.io/nbearson/isce_chtc:20220204
 #docker_image = docker.io/nbearson/isce_mintpy:latest
- docker_image = docker.io/nbearson/maise:20220919
+#docker_image = docker.io/nbearson/maise:20220919
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
@@ -33,11 +35,20 @@ executable = run_ssara_isce_mintpy.sh
 # To actually submit this file
     # condor_submit run_ssara_isce_mintpy.sub
 
-
 transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 
 # 20220822 # new standard order
 #arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
+
+# There is a variable $_CONDOR_SCRATCH_DIR that gets set when the job starts
+#that points to this location, so you could use that in a wrapper script
+#("export HOME=$_CONDOR_SCRATCH_DIR") before running the rest of your job.
+#There's also a special "$$(CondorScratchDir)" variable you can use in the
+#"environment" command in a submit file that will expand to the landing
+#location, for example:
+
+environment = "HOME=$$(CondorScratchDir)"
+
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -50,13 +61,21 @@ request_disk = 500GB
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
 
+
+# For vanilla and Docker -universe jobs (and others that use the shadow), specifies if HTCondor (the starter) 
+# should produce a “manifest”, which is directory containing three files: the list of files and directories 
+# at the top level of the sandbox when file transfer in completes (in), the same when file transfer out begins (out), 
+# and a dump of the environment set for the job (env).
+manifest = true
+
 # queue
 # try multiple inputs
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-queue arguments from (  
-"-n FORGE -m S1 -t 20 -1 20210101 -2 20220930 -c 5" 
+queue arguments from (
+"-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1"  
 )
 
+#"-n FORGE -m S1 -t 20 -1 20210101 -2 20220930 -c 5" 
 #"-n FORGE -m S1 -t 20 -1 20140101 -2 20141231 -c 5" 
 #"-n FORGE -m S1 -t 20 -1 20150101 -2 20151231 -c 5" 
 #"-n FORGE -m S1 -t 20 -1 20160101 -2 20161231 -c 5" 

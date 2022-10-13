@@ -9,7 +9,7 @@
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   
 else
-    export  PYTHONPATH = ":"
+    export  PYTHONPATH=":"
 fi 
 # configure environment for ISCE
 #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable

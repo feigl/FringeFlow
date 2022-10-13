@@ -10,7 +10,7 @@
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   
 else
-    export  PYTHONPATH = ":"
+    export PYTHONPATH=":"
 fi 
 
 # configure environment for ISCE

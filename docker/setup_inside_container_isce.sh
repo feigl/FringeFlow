@@ -6,6 +6,13 @@
 # set up paths and environment variables inside container
 # source this file
 
+# avoid problems with unbound environment variable
+if [[ -n ${PYTHONPATH+set} ]]; then
+    echo inheriting PYTHONPATH as ${PYTHONPATH}   
+else
+    export  PYTHONPATH = ":"
+fi 
+
 # configure environment for ISCE
 if [[ -f /opt/isce2/isce_env.sh ]]; then
    source /opt/isce2/isce_env.sh

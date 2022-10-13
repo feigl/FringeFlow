@@ -16,8 +16,12 @@ if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
 fi
 
 if [[ -d /tools/isce2/src/isce2/applications ]]; then
-   export PATH=${PATH}:/tools/isce2/src/isce2/applications
-   export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
+    export PATH=${PATH}:/tools/isce2/src/isce2/applications
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
+    else
+        export  PYTHONPATH=/tools/isce2/src/isce2/applications
+    fi
 fi
 
 if [[ -d ${HOME}/FringeFlow ]]; then
@@ -39,7 +43,11 @@ fi
 if [[ -d /tools/SSARA ]]; then
     export SSARA_HOME=/tools/SSARA
     export PATH=${PATH}:${SSARA_HOME}
-    export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+    else
+        export PYTHONPATH=${SSARA_HOME}
+    fi
 fi 
 
 # set up for MintPy
@@ -49,19 +57,31 @@ if [[ -d /tools/MintPy ]]; then
     export PATH=${PATH}:${MINTPY_HOME}/sh
     export PATH=${PATH}:${MINTPY_HOME}/simulation
     export PATH=${PATH}:${MINTPY_HOME}/utils
-    export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/mintpy
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/mintpy
+    else
+        export PYTHONPATH=${MINTPY_HOME}/mintpy
+    fi
     export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/PyAPS
 fi
 
 if [[ -d /tools/PyAPS ]]; then
-    export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS
+    else
+        export PYTHONPATH=/tools/PyAPS
+    fi
     export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS/pyaps3
 fi
 
 if [[ -d $HOME/ARIA-tools ]]; then
-   export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
-   export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
-   export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
+    else
+        export PYTHONPATH=${HOME}/ARIA-tools/tools/ARIAtools
+    fi
+    export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
+    export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
 fi
 
 if [[ -d /opt/conda/share/proj ]]; then

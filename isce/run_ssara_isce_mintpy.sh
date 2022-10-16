@@ -23,6 +23,7 @@ Help()
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1"
+    echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c a"
     exit -1
   }
 

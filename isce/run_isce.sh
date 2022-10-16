@@ -53,13 +53,13 @@ echo timetag is ${timetag}
 if [[ -n ${SLCDIR+set} ]]; then
    echo inheriting SLCDIR to be $SLCDIR      
 else
-   export SLCDIR="SLC"
+   export SLCDIR="../SLC"
 fi
 echo SLCDIR is ${SLCDIR}
 if [[ -d ${SLCDIR} ]]; then
    echo SLCDIR named $SLCDIR exists
 else
-   echo $banem ERROR 
+   echo $bname ERROR 
    
 fi
 

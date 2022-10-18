@@ -67,10 +67,6 @@ while getopts ":1:2:h:n:m:t:" option; do
     esac
 done
 
-# TODO set site and bbox
-bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
-
-
 
 # test existence of variables
 #https://unix.stackexchange.com/questions/212183/how-do-i-check-if-a-variable-exists-in-an-if-statement
@@ -107,7 +103,41 @@ fi
 
 export WORKDIR=$PWD
 
+## are we running under condor ?
+if [[  -d /staging/groups/geoscience ]]; then
+    export ISCONDOR=1
+else
+    export ISCONDOR=0 
+fi
+echo ISCONDOR is $ISCONDOR
 
+# uncompress files for shell scripts 
+if [[ ISCONDOR -eq 1 ]]; then
+    tar -C ${HOME} -xzvf FringeFlow.tgz
+
+    # set up paths and environment
+    # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+    source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+
+    # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
+    $HOME/FringeFlow/docker/domagic.sh magic.tgz
+
+    # uncompress siteinfo
+    #tar -C ${HOME} -xzvf siteinfo.tgz
+    get_siteinfo.sh .
+fi
+
+
+export TIMETAG=`date +"%Y%m%dT%H%M%S"`
+echo TIMETAG is ${TIMETAG}
+
+export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
+echo RUNNAME is ${RUNNAME}
+
+RUNDIR="$WORKDIR/$RUNNAME"
+mkdir -p $RUNDIR
+pushd $RUNDIR
+pwd
 
 
 # cd MetaData
@@ -177,3 +207,24 @@ run_mintpy.sh mintpy_aria.cfg
 
 # make plots
 plot_maps_mintpy.sh $SITEUC
+
+echo "Storing results...."
+# transfer output back to /staging/
+pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
+# I don't love using *.log here, as with `set -e` we will bail if there are no such log files
+#tar czf "$RUNNAME.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
+# 2022/08/08 Kurt - add folders only
+
+if [[  -d /staging/groups/geoscience ]]; then
+    tar -czf "$RUNNAME.tgz"  MINTPY
+    mkdir -p "/staging/groups/geoscience/maise/output/"
+    cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/maise/output/$RUNNAME.tgz"
+    # delete working dir contents to avoid transfering files back to /home/ on submit2
+    rm -rf $WORKDIR/*
+else
+    echo keeping everything
+fi
+popd
+
+# exit cleanly
+exit 0

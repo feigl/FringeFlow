@@ -71,6 +71,7 @@ done
 bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
 
 
+
 # test existence of variables
 #https://unix.stackexchange.com/questions/212183/how-do-i-check-if-a-variable-exists-in-an-if-statement
 if [[ -n ${SITELC+set} ]]; then
@@ -157,6 +158,22 @@ ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all 
 mkdir -p MINTPY
 pushd MINTPY
 
-cp $HOME/FringeFlow/mintpy/mintpy_aria.cfg .
-# TODO choose reference point to be specific to site
-run_mintpy.sh mintpy_aria.cfg 
+
+# set Lat,Lon coordinates of reference pixel NE corner
+case $SITEUC in
+  SANEM)
+    REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
+    ;;
+    )
+  *)
+    REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
+    ;;
+esac
+echo REFLALO is $REFLALO
+cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg | sed "s/REFLALO/$REFLALO/" > mintpy_aria.cfg
+
+# start MintPy
+run_mintpy.sh mintpy_aria.cfg
+
+# make plots
+plot_maps_mintpy.sh $SITEUC

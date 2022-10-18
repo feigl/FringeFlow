@@ -20,7 +20,7 @@ cat $1 | grep http  | awk -F, -vICOL=$icol '{print $ICOL}' > tmp.txt
 filename="tmp.txt"
 while read -r line; do
     echo getting $line
-    curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || exit_with_error "Command failed with error on $line . Please retrieve the data manually."
+    curl -b ~/.urs_cookies -c ~/.urs_cookies -L -n -f -Og $line && echo || echo "Command failed with error on $line . Please retrieve the data manually."
 done < $filename
 rm tmp.txt
 

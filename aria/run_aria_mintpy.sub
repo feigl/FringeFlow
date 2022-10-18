@@ -1,0 +1,92 @@
+# run_aria_mintpy.sub
+# Download interferometric pairs from ARIA and then analyze as time series using MintPy under ht_condor
+
+# 2021/05/28 Nick Bearson and Kurt Feigl
+# 2021/07/20 Kurt Feigl
+# 2022/08/09 Kurt Feigl 
+# 2022/10/12 Kurt Feigl
+# 2022/10/16 Kurt Feigl - adapt from earlier
+
+
+universe = docker
+
+# Docker image
+#docker_image = docker.io/nbearson/isce_mintpy:latest 
+#docker_image = docker.io/isce/isce2:latest
+#docker_image = docker.io/benjym/insar
+#docker_image = docker.io/nbearson/isce_mintpy:20211110
+#docker_image = docker.io/nbearson/chtctest:latest
+ docker_image = docker.io/nbearson/isce_chtc:20220204
+#docker_image = docker.io/nbearson/isce_mintpy:latest
+#docker_image = docker.io/nbearson/maise:20220919
+
+# files
+log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
+output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
+error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
+
+executable = run_aria_mintpy.sh
+
+### do this before submitting
+    # cd $HOME/FringeFlow; git pull;cd $HOME
+    # cd $HOME; tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
+    # tar -C ${HOME} -czvf ssh.tgz .ssh
+    # tar -C ${HOME} -czvf ${PWD}/magic.tgz password_config.py .netrc model.cfg .ssh
+
+# To actually submit this file
+    # condor_submit run_aria_mintpy.sub
+
+transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
+
+# There is a variable $_CONDOR_SCRATCH_DIR that gets set when the job starts
+#that points to this location, so you could use that in a wrapper script
+#("export HOME=$_CONDOR_SCRATCH_DIR") before running the rest of your job.
+#There's also a special "$$(CondorScratchDir)" variable you can use in the
+#"environment" command in a submit file that will expand to the landing
+#location, for example:
+
+environment = "HOME=$$(CondorScratchDir)"
+
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+request_cpus = 1
+request_memory = 40GB
+# request_disk = 200GB - not big enough for a year with -c 1
+request_disk = 500GB
+
+# IMPORTANT! Require execute servers that can access /staging
+Requirements = (Target.HasCHTCStaging == true)
+
+
+# For vanilla and Docker -universe jobs (and others that use the shadow), specifies if HTCondor (the starter) 
+# should produce a “manifest”, which is directory containing three files: the list of files and directories 
+# at the top level of the sandbox when file transfer in completes (in), the same when file transfer out begins (out), 
+# and a dump of the environment set for the job (env).
+manifest = true
+
+# queue
+# try multiple inputs
+# https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
+queue arguments from (
+"-n SANEM -m S1 -t 42 -1 20210101 -2 20210501"  
+)
+
+
+### Think about multiple runs
+    #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
+    # Example 3
+    #   queue input,arguments from (
+    #    file1, -a -b 26
+    #    file2, -c -d 92
+    # )
+    #Using the from form of the options, each of the two variables specified is given a value from the list of items. For this example the queue command expands to
+    #  input = file1
+    #  arguments = -a -b 26
+    #  queue 
+    #  input = file2
+    #  arguments = -c -d 92
+    #  queue
+
+

@@ -11,7 +11,7 @@ Help()
    # Display Help
     echo "$bname runs ISCE"
     echo "usage:   $bname SITE MISSION TRACK YYYYMMDD1 YYYYMMDD2"
-    echo "example: $banem SANEM     S1   144  20220331 20220506"
+    echo "example: $baname SANEM     S1   144  20220331 20220506"
     exit -1
   }
 
@@ -155,6 +155,7 @@ stackSentinel.py -w ./ \
     --filter_strength 0 \
     --azimuth_looks 5 \
     --range_looks 20 \
+    --num_proc 1 \
     --num_process4topo 1 \
     -C geometry \
     -b "${bbox}" \

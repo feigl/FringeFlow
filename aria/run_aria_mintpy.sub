@@ -21,9 +21,9 @@ universe = docker
  docker_image = docker.io/nbearson/maise:20220919
 
 # files
-log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
-output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
-error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
+log    = run_aria_mintpy.$(Cluster).$(Process).log 
+output = run_aria_mintpy.$(Cluster).$(Process).out
+error  = run_aria_mintpy.$(Cluster).$(Process).err
 
 executable = run_aria_mintpy.sh
 

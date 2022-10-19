@@ -117,7 +117,7 @@ if [[ ISCONDOR -eq 1 ]]; then
 
     # set up paths and environment
     # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
-    source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+    source $HOME/FringeFlow/docker/setup_inside_container_mintpy.sh
 
     # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
     $HOME/FringeFlow/docker/domagic.sh magic.tgz

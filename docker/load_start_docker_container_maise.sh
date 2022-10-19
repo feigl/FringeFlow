@@ -162,7 +162,7 @@ elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
   #docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
-  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/maise:20220919
+  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/maise:20220919
 else 
   #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/maise:20220919

@@ -195,10 +195,11 @@ case $SITEUC in
   SANEM)
     REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
     ;;
-    )
+    
   *)
     REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
     ;;
+    
 esac
 echo REFLALO is $REFLALO
 cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg | sed "s/REFLALO/$REFLALO/" > mintpy_aria.cfg

@@ -47,7 +47,7 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 #"environment" command in a submit file that will expand to the landing
 #location, for example:
 
-environment = "HOME=$$(CondorScratchDir)"
+#environment = "HOME=$$(CondorScratchDir)"
 
 
 should_transfer_files = YES

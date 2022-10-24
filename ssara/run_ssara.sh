@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -x
 # 2021/06/21 Kurt Feigl
 # 2022/08/15 Kurt Feigl - make it work everywhere
 
@@ -109,9 +109,9 @@ if [[ ! ${action} == "print" ]]; then
     ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
-    --parallel=4 \
     --download | tee -a ssara_${timetag}.log
 
+# --parallel=1 
 fi
 echo "$0 ended normally"
 exit 0

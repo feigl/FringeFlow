@@ -15,9 +15,9 @@ universe = docker
 #docker_image = docker.io/benjym/insar
 #docker_image = docker.io/nbearson/isce_mintpy:20211110
 #docker_image = docker.io/nbearson/chtctest:latest
- docker_image = docker.io/nbearson/isce_chtc:20220204
+#docker_image = docker.io/nbearson/isce_chtc:20220204
 #docker_image = docker.io/nbearson/isce_mintpy:latest
-#docker_image = docker.io/nbearson/maise:20220919
+ docker_image = docker.io/nbearson/maise:20220919
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 

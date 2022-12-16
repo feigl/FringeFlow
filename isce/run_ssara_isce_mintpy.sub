@@ -39,7 +39,14 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 
 # 20220822 # new standard order
 #arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
-
+# SANEM track 64 from ARIA includes these dates
+# 2022-03-26
+# 2022-04-07
+# 2022-04-19
+# 2022-05-01
+# 2022-05-13
+# 2022-05-25
+arguments = "-n SANEM -m S1 -t 64 -1 20220326 -2 20220501 -c 1"
 # There is a variable $_CONDOR_SCRATCH_DIR that gets set when the job starts
 #that points to this location, so you could use that in a wrapper script
 #("export HOME=$_CONDOR_SCRATCH_DIR") before running the rest of your job.
@@ -48,7 +55,6 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 #location, for example:
 
 #environment = "HOME=$$(CondorScratchDir)"
-
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -68,7 +74,8 @@ Requirements = (Target.HasCHTCStaging == true)
 # and a dump of the environment set for the job (env).
 manifest = true
 
-# queue
+queue
+
 # try multiple inputs
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
 queue arguments from (

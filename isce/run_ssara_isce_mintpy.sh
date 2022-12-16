@@ -121,7 +121,25 @@ echo ISCONDOR is $ISCONDOR
 
 # uncompress files for shell scripts 
 if [[ ISCONDOR -eq 1 ]]; then
-    tar -C ${HOME} -xzvf FringeFlow.tgz
+#TODO need to define HOME
+#   Interesting thought! I'm not sure if that variable is available in a submit file. These two quick tests were unsuccessful:
+#    Using:
+#       environment = "HOME=$_CONDOR_SCRATCH_DIR"
+#    gives me:
+#       I have no name!@bearson-10155730:/var/lib/condor/execute/slot1/dir_2266535$ echo $HOME
+#       $_CONDOR_SCRATCH_DIR
+# and:
+#     environment = "HOME=$(_CONDOR_SCRATCH_DIR)"
+#      gives me:
+#    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
+#    /
+
+
+    
+    # next line fails for lack of permissions
+    tar -C ${HOME} -xzvf FringeFlow.tgz  
+
+
 
     # set up paths and environment
     # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?

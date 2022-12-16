@@ -15,7 +15,7 @@ Help()
     echo "$bname will run some combination of Mintpy Aria Isce Ssara Efficiently"
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -t 64 -1 20210331 -2 20210506 -c 1"
-    echo "    $bname  -n FORGE -m S1 -t 20 -1 20200101 -2 20200130 -c a"
+    echo 'condor_submit executable="run_ssara_isce_mintpy.sh" arguments="-n SANEM -m S1 -t 64 -1 20220326 -2 20220501 -c 2" run_maise.sub'
     exit -1
   }
 

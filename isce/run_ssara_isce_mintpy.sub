@@ -78,12 +78,12 @@ queue
 
 # try multiple inputs
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-queue arguments from (
-"-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 5" 
-"-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 5" 
-"-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 5" 
-"-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 5" 
-)
+# queue arguments from (
+# "-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 5" 
+# )
 
 #"-n FORGE -m S1 -t 20 -1 20210101 -2 20220930 -c 5" 
 #"-n FORGE -m S1 -t 20 -1 20140101 -2 20141231 -c 5" 

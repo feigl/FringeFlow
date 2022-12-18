@@ -125,10 +125,12 @@ if [[ ISCONDOR -eq 1 ]]; then
 #      gives me:
 #    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
 #    /
-     
-    echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
+    
+    echo '$HOME' is $HOME
+    #echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
     # try exporting
-    export HOME=$(_CONDOR_SCRATCH_DIR)
+    #export HOME=$(_CONDOR_SCRATCH_DIR)
+    export HOME=$PWD
     echo '$HOME' is $HOME
 
     # next line fails for lack of permissions

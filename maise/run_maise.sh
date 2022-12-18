@@ -168,6 +168,28 @@ pwd
 # fi
 # echo SLCDIR is ${SLCDIR}
 
+# # test case
+# cd ISCE
+# stackSentinel.py -w ./ -d demLat_N39_N41_Lon_W120_W118.dem.wgs84 \
+# -s /s12/insar/SANEM/S1/T64/SANEM_S1_64_20210331_20210506/SLC -a ../AUX/ -o ../ORBITS/ -c 1 --filter_strength 0 --azimuth_looks 5 --range_looks 20 --num_proc 1 --num_process4topo 1 \
+# -C geometry -b '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --start 2021-03-31 --stop 2021-05-07 -W interferogram 
+
+# 20210331
+# orbit was not found in the /s12/insar/SANEM/S1/T64/SANEM_S1_64_20210331_20210506/ORBITS
+# downloading precise or restituted orbits ...
+# restituted or precise orbit already exists.
+# Traceback (most recent call last):
+#   File "/tools/isce2/src/isce2/contrib/stack/topsStack/stackSentinel.py", line 1003, in <module>
+#     main(sys.argv[1:])
+#   File "/tools/isce2/src/isce2/contrib/stack/topsStack/stackSentinel.py", line 968, in main
+#     acquisitionDates, stackReferenceDate, secondaryDates, safe_dict, updateStack = checkCurrentStatus(inps)
+#   File "/tools/isce2/src/isce2/contrib/stack/topsStack/stackSentinel.py", line 861, in checkCurrentStatus
+#     acquisitionDates, stackReferenceDate, secondaryDates, safe_dict = get_dates(inps)
+#   File "/tools/isce2/src/isce2/contrib/stack/topsStack/stackSentinel.py", line 301, in get_dates
+#     pnts = safeObj.getkmlQUAD(safe)
+#   File "/tools/isce2/src/isce2/contrib/stack/topsStack/Stack.py", line 1646, in getkmlQUAD
+#     import cv2
+# ImportError: libGL.so.1: cannot open shared object file: No such file or directory
 
 echo "Storing results...."
 # transfer output back to /staging/

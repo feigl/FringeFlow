@@ -225,6 +225,7 @@ echo "Running ISCE...."
 mkdir -p ISCE
 pushd ISCE
 run_isce.sh $SITEUC $MISSION $TRACK $YYYYMMDD1 $YYYYMMDD2 | tee -a ../isce.log
+#run_isce.sh SANEM S1 64 20210331 20210507
 popd
 
 echo "Running MINTPY..."

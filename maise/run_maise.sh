@@ -130,7 +130,7 @@ if [[ ISCONDOR -eq 1 ]]; then
     #echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
     # try exporting
     #export HOME=$(_CONDOR_SCRATCH_DIR)
-    export HOME=$PWD
+    #export HOME=$PWD
     echo '$HOME' is $HOME
 
     # next line fails for lack of permissions

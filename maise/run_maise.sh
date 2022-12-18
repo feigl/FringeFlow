@@ -184,6 +184,8 @@ pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
 # 2022/08/08 Kurt - add folders only
 
 if [[  -d /staging/groups/geoscience ]]; then
+    cp -vf ../_condor_stdout .
+    cp -vf ../_condor_stderr .
     tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY _condor_stdout _condor_stderr
     mkdir -p "/staging/groups/geoscience/isce/output/"
     cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"

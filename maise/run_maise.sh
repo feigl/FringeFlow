@@ -126,12 +126,17 @@ if [[ ISCONDOR -eq 1 ]]; then
 #    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
 #    /
     
-    echo '$HOME' is $HOME
+    echo 'HOME' is $HOME
+    echo 'PWD' is $PWD
+
+    echo exiting now
+    exit -1
+
     #echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
     # try exporting
     #export HOME=$(_CONDOR_SCRATCH_DIR)
     #export HOME=$PWD
-    echo '$HOME' is $HOME
+    #echo 'HOME' is $HOME
 
     # next line fails for lack of permissions
     tar -C ${HOME} -xzvf FringeFlow.tgz  
@@ -154,6 +159,9 @@ echo TIMETAG is ${TIMETAG}
 
 export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
 echo RUNNAME is ${RUNNAME}
+
+# suggested by Nick?
+#export PROJ_LIB=/opt/conda/share/proj
 
 RUNDIR="$WORKDIR/$RUNNAME"
 mkdir -p $RUNDIR

@@ -126,12 +126,16 @@ if [[ ISCONDOR -eq 1 ]]; then
 #    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
 #    /
     
-    echo '$HOME' is $HOME
+    echo 'HOME' is $HOME
+    echo 'PWD' is $PWD
+
+
     #echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
     # try exporting
     #export HOME=$(_CONDOR_SCRATCH_DIR)
-    #export HOME=$PWD
-    echo '$HOME' is $HOME
+    echo "setting HOME to PWD via export"
+    export HOME=$PWD
+    echo 'HOME' is $HOME
 
     # next line fails for lack of permissions
     tar -C ${HOME} -xzvf FringeFlow.tgz  
@@ -154,6 +158,9 @@ echo TIMETAG is ${TIMETAG}
 
 export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
 echo RUNNAME is ${RUNNAME}
+
+# suggested by Nick?
+#export PROJ_LIB=/opt/conda/share/proj
 
 RUNDIR="$WORKDIR/$RUNNAME"
 mkdir -p $RUNDIR
@@ -199,6 +206,8 @@ pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
 # 2022/08/08 Kurt - add folders only
 
 if [[  -d /staging/groups/geoscience ]]; then
+    cp -vf ../_condor_stdout .
+    cp -vf ../_condor_stderr .
     tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY _condor_stdout _condor_stderr
     mkdir -p "/staging/groups/geoscience/isce/output/"
     cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"

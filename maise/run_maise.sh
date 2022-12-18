@@ -129,14 +129,13 @@ if [[ ISCONDOR -eq 1 ]]; then
     echo 'HOME' is $HOME
     echo 'PWD' is $PWD
 
-    echo exiting now
-    exit -1
 
     #echo '$(_CONDOR_SCRATCH_DIR)' is $(_CONDOR_SCRATCH_DIR)
     # try exporting
     #export HOME=$(_CONDOR_SCRATCH_DIR)
-    #export HOME=$PWD
-    #echo 'HOME' is $HOME
+    echo "setting HOME to PWD via export"
+    export HOME=$PWD
+    echo 'HOME' is $HOME
 
     # next line fails for lack of permissions
     tar -C ${HOME} -xzvf FringeFlow.tgz  

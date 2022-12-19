@@ -26,8 +26,8 @@ log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log
 output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
 error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
 
-executable = run_ssara_isce_mintpy.sh
-#executable = run_maise.sh
+#executable = run_ssara_isce_mintpy.sh
+executable = run_maise.sh
 
 ### do this before submitting
     # cd $HOME/FringeFlow; git pull;cd $HOME

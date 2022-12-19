@@ -18,15 +18,17 @@ universe = docker
 #docker_image = docker.io/nbearson/isce_chtc:20220204
 #docker_image = docker.io/nbearson/isce_mintpy:latest
 #docker_image = docker.io/nbearson/maise:20220919  # Unable to find image 'nbearson/maise:20220919' locally Error response from daemon
- docker_image = docker.io/nbearson/maise:latest
+#docker_image = docker.io/nbearson/maise:latest
+#docker_image = docker.io/feigl/maise:20221218 # include about libLG
+docker_image = docker.io/feigl/maise:20221219 # allow overwriting model.cfg
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
 output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
 error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
 
-#executable = run_ssara_isce_mintpy.sh
-executable = run_maise.sh
+executable = run_ssara_isce_mintpy.sh
+#executable = run_maise.sh
 
 ### do this before submitting
     # cd $HOME/FringeFlow; git pull;cd $HOME

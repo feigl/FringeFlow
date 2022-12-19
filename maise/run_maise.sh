@@ -198,6 +198,13 @@ pwd
 #     import cv2
 # ImportError: libGL.so.1: cannot open shared object file: No such file or directory
 
+# test some things
+topsApp.py --help --steps
+ariaDownload.py --help
+smallbaselineApp.py --help
+ssara_federated_query.py --help
+stackSentinel.py --help
+
 echo "Storing results...."
 # transfer output back to /staging/
 pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
@@ -205,12 +212,24 @@ pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
 #tar czf "$RUNNAME.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
 # 2022/08/08 Kurt - add folders only
 
-if [[  -d /staging/groups/geoscience ]]; then
+# copy condor stuff
+if [[ -f ../_condor_stdout ]]; then
     cp -vf ../_condor_stdout .
+fi
+if [[ -f ../_condor_stderr ]]; then
     cp -vf ../_condor_stderr .
-    tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY _condor_stdout _condor_stderr
+fi
+
+# make tar file -- fails if any file does not exist
+#tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY _condor_stdout _condor_stderr
+# make tar file with existing files
+tar -czf "$RUNNAME.tgz" $(ls DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY _condor_stdout _condor_stderr 2>/dev/null)
+
+if [[  -d /staging/groups/geoscience ]]; then
+    # make directory on staging
     mkdir -p "/staging/groups/geoscience/isce/output/"
-    cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
+    # move to staging area
+    \mv -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2
     rm -rf $WORKDIR/*
 else

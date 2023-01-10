@@ -35,6 +35,7 @@
 # edit 20211028 Kurt and Sam improve error reporting
 # edit 20220302 Sam added dt=$g and others (trk already defined) to capture that variable from the PAIRSmake.txt and pass it to build_pair.sh->write_run_script.sh->post_process_pair.sh->plot_pair7.sh
 # edit 20220203 Kurt and Sam pass variables needed for ploting down the line
+# edit 20230110 Kurt and Sam reduce number of remote commands requiring MFA
 
 
 if [ "$#" -eq 1 ]; then
@@ -172,8 +173,10 @@ let "kount+=1"
    build_pair.sh ${sat} ${trk} ${ref} ${sec} ${user} ${satparam} ${demf} ${filter_wv} ${xmin} ${xmax} ${ymin} ${ymax} ${site} ${unwrap} ${dt} ${bperp} | tee ${pairdir}.log 
 done < "$1"   # end of "while read" loop from above
 echo ""
-echo ""
 echo "Processed $ngood good lines of $kount lines total in file $1"
+echo "submitting jobs ..."
+echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+
 echo "Normal end of $0"
 
 

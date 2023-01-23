@@ -7,6 +7,7 @@
 # 2021/11/08 Make plots, too.
 # 2021/12/17 UTMs and plots are made here back on SSEC server (e.g. Ajska)
 # 2022/01/28 Try cleaning up /staging 
+# 2023/01/23 use tar ball without compression, changing "tar -xzvf" to "tar -xvf" and ".tgz to ".tar"
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}
     site=`echo ${2} | awk '{print tolower($1)}'`
@@ -77,21 +78,22 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
 
         #echo $sat $track $ref $sec $user $satparam $demf $filter_wv $xmin $xmax $ymin $ymax $site ${unwrap}
         # set name of tarball
-        tgz1=In${ref}_${sec}.tgz
-        echo "tgz1 is now ${tgz1}"
+        
+        tar1=In${ref}_${sec}.tar
+        echo "tar1 is now ${tar1}"
 
-        if [[ ! -f ${tgz1} ]]; then
+        if [[ ! -f ${tar1} ]]; then
             # copy tarball and delete
-            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tgz1} .
+            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tar1} .
             exit_status=$?
             if [ $exit_status -ne 0 ]; then
-                echo "Could not retrieve tarball named ${tgz1}"
+                echo "Could not retrieve tarball named ${tar1}"
             fi
         fi 
         
-        if [[ -f ${tgz1} ]]; then
-            echo "extracting files from tarball named ${tgz1}"
-            tar -xvzf ${tgz1}
+        if [[ -f ${tar1} ]]; then
+            echo "extracting files from tarball named ${tar1}"
+            tar -xvf ${tar1}
         fi
 
             
@@ -133,7 +135,7 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
                 #         echo "Did not find directory In${ref}_${sec}"
                 #     fi
                 # else
-                #     echo "Did not find an ouput tar file named: ${tgz1}, for making In${ref}_${sec}"
+                #     echo "Did not find an ouput tar file named: ${tar1}, for making In${ref}_${sec}"
             fi
 done < "$1"  # end of "while read" loop from above
 echo "Processed $ngood good lines of $kount lines total in file $1"

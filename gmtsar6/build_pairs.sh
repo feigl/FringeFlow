@@ -175,7 +175,8 @@ done < "$1"   # end of "while read" loop from above
 echo ""
 echo "Processed $ngood good lines of $kount lines total in file $1"
 echo "submitting jobs ..."
-echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+#echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+echo "condor_submit submit_all.sh" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
 
 echo "Normal end of $0"
 

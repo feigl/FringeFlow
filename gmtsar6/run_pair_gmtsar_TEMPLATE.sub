@@ -2,6 +2,7 @@
 # Run 1 interferometric pair using GMTSAR under ht_condor
 
 # 2021/07/08 Kurt Feigl
+# 2023/01/31 Kurt & Sam - change tgz to tar
 universe = docker
 
 # Docker image
@@ -25,7 +26,8 @@ executable = run_pair_gmtsar.sh
 transfer_input_files = run_pair_gmtsar.sh
 
 #arguments = $(Process)
-arguments = pairdir.tgz
+#arguments = pairdir.tgz
+arguments = pairdir.tar
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT

@@ -161,7 +161,7 @@ if [[ ! -f ${pairdir}.tar ]]; then
     rsync --exclude=".git" -ra ${HOME}/FringeFlow .
 
     # copy the bin_htcondor scripts, excluding source code control stuff in .git folder
-    if [[ -d /home/batzli/bin_htcondor ]]; the
+    if [[ -d /home/batzli/bin_htcondor ]]; then
         rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
     else
         echo ERROR could not find /home/batzli/bin_htcondor

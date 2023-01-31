@@ -159,7 +159,7 @@ let "kount+=1"
 
    SITE=`echo ${site} | awk '{ print toupper($1) }'`
 
-   # make a directory for this pair
+   # name of input directory for this pair
    pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 
    # get time difference in days

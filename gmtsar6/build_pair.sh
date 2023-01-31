@@ -161,10 +161,17 @@ if [[ ! -f ${pairdir}.tar ]]; then
     rsync --exclude=".git" -ra ${HOME}/FringeFlow .
 
     # copy the bin_htcondor scripts, excluding source code control stuff in .git folder
-    rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
+    if [[ -d /home/batzli/bin_htcondor ]]; the
+        rsync --exclude=".git" -ra /home/batzli/bin_htcondor .
+    else
+        echo ERROR could not find /home/batzli/bin_htcondor
+        exit -1
+    fi
 
-   # copy the siteinfo directory
-    rsync -ra /home/batzli/siteinfo .
+    # copy the siteinfo directory
+    # rsync -ra /home/batzli/siteinfo .
+    # 2023/01/31 copy the user's siteinfo directory
+    rsync -ra ${HOME}/siteinfo .
 
     # copy makefile for plotting routines
     # cd In${ref}_${sec}

@@ -104,6 +104,9 @@ if [[ ! $# -eq 9 ]] ; then
 
     echo "pair_status is now ${pair_status}"
 
+    # make a title file
+    echo "${sat} ${trk} ${site} $PWD bperp ${bperp} ${user} filter_wv ${filter_wv} dt ${dt}" > In${ref}_${sec}/title.txt
+ 
     # prepare cut grd files for gipht 
     prepare_grids_for_gipht6.sh $site
 
@@ -119,21 +122,30 @@ if [[ ! $# -eq 9 ]] ; then
 #    echo "plot_pair7.sh [sat]* [track] [site] [plot title] [grdfile] [outfile] [mmperfringe]* [bperp] [user] [filter_wv] [time span] [label]*"
 #    Note: * are hard-coded: mmperfringe=15.5, label=UTM
 #    echo "plot_pair7.sh  TSX T30 forge title phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 feigl 80 999 UTM"
-
+    
     plot_pair7.sh ${sat} ${trk} ${site} $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "15.5" ${bperp} ${user} ${filter_wv} ${dt} "UTM"
        #2022/02/03 remove plotting to its own line in run.sh (written by write_run_script)
        #plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"
     cd ..
     
-    # make a tar file
+        # copy condor stuff
+    if [[ -f ../_condor_stdout ]]; then
+        cp -vf ../_condor_stdout .
+    fi
+    if [[ -f ../_condor_stderr ]]; then
+        cp -vf ../_condor_stderr .
+    fi
+
+    ## make a tar file
     #tarfile=In${ref}_${sec}_${timetag}.tar
     tarfile=In${ref}_${sec}.tar
     # remove echoes when satisfied 
     #tar -czvf $tarfile In${ref}_${sec}
     # follow the links
-    tar -chzvf ${tarfile} In${ref}_${sec}
+    # tar -chzvf ${tarfile} In${ref}_${sec}
+    # 2023/01/31
+    tar -chvf ${tarfile} In${ref}_${sec}
     
- 
     # transfer pair to askja under ${HOME}/insar/[sat][trk]/site
     # htcondor version
     # ssh $askja "mkdir -p ${HOME}/insar/$sat/$trk/$site"

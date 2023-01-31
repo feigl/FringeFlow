@@ -192,7 +192,7 @@ if [[ ! -f ${pairdir}.tar ]]; then
         mkdir -p /s12/insar/
         cp -vf  $tarfile /s12/insar/
         #ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
-        # rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
         # clean up after pair is transferred
         #rm -f $tarfile
     else
@@ -216,11 +216,8 @@ if [[ ! -f ${pairdir}.tar ]]; then
     #echo "rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:"
     #rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 
-    # transfer all the files at once
-    rsync -ra $tarfile \
-    ${pairdir}.sub \
-    /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh \
-    ${ruser}@submit-2.chtc.wisc.edu:
+    # transfer two files
+    rsync -rav ${pairdir}.sub ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
 fi
 
 #echo "Current working directory is now ${PWD}"

@@ -1,4 +1,4 @@
-#!/bin/bash -vx 
+#!/bin/bash -x 
 
 # for debugging, add "-vx" switch after "bash" in the shebang line above.
 # switches in line above:
@@ -39,6 +39,8 @@
 # 2021/12/09 Sam attempted to implement auto-submit
 # 2022/03/02 Sam added ${15} and ${16} to bring dt and bperp forward from build_pairs.sh and beyond to plot_pair7.sh and write_run_script.sh
 # 2022/02/03 Kurt and Sam, update to make plots
+# 2022/06/15 Sam commented out line 156
+# 2023/01/10 Kurt and Sam - reduce number of remote commands requiring MFA
 
 if [[ ! $# -eq 16 ]] ; then
     echo '	ERROR: $0 requires 16 arguments.'
@@ -110,10 +112,10 @@ pairdir=${SITE}_${sat}_${trk}_${swath}_${ref}_${sec}
 echo "pairdir is $pairdir"
 
 # do this for debugging
-# touch ${pairdir}.tgz
+# touch ${pairdir}.tar
 # date > ${pairdir}.sub
 
-if [[ ! -f ${pairdir}.tgz ]]; then
+if [[ ! -f ${pairdir}.tar ]]; then
     mkdir -p ${pairdir}
     cd ${pairdir}
 
@@ -152,7 +154,8 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     # run a script to write a script (run.sh)
     write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap} ${trk} ${dt} ${bperp} ${user}
     # TODO - add track to this command line 
-    write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
+    # 6/15/2022 commented out the line below
+    #write_run_script.sh ${sat} ${ref} ${sec} ${satparam} dem/${demf} ${filter_wv} ${site} ${xmin} ${xmax} ${ymin} ${ymax} ${unwrap}
 
     # copy the FringeFlow scripts, excluding source code control stuff in .git folder
     rsync --exclude=".git" -ra ${HOME}/FringeFlow .
@@ -172,21 +175,21 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
 
     # make a tar file
-    tgzfile=${pairdir}.tgz
-    echo "Making tar file named ${tgzfile}"
-    tar -czf ../$tgzfile ./
+    tarfile=${pairdir}.tar
+    echo "Making tar file named ${tarfile}"
+    tar -cf ../$tarfile ./
     cd ..
 
     # transfer the tar file
     if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then
         mkdir -p /s12/insar/
-        cp -f  $tgzfile /s12/insar/
+        cp -vf  $tarfile /s12/insar/
         #ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
-        rsync --progress -av $tgzfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        # rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
         # clean up after pair is transferred
-        #rm -f $tgzfile
+        #rm -f $tarfile
     else
-        echo "Cannot find a place to transfer tar file named $tgzfile"
+        echo "Cannot find a place to transfer tar file named $tarfile"
     fi
 
     # send the executable to CHTC
@@ -194,7 +197,7 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     #echo "Now running the following command"
     # remove echo and quotes for auto submit
     #echo "rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:"
-    rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+    #rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
 
     # make a submit file 
     cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
@@ -204,7 +207,13 @@ if [[ ! -f ${pairdir}.tgz ]]; then
     #echo "Now running the following command"
     # remove echo and quotes for auto submit
     #echo "rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:"
-    rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+    #rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+
+    # transfer all the files at once
+    rsync -ra $tarfile \
+    ${pairdir}.sub \
+    /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh \
+    ${ruser}@submit-2.chtc.wisc.edu:
 fi
 
 #echo "Current working directory is now ${PWD}"
@@ -216,10 +225,10 @@ if [[ -f ${pairdir}.sub ]]; then
     #ls -l ${pairdir}.sub
     #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'
     #uncomment the next two lines for auto submit
-    echo "ls -l ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu  
-    echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+    #echo "ls -l ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu  
+    #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
     #comment the following line for auto submit
-    #echo "condor_submit ${pairdir}.sub" >> submit_all.sh
+    echo "condor_submit ${pairdir}.sub" >> submit_all.sh
 fi
 # check on status of jobs
 # ssh submit-2.chtc.wisc.edu "condor_q"

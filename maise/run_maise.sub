@@ -3,9 +3,8 @@
 
 # 2021/05/28 Nick Bearson and Kurt Feigl
 # 2021/07/20 Kurt Feigl
-# 2022/08/09 Kurt Feigl
-#  
-
+# 2022/08/09 Kurt Feigl 
+# 2022/10/12 Kurt Feigl
 
 universe = docker
 
@@ -15,15 +14,20 @@ universe = docker
 #docker_image = docker.io/benjym/insar
 #docker_image = docker.io/nbearson/isce_mintpy:20211110
 #docker_image = docker.io/nbearson/chtctest:latest
- docker_image = docker.io/nbearson/isce_chtc:20220204
+#docker_image = docker.io/nbearson/isce_chtc:20220204
 #docker_image = docker.io/nbearson/isce_mintpy:latest
+#docker_image = docker.io/nbearson/maise:20220919  # Unable to find image 'nbearson/maise:20220919' locally Error response from daemon
+#docker_image = docker.io/nbearson/maise:latest
+#docker_image = docker.io/feigl/maise:20221218 # include about libLG
+docker_image = docker.io/feigl/maise:20221219 # allow overwriting model.cfg
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
 output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
 error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
 
-executable = run_ssara_isce_mintpy.sh
+#executable = run_ssara_isce_mintpy.sh
+executable = run_maise.sh
 
 ### do this before submitting
     # cd $HOME/FringeFlow; git pull;cd $HOME
@@ -34,11 +38,26 @@ executable = run_ssara_isce_mintpy.sh
 # To actually submit this file
     # condor_submit run_ssara_isce_mintpy.sub
 
-
 transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 
 # 20220822 # new standard order
 #arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
+# SANEM track 64 from ARIA includes these dates
+# 2022-03-26
+# 2022-04-07
+# 2022-04-19
+# 2022-05-01
+# 2022-05-13
+# 2022-05-25
+arguments = "-n SANEM -m S1 -t 64 -1 20220326 -2 20220501 -c 1"
+# There is a variable $_CONDOR_SCRATCH_DIR that gets set when the job starts
+#that points to this location, so you could use that in a wrapper script
+#("export HOME=$_CONDOR_SCRATCH_DIR") before running the rest of your job.
+#There's also a special "$$(CondorScratchDir)" variable you can use in the
+#"environment" command in a submit file that will expand to the landing
+#location, for example:
+
+#environment = "HOME=$$(CondorScratchDir)"
 
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
@@ -51,64 +70,22 @@ request_disk = 500GB
 # IMPORTANT! Require execute servers that can access /staging
 Requirements = (Target.HasCHTCStaging == true)
 
-# queue
+# For vanilla and Docker -universe jobs (and others that use the shadow), specifies if HTCondor (the starter) 
+# should produce a “manifest”, which is directory containing three files: the list of files and directories 
+# at the top level of the sandbox when file transfer in completes (in), the same when file transfer out begins (out), 
+# and a dump of the environment set for the job (env).
+manifest = true
+
+queue
+
 # try multiple inputs
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-queue arguments from (  
-"-n FORGE -m S1 -t 20 -1 20140101 -2 20141231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20150101 -2 20151231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20160101 -2 20161231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20170101 -2 20171231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20180101 -2 20181231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20190101 -2 20191231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20200101 -2 20201231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20210101 -2 20211231 -c 5" 
-"-n FORGE -m S1 -t 20 -1 20220101 -2 20220901 -c 5"    
-)
+# queue arguments from (
+# "-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 5" 
+# "-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 5" 
+# )
 
-#"-n SANEM -m S1 -t 144 -1 20140101 -2 20141231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20150101 -2 20151231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20160101 -2 20161231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20170101 -2 20171231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 5" 
-#"-n SANEM -m S1 -t 144 -1 20220101 -2 20220901 -c 5"    
-
-# "-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1"   # not enough data
-# "-n SANEM -m S1 -t 144 -1 20140101 -2 20141231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20150101 -2 20151231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20160101 -2 20161231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20170101 -2 20171231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20180101 -2 20181231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20190101 -2 20191231 -c 1" 
-# "-n SANEM -m S1 -t 144 -1 20200101 -2 20201231 -c 1" # ran to geo
-# "-n SANEM -m S1 -t 144 -1 20210101 -2 20211231 -c 1" # ran
-# "-n SANEM -m S1 -t 144 -1 20220101 -2 20220901 -c 1"   
-
-# [feigl@askja T144]$ find . -name geo_velocity_ERA5_ramp_demErr.pdf
-# ./SANEM_S1_144_20210101_20211231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
-# ./SANEM_S1_144_20200101_20201231/MINTPY/geo/geo_velocity_ERA5_ramp_demErr.pdf
-
-#  [feigl@askja T144]$ display `find . -name geo_velocity_ERA5_ramp_demErr.pdf`
-#    "-n SANEM -m S1 -t 144 -1 20220331 -2 20220506 -c 1" # good short test case
-#    "-n FORGE -m S1 -t 20  -1 20220101 -2 20220501 -c 1" # fails no SLCs
-#    "-n FORGE -m S1 -t 20  -1 20200101 -2 20220501 -c 1" # fails "exceeds disk quota"
-
-### Think about multiple runs
-    #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-    # Example 3
-    #   queue input,arguments from (
-    #    file1, -a -b 26
-    #    file2, -c -d 92
-    # )
-    #Using the from form of the options, each of the two variables specified is given a value from the list of items. For this example the queue command expands to
-    #  input = file1
-    #  arguments = -a -b 26
-    #  queue 
-    #  input = file2
-    #  arguments = -c -d 92
-    #  queue
 
 

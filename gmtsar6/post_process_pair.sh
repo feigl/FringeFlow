@@ -2,7 +2,7 @@
 # 2021/10/25 Sam and Kurt uncommented line 96 to create UTM grid files.
 # 2022/01/31 make the plots in the ht_condor job in the slot
 # 2022/03/02 Sam: added passing in of variables needed by plot_pair7.sh
-
+# 2023/01/31 Kurt and Sam use tar instead of tgz
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
@@ -126,19 +126,19 @@ if [[ ! $# -eq 9 ]] ; then
     cd ..
     
     # make a tar file
-    #tgzfile=In${ref}_${sec}_${timetag}.tgz
-    tgzfile=In${ref}_${sec}.tgz
+    #tarfile=In${ref}_${sec}_${timetag}.tar
+    tarfile=In${ref}_${sec}.tar
     # remove echoes when satisfied 
-    #tar -czvf $tgzfile In${ref}_${sec}
+    #tar -czvf $tarfile In${ref}_${sec}
     # follow the links
-    tar -chzvf ${tgzfile} In${ref}_${sec}
+    tar -chzvf ${tarfile} In${ref}_${sec}
     
  
     # transfer pair to askja under ${HOME}/insar/[sat][trk]/site
     # htcondor version
     # ssh $askja "mkdir -p ${HOME}/insar/$sat/$trk/$site"
-    #rsync -av --remove-source-files $tgzfile $askja:${HOME}/insar/$sat/$trk/$site/
-    #rsync -av $tgzfile $askja:${HOME}/insar/$sat/$trk/$site/  
+    #rsync -av --remove-source-files $tarfile $askja:${HOME}/insar/$sat/$trk/$site/
+    #rsync -av $tarfile $askja:${HOME}/insar/$sat/$trk/$site/  
     #exit 0
     
     # test string for equality
@@ -148,21 +148,21 @@ if [[ ! $# -eq 9 ]] ; then
     if [[ -d /s12/insar ]]; then
         # assume we are on askja
         mkdir -p /s12/insar/${SITE}/TSX
-        cp -v  $tgzfile /s12/insar/${SITE}/TSX
+        cp -v  $tarfile /s12/insar/${SITE}/TSX
         # clean up after pair is transferred
-        #rm -fv $tgzfile
+        #rm -fv $tarfile
         #rm -rfv In${ref}_${sec}
     elif [[ -d /staging/groups/geoscience/insar ]]; then
         # assume we are on submit-2 
         mkdir -p /staging/groups/geoscience/insar
-        cp -v  $tgzfile /staging/groups/geoscience/insar
+        cp -v  $tarfile /staging/groups/geoscience/insar
         # clean up after pair is transferred
-        rm -fv $tgzfile
+        rm -fv $tarfile
         rm -rfv In${ref}_${sec}
-        rm -rfv *.tgz FringeFlow bin_htcondor 
+        rm -rfv *.tar FringeFlow bin_htcondor 
     else
         # trouble
-        echo "Cannot find a place to transfer tar file named $tgzfile"
+        echo "Cannot find a place to transfer tar file named $tarfile"
         # clean up 
         # rm -rf In${ref}_${sec}
     fi

@@ -110,10 +110,10 @@ echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
 
-if [[ -d /staging/groups/geoscience/insar/isce ]]; then
-   export ISCONDOR=1;
+if [[ -d /staging/groups/geoscience ]]; then
+   export ISCONDOR=1
 else
-   export ISCONDOR=0;
+   export ISCONDOR=0
 fi
 echo ISCONDOR is $ISCONDOR
 

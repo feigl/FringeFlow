@@ -48,6 +48,7 @@ echo "Starting image in container..."
 echo "Once container starts, consider the following commands"
 #echo 'tar -C $HOME -xzvf FringeFlow.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh'
+echo 'copy $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh'
 # echo 'domagic.sh magic.tgz'
 # echo 'export SITE_TABLE=$HOME/siteinfo/site_dims.txt'
 echo '#test to see if that darned siteinfo is working'
@@ -81,6 +82,7 @@ cd $runname
 
 echo "Once container starts, try: "
 echo "source /root/FringeFlow/docker/setup_inside_container_gmtsar.sh"
+echo "cp -r siteinfo $HOME"
 echo "Starting container...."
 
 # run script in container

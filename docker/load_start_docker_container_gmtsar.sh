@@ -79,7 +79,6 @@ fi
 # go into container
 cd $runname
 
-
 echo "Once container starts, try: "
 echo "cp -rv siteinfo /root"
 echo "source /root/FringeFlow/docker/setup_inside_container_gmtsar.sh"

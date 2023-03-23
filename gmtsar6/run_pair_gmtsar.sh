@@ -72,7 +72,16 @@ fi
 # 2023/01/31 time tar -xzvf ${tarfile}
 time tar -xvf ${tarfile}
 # intialize environmental vars including PATH
-source setup_inside_container_gmtsar.sh 
+if [[ -f setup_inside_container_gmtsar.sh ]]; then
+  source setup_inside_container_gmtsar.sh 
+elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+  source FringeFlow/docker/setup_inside_container_gmtsar.sh
+else
+	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
+	exit -1
+fi
+
+
 # set an environmental var for SITE_TABLE
 #parent=$(dirname $PWD)
 export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"

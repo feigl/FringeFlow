@@ -3,24 +3,25 @@
 # 2021/07/08 Kurt Feigl
 # 2021/11/03 Kurt and Sam add some documentation
 # 2022/01/24 Kurt and Sam clarifing SITE_TABLE logic
+# 2023/02/28 Kurt and Sam move useful things from bin_htcondor to FringeFlow repo
 #
 if [[ ! -w "$HOME" ]]; then
     echo "Resetting HOME from $HOME to $PWD because cannot write to $HOME"
     export HOME=$PWD
 fi
 
-# configure environment for Reinisch workflow
-if [[ -f /home/batzli/setup.sh ]]; then
-    # set up on askja
-    source /home/batzli/setup.sh
-else
-    # assume we are on another machine
-    if [[ -d ${HOME}/bin_htcondor ]]; then
-        export PATH=${HOME}/bin_htcondor:${PATH}
-    else
-        export PATH=${PWD}/bin_htcondor:${PATH}
-    fi
-fi
+# # configure environment for Reinisch workflow
+# if [[ -f /home/batzli/setup.sh ]]; then
+#     # set up on askja
+#     source /home/batzli/setup.sh
+# else
+#     # assume we are on another machine
+#     if [[ -d ${HOME}/bin_htcondor ]]; then
+#         export PATH=${HOME}/bin_htcondor:${PATH}
+#     else
+#         export PATH=${PWD}/bin_htcondor:${PATH}
+#     fi
+# fi
 
 # configure FringeFlow workflow, assuming that 
 if [[ -d ${HOME}/FringeFlow ]]; then

@@ -210,6 +210,8 @@ echo "#!/bin/bash -vx" > run.sh
  
 #echo SAT = $sat
 
+echo "get_site_dims.sh ${site} 1" >> run.sh
+
 # build the command [p2p_processing.csh now handles TSX and other sats that don't have their own scripts, but order of args has probably changed]
 if [[ "$sat" == "TSX" ]] ; then
 	if [[ "$site" == "dcamp" || "$site" == "tungs" || "$site" == "dixie" || "$site" == "tusca" ]] ; then #special case for Airbus not urgent

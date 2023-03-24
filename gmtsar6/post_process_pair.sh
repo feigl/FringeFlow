@@ -3,6 +3,7 @@
 # 2022/01/31 make the plots in the ht_condor job in the slot
 # 2022/03/02 Sam: added passing in of variables needed by plot_pair7.sh
 # 2023/01/31 Kurt and Sam use tar instead of tgz
+# 2023/03/24 Kurt do not remove executables
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
@@ -171,7 +172,8 @@ if [[ ! $# -eq 9 ]] ; then
         # clean up after pair is transferred
         rm -fv $tarfile
         rm -rfv In${ref}_${sec}
-        rm -rfv *.tar FringeFlow bin_htcondor 
+        rm -rfv *.tar 
+        # rm -rfv FringeFlow bin_htcondor 
     else
         # trouble
         echo "Cannot find a place to transfer tar file named $tarfile"

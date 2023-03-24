@@ -74,6 +74,8 @@ time tar -xvf ${tarfile}
 # intialize environmental vars including PATH
 if [[ -f setup_inside_container_gmtsar.sh ]]; then
   source setup_inside_container_gmtsar.sh 
+elif [[ -f $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+  source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh
 elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
   source FringeFlow/docker/setup_inside_container_gmtsar.sh
 else
@@ -84,7 +86,15 @@ fi
 
 # set an environmental var for SITE_TABLE
 #parent=$(dirname $PWD)
-export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
+if [[ -f ${PWD}/siteinfo/site_dims.txt ]]; then
+   export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
+elif [[ -f ${HOME}/siteinfo/site_dims.txt ]]; then
+   export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+else
+	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
+	exit -1
+fi
+
 echo "the site dimensions file is $SITE_TABLE"
 cd "In${ref}_${sec}"
 # send output to home, in hopes that it will transfer back at the end

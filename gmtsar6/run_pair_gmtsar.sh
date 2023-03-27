@@ -5,6 +5,7 @@
 #2021/10/20 Sam -- modifying for use on Askja
 #2021/11/03 Kurt and Sam
 #2023/01/31 Kurt and Sam: change tgz to tar
+# 2023/0326 Kurt move all set up stuff here
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`
@@ -50,7 +51,7 @@ echo "swath is $swath"
 echo "ref is $ref"
 echo "sec is $sec"
 
-runname="${sat}_${trk}_${sit}_${t0}_${t1}_${timetag}"
+runname="${sat}_${trk}_${site}_${t0}_${t1}_${timetag}"
 echo runname is ${runname}
 
 # conditions to account for data availablity for local vs condor slot run
@@ -71,18 +72,36 @@ fi
 # extract tar file
 # 2023/01/31 time tar -xzvf ${tarfile}
 time tar -xvf ${tarfile}
-# intialize environmental vars including PATH
-if [[ -f setup_inside_container_gmtsar.sh ]]; then
-  source setup_inside_container_gmtsar.sh 
-elif [[ -f $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
-  source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh
-elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
-  source FringeFlow/docker/setup_inside_container_gmtsar.sh
-else
-	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
-	exit -1
-fi
 
+# # intialize environmental vars including PATH
+# if [[ -f setup_inside_container_gmtsar.sh ]]; then
+#   source setup_inside_container_gmtsar.sh 
+# elif [[ -f $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+#   source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh
+# elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+#   source FringeFlow/docker/setup_inside_container_gmtsar.sh
+# else
+# 	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
+# 	exit -1
+# fi
+
+# configure FringeFlow workflow, assuming that 
+if [[ -d ${HOME}/FringeFlow ]]; then
+    export PATH=${HOME}/FringeFlow/sh:${PATH}
+    export PATH=${HOME}/FringeFlow/docker:${PATH}
+    export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
+elif [[ -d ${PWD}/FringeFlow ]]; then
+    export PATH=${PWD}/FringeFlow/sh:${PATH}
+    export PATH=${PWD}/FringeFlow/docker:${PATH}
+    export PATH=${PWD}/FringeFlow/gmtsar6:${PATH}
+elif [[ -d ./FringeFlow ]]; then
+    export PATH=./FringeFlow/sh:${PATH}
+    export PATH=./FringeFlow/docker:${PATH}
+    export PATH=./FringeFlow/gmtsar6:${PATH}
+else 
+    echo "$0 ERROR: cannot find FringeFlow"
+    exit
+fi
 
 # set an environmental var for SITE_TABLE
 #parent=$(dirname $PWD)
@@ -91,12 +110,19 @@ if [[ -f ${PWD}/siteinfo/site_dims.txt ]]; then
 elif [[ -f ${HOME}/siteinfo/site_dims.txt ]]; then
    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
 else
-	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
+	echo "ERROR: Could not find file named site_dims.txt"
 	exit -1
 fi
 
-echo "the site dimensions file is $SITE_TABLE"
+# test site table
+echo "testing site table "       | tee -a ${HOME}/${runname}.log
+echo "the site dimensions file is $SITE_TABLE" | tee -a ${HOME}/${runname}.log
+echo SITE_TABLE is ${SITE_TABLE} | tee -a ${HOME}/${runname}.log
+get_site_dims.sh ${site} 1       | tee -a ${HOME}/${runname}.log
+
+
 cd "In${ref}_${sec}"
+
 # send output to home, in hopes that it will transfer back at the end
 time ./run.sh | tee -a ${HOME}/${runname}.log
 

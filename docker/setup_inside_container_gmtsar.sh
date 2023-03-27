@@ -11,17 +11,17 @@ if [[ ! -w "$HOME" ]]; then
 fi
 
 # # configure environment for Reinisch workflow
-# if [[ -f /home/batzli/setup.sh ]]; then
-#     # set up on askja
-#     source /home/batzli/setup.sh
-# else
-#     # assume we are on another machine
-#     if [[ -d ${HOME}/bin_htcondor ]]; then
-#         export PATH=${HOME}/bin_htcondor:${PATH}
-#     else
-#         export PATH=${PWD}/bin_htcondor:${PATH}
-#     fi
-# fi
+if [[ -f /home/batzli/setup.sh ]]; then
+    # set up on askja
+    source /home/batzli/setup.sh
+else
+    # assume we are on another machine
+    if [[ -d ${HOME}/bin_htcondor ]]; then
+        export PATH=${HOME}/bin_htcondor:${PATH}
+    else
+        export PATH=${PWD}/bin_htcondor:${PATH}
+    fi
+fi
 
 # configure FringeFlow workflow, assuming that 
 if [[ -d ${HOME}/FringeFlow ]]; then
@@ -51,9 +51,9 @@ elif [[ -d ${PWD}/siteinfo ]]; then
 #    export PATH=${PWD}/siteinfo:${PATH}
     export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
 else
-    echo "WARNING the logic in setup_inside_container_gmtsar.sh cannot find directory named siteinfo in ${home} or ${PWD} but maybe we are looking in the wrong place or maybe the paths are exported in the wrong shell?"
+    echo "WARNING the logic in setup_inside_container_gmtsar.sh cannot find directory named siteinfo in ${HOME} or ${PWD}"
 fi
-echo "If we are in the right place, then SITE_TABLE is $SITE_TABLE or the next attempt is to export that variable in run_pairs_gmtsar.sh?"
+echo "SITE_TABLE is $SITE_TABLE"
 
 
 # needed for ISCE and MINTPY

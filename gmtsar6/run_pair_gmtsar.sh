@@ -74,45 +74,27 @@ fi
 time tar -xvf ${tarfile}
 
 # # intialize environmental vars including PATH
-# if [[ -f setup_inside_container_gmtsar.sh ]]; then
-#   source setup_inside_container_gmtsar.sh 
-# elif [[ -f $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
-#   source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh
-# elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
-#   source FringeFlow/docker/setup_inside_container_gmtsar.sh
-# else
-# 	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
-# 	exit -1
-# fi
-
-# configure FringeFlow workflow, assuming that 
-if [[ -d ${HOME}/FringeFlow ]]; then
-    export PATH=${HOME}/FringeFlow/sh:${PATH}
-    export PATH=${HOME}/FringeFlow/docker:${PATH}
-    export PATH=${HOME}/FringeFlow/gmtsar6:${PATH}
-elif [[ -d ${PWD}/FringeFlow ]]; then
-    export PATH=${PWD}/FringeFlow/sh:${PATH}
-    export PATH=${PWD}/FringeFlow/docker:${PATH}
-    export PATH=${PWD}/FringeFlow/gmtsar6:${PATH}
-elif [[ -d ./FringeFlow ]]; then
-    export PATH=./FringeFlow/sh:${PATH}
-    export PATH=./FringeFlow/docker:${PATH}
-    export PATH=./FringeFlow/gmtsar6:${PATH}
-else 
-    echo "$0 ERROR: cannot find FringeFlow"
-    exit
-fi
-
-# set an environmental var for SITE_TABLE
-#parent=$(dirname $PWD)
-if [[ -f ${PWD}/siteinfo/site_dims.txt ]]; then
-   export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
-elif [[ -f ${HOME}/siteinfo/site_dims.txt ]]; then
-   export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+if [[ -f setup_inside_container_gmtsar.sh ]]; then
+  source setup_inside_container_gmtsar.sh 
+elif [[ -f $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+  source $HOME/FringeFlow/docker/setup_inside_container_gmtsar.sh
+elif [[ -f FringeFlow/docker/setup_inside_container_gmtsar.sh ]]; then
+  source FringeFlow/docker/setup_inside_container_gmtsar.sh
 else
-	echo "ERROR: Could not find file named site_dims.txt"
+	echo "ERROR: Could not find file named setup_inside_container_gmtsar.sh"
 	exit -1
 fi
+
+# # set an environmental var for SITE_TABLE
+# #parent=$(dirname $PWD)
+# if [[ -f ${PWD}/siteinfo/site_dims.txt ]]; then
+#    export SITE_TABLE=${PWD}/siteinfo/site_dims.txt
+# elif [[ -f ${HOME}/siteinfo/site_dims.txt ]]; then
+#    export SITE_TABLE=${HOME}/siteinfo/site_dims.txt
+# else
+# 	echo "ERROR: Could not find file named site_dims.txt"
+# 	exit -1
+# fi
 
 # test site table
 echo "testing site table "       | tee -a ${HOME}/${runname}.log

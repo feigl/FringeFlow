@@ -130,7 +130,7 @@ if [[ ! $# -eq 9 ]] ; then
        #plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"
     cd ..
     
-        # copy condor stuff
+    # copy condor .out and .err
     if [[ -f ../_condor_stdout ]]; then
         cp -vf ../_condor_stdout .
     fi

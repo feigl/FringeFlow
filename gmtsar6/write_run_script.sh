@@ -21,6 +21,7 @@
 # 20210707 Kurt and Sam adapt for docker. "region_cut" must be empty
 # 20211217 Sam added 'export SITE_TABLE=${PWD}/siteinfo/site_dims.txt' to run.sh file
 # 20220303 Sam added variables received from build_pair.sh to add to post_process_pair.sh in the run.sh file written here 
+# 20230606 Kurt permute order: make plots before deleting files
 
 if [ ! "$#" -eq 16 ]; then
 	echo "$0 needs 16 arguments. Found only $#"
@@ -229,14 +230,16 @@ else
     echo "unknown sat $sat"
 fi
 
+
 # handle post-processing
 echo "post_process_pair.sh ${sat} ${trk} ${site} ${ref} ${sec} ${bperp} ${user} ${filter_wv} ${dt}" >> run.sh
 
-# set up to make a plot
-# TODO edit to pass in dt and track; 
-# bperp would be nice, too. 
-# mmperfringe is too hard to  find.
-echo plot_pair7.sh  ${sat} "track" ${site} ${inpairdir} ${inpairdir}/phasefilt_mask_utm.grd ${inpairdir}/phasefilt_mask_utm.ps "mmperfringe" "bperp" ${USER} $filter_wv "dt" ${demgrd} >> run.sh
+## set up to make a plot 2023/06/06 - this is already done in post-processing
+# # TODO edit to pass in dt and track; 
+# # bperp would be nice, too. 
+# # mmperfringe is too hard to  find.
+# echo plot_pair7.sh  ${sat} "track" ${site} ${inpairdir} ${inpairdir}/phasefilt_mask_utm.grd ${inpairdir}/phasefilt_mask_utm.ps "mmperfringe" "bperp" ${USER} $filter_wv "dt" ${demgrd} >> run.sh
+
 
 # make run.sh executable 
 chmod +x run.sh

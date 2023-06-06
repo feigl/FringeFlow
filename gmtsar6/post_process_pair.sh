@@ -124,6 +124,7 @@ if [[ ! $# -eq 9 ]] ; then
 #    Note: * are hard-coded: mmperfringe=15.5, label=UTM
 #    echo "plot_pair7.sh  TSX T30 forge title phasefilt_mask_utm.grd phase_filt_mask.ps 15.5 63.2 feigl 80 999 UTM"
     
+
     plot_pair7.sh ${sat} ${trk} ${site} $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "15.5" ${bperp} ${user} ${filter_wv} ${dt} "UTM"
        #2022/02/03 remove plotting to its own line in run.sh (written by write_run_script)
        #plot_pair7.sh  TSX T91 $site $PWD phasefilt_mask_utm.grd phasefilt_mask_utm.ps "mmperfringe" "bperp" "user" "filter_wv" "dt" "UTM"

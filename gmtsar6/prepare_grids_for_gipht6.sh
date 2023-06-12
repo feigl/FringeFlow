@@ -33,6 +33,7 @@
 #                      because this script is called from post_process.sh (launched by run.sh inside each In* directory 
 #                      and not by retreieve_pairs anymore.
 #                    - comment out calls to gdal
+# 20230612 KLF make it work
 
 if [[ $# -eq 0 ]]; then
     cat - << ENDOFDOC

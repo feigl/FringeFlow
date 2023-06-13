@@ -23,7 +23,30 @@ executable = run_pair_gmtsar.sh
     # build_pairs.sh PAIRSmake.txt 0
     # rsync --progress -av FORGE_TSX_T30_strip004_20200415_20210505.tgz feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
 
-transfer_input_files = run_pair_gmtsar.sh, FringeFlow/, siteinfo/
+# add directories (sans trailing slashes)
+# transfer_input_files = < file1,file2,file… > A comma-delimited list of all the
+# files and directories to be transferred into the working directory for the
+# job, before the job is started. By default, the file specified in the
+# executable command and any file specified in the input command (for example,
+# stdin) are transferred.
+
+# When a path to an input file or directory is specified, this specifies the
+# path to the file on the submit side. The file is placed in the job’s temporary
+# scratch directory on the execute side, and it is named using the base name of
+# the original path. For example, /path/to/input_file becomes input_file in the
+# job’s scratch directory.
+
+# When a directory is specified, the behavior depends on whether there is a
+# trailing path separator character. When a directory is specified with a
+# trailing path separator, it is as if each of the items within the directory
+# were listed in the transfer list. Therefore, the contents are transferred, but
+# the directory itself is not. When there is no trailing path separator, the
+# directory itself is transferred with all of its contents inside it. On
+# platforms such as Windows where the path separator is not a forward slash (/),
+# a trailing forward slash is treated as equivalent to a trailing path
+# separator. An example of an input directory specified with a trailing forward
+# slash is input_data/.
+transfer_input_files = run_pair_gmtsar.sh, FringeFlow, siteinfo
 
 #arguments = $(Process)
 #arguments = pairdir.tgz

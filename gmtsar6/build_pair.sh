@@ -171,7 +171,8 @@ if [[ ! -f ${pairdir}.tar ]]; then
     # copy the siteinfo directory
     # rsync -ra /home/batzli/siteinfo .
     # 2023/01/31 copy the user's siteinfo directory
-    rsync -ra ${HOME}/siteinfo .
+    # rsync -ra ${HOME}/siteinfo .
+    # 2023/06/13 assume a copy is already there
 
     # copy makefile for plotting routines
     # cd In${ref}_${sec}

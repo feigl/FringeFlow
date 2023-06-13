@@ -179,8 +179,17 @@ if [[ ! -f ${pairdir}.tar ]]; then
     # cp /home/batzli/bin_htcondor/plotting.make .
     # cd ..
 
-    # copy setup file
+    # copy setup file - TODO this is already inside of FringeFlow
     cp  ${HOME}/FringeFlow/docker/setup_inside_container_gmtsar.sh .
+
+    # make a file listing files to send to submit-2
+    if [[ ! -f send2.lst ]]; then 
+        touch send2.lst   
+    fi
+    # make a file listing files to send to transfer00
+    if [[ ! -f send0.lst ]]; then 
+        touch send0.lst
+    fi
 
     # make a tar file
     tarfile=${pairdir}.tar
@@ -196,6 +205,9 @@ if [[ ! -f ${pairdir}.tar ]]; then
         rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
         # clean up after pair is transferred
         #rm -f $tarfile
+        # TODO
+        # echo "$tarfile"  >> send0.lst
+
     else
         echo "Cannot find a place to transfer tar file named $tarfile"
     fi
@@ -218,7 +230,11 @@ if [[ ! -f ${pairdir}.tar ]]; then
     #rsync -ra ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 
     # transfer two files
-    rsync -rav ${pairdir}.sub ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+    # rsync -rav ${pairdir}.sub ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
+    # 2023/06/13 FringeFlow folder now transfered via transfer_input_file command in .sub file
+    rsync -rav ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
+    # TODO
+    # echo "${pairdir}.sub"  >> send2.lst
 fi
 
 #echo "Current working directory is now ${PWD}"

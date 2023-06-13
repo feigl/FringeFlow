@@ -36,6 +36,7 @@
 # edit 20220302 Sam added dt=$g and others (trk already defined) to capture that variable from the PAIRSmake.txt and pass it to build_pair.sh->write_run_script.sh->post_process_pair.sh->plot_pair7.sh
 # edit 20220203 Kurt and Sam pass variables needed for ploting down the line
 # edit 20230110 Kurt and Sam reduce number of remote commands requiring MFA
+# edit 20230613 Kurt and Sam reduce the number of transfers
 
 
 if [ "$#" -eq 1 ]; then
@@ -77,6 +78,15 @@ filter_wv=`tail -1 $1 | awk '{print $19}'`
 # get DEM from input file
 demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 #echo "demf is $demf"
+
+# make a file listing files to send to submit-2
+if [[ ! -f send2.lst ]]; then 
+   touch send2.lst   
+fi
+# make a file listing files to send to transfer00
+if [[ ! -f send0.lst ]]; then 
+   touch send0.lst
+fi
 
 ### check variables
 #I believe next will be: 
@@ -174,8 +184,17 @@ let "kount+=1"
 done < "$1"   # end of "while read" loop from above
 echo ""
 echo "Processed $ngood good lines of $kount lines total in file $1"
+# TODO
+# echo 'sending files to submit-2'
+# rsync --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
+
+# TODO
+# echo 'sending files to transfer'
+# rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+
 # 2023/01/31 submit all the jobs 
 cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
 

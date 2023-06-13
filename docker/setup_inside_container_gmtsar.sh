@@ -50,7 +50,7 @@ elif [[ -d ${PWD}/siteinfo ]]; then
     export SITE_TABLE="${PWD}/siteinfo/site_dims.txt"
 elif [[ -d /root/siteinfo ]]; then
     echo "found directory ${PWD}/siteinfo"
-    export SITE_TABLE=/root/siteinfo/site_dims.txt"
+    export SITE_TABLE="/root/siteinfo/site_dims.txt"
 else
     echo "WARNING the logic in setup_inside_container_gmtsar.sh cannot find directory named siteinfo in ${HOME} or ${PWD}"
     exit -1

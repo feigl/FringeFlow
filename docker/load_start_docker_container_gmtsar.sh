@@ -33,6 +33,7 @@ echo runname is $runname
 # get important files
 cp $HOME/PAIRSmake.txt $dirname
 cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt $dirname
+cp -r $HOME/siteinfo $dirname
 
 echo '  '
 echo "Starting image in container..."

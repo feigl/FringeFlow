@@ -23,7 +23,7 @@ executable = run_pair_gmtsar.sh
     # build_pairs.sh PAIRSmake.txt 0
     # rsync --progress -av FORGE_TSX_T30_strip004_20200415_20210505.tgz feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
 
-transfer_input_files = run_pair_gmtsar.sh
+transfer_input_files = run_pair_gmtsar.sh, FringeFlow/, siteinfo/
 
 #arguments = $(Process)
 #arguments = pairdir.tgz

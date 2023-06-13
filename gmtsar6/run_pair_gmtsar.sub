@@ -21,12 +21,13 @@ executable = run_pair_gmtsar.sh
 ### prepare large data file on askja with a name like this:
     # build_pairs.sh PAIRSmake.txt 0
     # rsync --progress -av FORGE_TSX_T30_strip004_20200415_20210505.tgz feigl@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
-
+    # cd FringeFlow; git pull
+    # verify that siteinfo is up to date
 ### do this before submitting
     # condor_submit run_pair_gmtsar.sub
 
 
-transfer_input_files = run_pair_gmtsar.sh
+transfer_input_files = run_pair_gmtsar.sh, FringeFlow/, siteinfo/
 
 #arguments = $(Process)
 arguments = FORGE_TSX_T30_strip004_20200415_20210505.tgz

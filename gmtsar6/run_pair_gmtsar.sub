@@ -2,6 +2,8 @@
 # Run 1 interferometric pair using GMTSAR under ht_condor
 
 # 2021/07/08 Kurt Feigl
+# 2023/06/13 transfer FringeFlow/ and siteinfo/
+
 universe = docker
 
 # Docker image

@@ -41,6 +41,8 @@
 # 2022/02/03 Kurt and Sam, update to make plots
 # 2022/06/15 Sam commented out line 156
 # 2023/01/10 Kurt and Sam - reduce number of remote commands requiring MFA
+# 2023/06/15 Kurt add user name to /staging folder
+
 
 if [[ ! $# -eq 16 ]] ; then
     echo '	ERROR: $0 requires 16 arguments.'
@@ -202,7 +204,8 @@ if [[ ! -f ${pairdir}.tar ]]; then
         mkdir -p /s12/insar/
         cp -vf  $tarfile /s12/insar/
         #ssh ${ruser}@transfer.chtc.wisc.edu mkdir -p /staging/groups/geoscience/insar
-        rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        #rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+        rsync --progress -av $tarfile ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
         # clean up after pair is transferred
         #rm -f $tarfile
         # TODO

@@ -37,6 +37,7 @@
 # edit 20220203 Kurt and Sam pass variables needed for ploting down the line
 # edit 20230110 Kurt and Sam reduce number of remote commands requiring MFA
 # edit 20230613 Kurt and Sam reduce the number of transfers
+# edit 20230615 Kurt add user name to /staging folder
 
 
 if [ "$#" -eq 1 ]; then
@@ -191,6 +192,7 @@ echo "Processed $ngood good lines of $kount lines total in file $1"
 # TODO
 # echo 'sending files to transfer'
 # rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
+# rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
 
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 

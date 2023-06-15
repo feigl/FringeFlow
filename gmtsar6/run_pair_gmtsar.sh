@@ -1,11 +1,12 @@
 #!/bin/bash -vx
 
 # calculate an interferometric pair
-#2021/06/10 Kurt Feigl
-#2021/10/20 Sam -- modifying for use on Askja
-#2021/11/03 Kurt and Sam
-#2023/01/31 Kurt and Sam: change tgz to tar
-# 2023/0326 Kurt move all set up stuff here
+# 2021/06/10 Kurt Feigl
+# 2021/10/20 Sam -- modifying for use on Askja
+# 2021/11/03 Kurt and Sam
+# 2023/01/31 Kurt and Sam: change tgz to tar
+# 2023/03/26 Kurt move all set up stuff here
+# 2023/06/15 Kurt add user name to /staging folder
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`
@@ -21,6 +22,13 @@ fi
 
 #export YYYYMMDD1="2019-10-02"
 #export YYYYMMDD2="2019-11-16"
+
+# set remote user on chtc
+if [[ ${USER} = "batzli" ]]; then
+   ruser="sabatzli"
+else
+   ruser=${USER}
+fi
 
 echo "Starting script named $0"
 echo "Argument is $1"
@@ -58,6 +66,10 @@ echo runname is ${runname}
 if [[ -f ${tarfile} ]]; then
 	echo "using local copy ${tarfile}"
 	ls -l ${tarfile}
+elif [[ -f /staging/groups/geoscience/insar/${ruser}/${tarfile} ]]; then
+  echo "looking for a copy on staging $ruser"
+  ls -l /staging/groups/geoscience/insar/${ruser}/${tarfile}
+  time cp -v /staging/groups/geoscience/insar/${ruser}/${tarfile} .
 elif [[ -f /staging/groups/geoscience/insar/${tarfile} ]]; then
   echo "looking for a copy on staging"
   ls -l /staging/groups/geoscience/insar/${tarfile}

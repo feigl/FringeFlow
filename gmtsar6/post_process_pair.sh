@@ -4,6 +4,8 @@
 # 2022/03/02 Sam: added passing in of variables needed by plot_pair7.sh
 # 2023/01/31 Kurt and Sam use tar instead of tgz
 # 2023/03/24 Kurt do not remove executables
+# 2023/06/15 Kurt add user name to /staging folder
+
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
 
@@ -166,6 +168,15 @@ if [[ ! $# -eq 9 ]] ; then
         # clean up after pair is transferred
         #rm -fv $tarfile
         #rm -rfv In${ref}_${sec}
+    elif [[ -d /staging/groups/geoscience/insar/${USER} ]]; then
+        # assume we are on submit-2 
+        mkdir -p /staging/groups/geoscience/insar/${USER}
+        cp -v  $tarfile /staging/groups/geoscience/insar/${USER}
+        # clean up after pair is transferred
+        rm -fv $tarfile
+        rm -rfv In${ref}_${sec}
+        rm -rfv *.tar 
+        # rm -rfv FringeFlow bin_htcondor 
     elif [[ -d /staging/groups/geoscience/insar ]]; then
         # assume we are on submit-2 
         mkdir -p /staging/groups/geoscience/insar

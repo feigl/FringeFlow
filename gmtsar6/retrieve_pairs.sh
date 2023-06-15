@@ -8,6 +8,8 @@
 # 2021/12/17 UTMs and plots are made here back on SSEC server (e.g. Ajska)
 # 2022/01/28 Try cleaning up /staging 
 # 2023/01/23 use tar ball without compression, changing "tar -xzvf" to "tar -xvf" and ".tgz to ".tar"
+# 2023/06/15 Kurt add user name to /staging folder
+
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}
     site=`echo ${2} | awk '{print tolower($1)}'`
@@ -84,7 +86,8 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
 
         if [[ ! -f ${tar1} ]]; then
             # copy tarball and delete
-            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tar1} .
+            #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tar1} .
+            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}/${tar1} .
             exit_status=$?
             if [ $exit_status -ne 0 ]; then
                 echo "Could not retrieve tarball named ${tar1}"

@@ -38,6 +38,8 @@
 # edit 20230110 Kurt and Sam reduce number of remote commands requiring MFA
 # edit 20230613 Kurt and Sam reduce the number of transfers
 # edit 20230615 Kurt add user name to /staging folder
+# edit 20230615 Kurt use -4 switch to ssh and rsync 
+# edit 20230615 Kurt move transfers outside loop
 
 
 if [ "$#" -eq 1 ]; then
@@ -185,20 +187,21 @@ let "kount+=1"
 done < "$1"   # end of "while read" loop from above
 echo ""
 echo "Processed $ngood good lines of $kount lines total in file $1"
-# TODO
-# echo 'sending files to submit-2'
-# rsync --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
 
-# TODO
-# echo 'sending files to transfer'
-# rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar
-# rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
+# 2023/06/15
+echo 'sending files to submit-2'
+rsync --progress -av -4 `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
+
+
+echo 'sending files to transfer'
+rsync --progress -av -4 `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
 
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
 
 # 2023/01/31 submit all the jobs 
-cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+#cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
+cat submit_all.sh | ssh -4 -t ${ruser}@submit-2.chtc.wisc.edu 
 
 echo "Normal end of $0"
 

@@ -86,7 +86,7 @@ demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 if [[ -f send2.lst ]]; then 
    \rm -f send2.lst
 fi
-echo "$HOME/FringeFlow/run_pair_gmtsar.sh" > send2.lst   
+echo "$HOME/FringeFlow/gmtsar6/run_pair_gmtsar.sh" > send2.lst   
 
 # make a file listing files to send to transfer00
 if [[ -f send0.lst ]]; then 

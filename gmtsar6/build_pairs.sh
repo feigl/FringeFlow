@@ -83,13 +83,16 @@ demf=`grep dem $1 | tail -1 | awk '{print $18}'`
 #echo "demf is $demf"
 
 # make a file listing files to send to submit-2
-if [[ ! -f send2.lst ]]; then 
-   touch send2.lst   
+if [[ -f send2.lst ]]; then 
+   \rm -f send2.lst
 fi
+echo "$HOME/FringeFlow/run_pair_gmtsar.sh" > send2.lst   
+
 # make a file listing files to send to transfer00
-if [[ ! -f send0.lst ]]; then 
-   touch send0.lst
+if [[ -f send0.lst ]]; then 
+   \rm -f send0.lst
 fi
+touch send0.lst
 
 ### check variables
 #I believe next will be: 

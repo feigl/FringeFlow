@@ -42,6 +42,7 @@
 # 2022/06/15 Sam commented out line 156
 # 2023/01/10 Kurt and Sam - reduce number of remote commands requiring MFA
 # 2023/06/15 Kurt add user name to /staging folder
+# TODO make ruser environment variable upper case throughout 
 
 
 if [[ ! $# -eq 16 ]] ; then
@@ -100,6 +101,7 @@ if [[ ${USER} = "batzli" ]]; then
 else
    ruser=${USER}
 fi
+echo "ruser is ${ruser}"
 
 # set data directory
 if [[ $(hostname) = "askja.ssec.wisc.edu" ]]; then

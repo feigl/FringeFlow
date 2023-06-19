@@ -42,6 +42,7 @@
 # edit 20230615 Kurt move transfers outside loop
 # edit 20230619 Kurt use -6 switch on ssh and rsync to submit-2.chtc.wisc.edu
 # edit 20230619 Reduce number of transfers to one only.
+# TODO make ruser environment variable upper case throughout 
 
 
 if [ "$#" -eq 1 ]; then

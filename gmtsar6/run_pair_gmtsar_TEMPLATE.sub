@@ -51,6 +51,7 @@ transfer_input_files = run_pair_gmtsar.sh, FringeFlow, siteinfo
 # define user
 #environment = "ruser=feigl"
 environment = "ruser=RUSER"
+# TODO make ruser environment variable upper case throughout 
 
 
 #arguments = $(Process)

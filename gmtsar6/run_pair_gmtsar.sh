@@ -7,6 +7,7 @@
 # 2023/01/31 Kurt and Sam: change tgz to tar
 # 2023/03/26 Kurt move all set up stuff here
 # 2023/06/15 Kurt add user name to /staging folder
+# TODO make ruser environment variable upper case throughout 
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`

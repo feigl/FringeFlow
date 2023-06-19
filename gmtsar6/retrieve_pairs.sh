@@ -9,6 +9,7 @@
 # 2022/01/28 Try cleaning up /staging 
 # 2023/01/23 use tar ball without compression, changing "tar -xzvf" to "tar -xvf" and ".tgz to ".tar"
 # 2023/06/15 Kurt add user name to /staging folder
+# TODO make ruser environment variable upper case throughout 
 
 if [ "$#" -eq 2 ]; then
 	pairlist=${1}

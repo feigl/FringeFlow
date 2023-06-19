@@ -40,6 +40,7 @@
 # edit 20230615 Kurt add user name to /staging folder
 # edit 20230615 Kurt use -4 switch to ssh and rsync 
 # edit 20230615 Kurt move transfers outside loop
+# edit 20230619 Kurt use -6 switch on ssh and rsync to submit-2.chtc.wisc.edu
 
 
 if [ "$#" -eq 1 ]; then
@@ -193,18 +194,17 @@ echo "Processed $ngood good lines of $kount lines total in file $1"
 
 # 2023/06/15
 echo 'sending files to submit-2'
-rsync --progress -av -4 `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
-
+rsync -6 --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
 
 echo 'sending files to transfer'
-rsync --progress -av -4 `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
+rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
 
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
 
 # 2023/01/31 submit all the jobs 
 #cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
-cat submit_all.sh | ssh -4 -t ${ruser}@submit-2.chtc.wisc.edu 
+cat submit_all.sh | ssh  -t ${ruser}@submit-2.chtc.wisc.edu 
 
 echo "Normal end of $0"
 

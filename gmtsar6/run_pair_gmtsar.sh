@@ -29,6 +29,7 @@ if [[ ${USER} = "batzli" ]]; then
 else
    ruser=${USER}
 fi
+echo user is $user
 
 echo "Starting script named $0"
 echo "Argument is $1"
@@ -76,7 +77,7 @@ elif [[ -f /staging/groups/geoscience/insar/${tarfile} ]]; then
   time cp -v /staging/groups/geoscience/insar/${tarfile} .
 else
 	echo "ERROR: Could not find input file named ${tarfile}"
-	ls -l /staging/groups/geoscience/insar ./
+	ls -l /staging/groups/geoscience/insar /staging/groups/geoscience/insar/${ruser} ./
 	exit -1
 fi
 

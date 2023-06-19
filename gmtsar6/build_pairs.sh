@@ -41,6 +41,7 @@
 # edit 20230615 Kurt use -4 switch to ssh and rsync 
 # edit 20230615 Kurt move transfers outside loop
 # edit 20230619 Kurt use -6 switch on ssh and rsync to submit-2.chtc.wisc.edu
+# edit 20230619 Reduce number of transfers to one only.
 
 
 if [ "$#" -eq 1 ]; then

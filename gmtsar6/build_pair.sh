@@ -1,4 +1,4 @@
-#!/bin/bash -x 
+#!/bin/bash -vex
 
 # for debugging, add "-vx" switch after "bash" in the shebang line above.
 # switches in line above:
@@ -224,7 +224,7 @@ if [[ ! -f ${pairdir}.tar ]]; then
     #rsync -ra /home/feigl/FringeFlow/gmtsar6/run_pair_gmtsar.sh ${ruser}@submit-2.chtc.wisc.edu:
 
     # make a submit file 
-    cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" > ${pairdir}.sub
+    cat ${HOME}/FringeFlow/gmtsar6/run_pair_gmtsar_TEMPLATE.sub | sed "s/pairdir/${pairdir}/" | sed "s/RUSER/${ruser}/g" > ${pairdir}.sub
 
     # send submit file to CHTC
     #echo "Now consider the following command"
@@ -238,8 +238,10 @@ if [[ ! -f ${pairdir}.tar ]]; then
     # 2023/06/13 FringeFlow folder now transfered via transfer_input_file command in .sub file
     # rsync -rav -4 ${pairdir}.sub ${ruser}@submit-2.chtc.wisc.edu:
 
-    # 2023/06/15
+    # 2023/06/15 add to list for transer to submit-2.chtc.wisc.edu 
     echo "${pairdir}.sub"  >> send2.lst
+    # 2023/06/19 add to list for transer to transfer.chtc.wisc.edu 
+    echo "${pairdir}.sub"  >> send0.lst
 fi
 
 #echo "Current working directory is now ${PWD}"
@@ -248,6 +250,8 @@ fi
 #ssh -T submit-2.chtc.wisc.edu "condor_submit ${pairdir}.sub" 
 # use try "-t" switch this instead
 if [[ -f ${pairdir}.sub ]]; then
+    # put copy instructions into script
+    echo "\cp /staging/groups/geoscience/insar/${ruser}/${pairdir}.sub . " >> submit_all.sh
     #ls -l ${pairdir}.sub
     #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'
     #uncomment the next two lines for auto submit

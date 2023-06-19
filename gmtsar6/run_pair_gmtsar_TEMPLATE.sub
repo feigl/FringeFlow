@@ -48,6 +48,11 @@ executable = run_pair_gmtsar.sh
 # slash is input_data/.
 transfer_input_files = run_pair_gmtsar.sh, FringeFlow, siteinfo
 
+# define user
+#environment = "ruser=feigl"
+environment = "ruser=RUSER"
+
+
 #arguments = $(Process)
 #arguments = pairdir.tgz
 arguments = pairdir.tar

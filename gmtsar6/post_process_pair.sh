@@ -160,7 +160,14 @@ if [[ ! $# -eq 9 ]] ; then
     # test string for equality
     #if [[ "$hostname" == "askja.ssec.wisc.edu" ]]; then
 
-   
+    # 2023/06/19 on CHTC, set this with environment="ruser=sabatzli" in .sub file
+    # if [[ ${USER} = "batzli" ]]; then
+    #    ruser="sabatzli"
+    # else
+    #    ruser=${USER}
+    # fi
+    echo ruser is $ruser
+
     if [[ -d /s12/insar ]]; then
         # assume we are on askja
         mkdir -p /s12/insar/${SITE}/TSX
@@ -168,10 +175,10 @@ if [[ ! $# -eq 9 ]] ; then
         # clean up after pair is transferred
         #rm -fv $tarfile
         #rm -rfv In${ref}_${sec}
-    elif [[ -d /staging/groups/geoscience/insar/${USER} ]]; then
+    elif [[ -d /staging/groups/geoscience/insar/${ruser} ]]; then
         # assume we are on submit-2 
-        mkdir -p /staging/groups/geoscience/insar/${USER}
-        cp -v  $tarfile /staging/groups/geoscience/insar/${USER}
+        mkdir -p /staging/groups/geoscience/insar/${ruser}
+        cp -v  $tarfile /staging/groups/geoscience/insar/${ruser}
         # clean up after pair is transferred
         rm -fv $tarfile
         rm -rfv In${ref}_${sec}

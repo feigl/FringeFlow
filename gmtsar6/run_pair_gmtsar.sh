@@ -24,12 +24,13 @@ fi
 #export YYYYMMDD2="2019-11-16"
 
 # set remote user on chtc
-if [[ ${USER} = "batzli" ]]; then
-   ruser="sabatzli"
-else
-   ruser=${USER}
-fi
-echo user is $user
+# 2023/06/19 on CHTC, set this with environment="ruser=sabatzli" in .sub file
+# if [[ ${USER} = "batzli" ]]; then
+#    ruser="sabatzli"
+# else
+#    ruser=${USER}
+# fi
+echo ruser is $ruser
 
 echo "Starting script named $0"
 echo "Argument is $1"
@@ -64,6 +65,7 @@ runname="${sat}_${trk}_${site}_${t0}_${t1}_${timetag}"
 echo runname is ${runname}
 
 # conditions to account for data availablity for local vs condor slot run
+ls -l /staging/groups/geoscience/insar/*  /staging/groups/geoscience/insar/${ruser}/* ./*
 if [[ -f ${tarfile} ]]; then
 	echo "using local copy ${tarfile}"
 	ls -l ${tarfile}
@@ -77,7 +79,7 @@ elif [[ -f /staging/groups/geoscience/insar/${tarfile} ]]; then
   time cp -v /staging/groups/geoscience/insar/${tarfile} .
 else
 	echo "ERROR: Could not find input file named ${tarfile}"
-	ls -l /staging/groups/geoscience/insar /staging/groups/geoscience/insar/${ruser} ./
+	ls -l /staging/groups/geoscience/insar/* /staging/groups/geoscience/insar/${ruser}/* ./*
 	exit -1
 fi
 

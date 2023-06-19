@@ -93,7 +93,9 @@ echo "$HOME/FringeFlow/gmtsar6/run_pair_gmtsar.sh" > send2.lst
 if [[ -f send0.lst ]]; then 
    \rm -f send0.lst
 fi
-touch send0.lst
+#touch send0.lst
+echo "$HOME/FringeFlow/gmtsar6/run_pair_gmtsar.sh" > send0.lst   
+
 
 ### check variables
 #I believe next will be: 
@@ -125,6 +127,8 @@ touch send0.lst
 
 # start list of jobs
 echo "#!/bin/bash" > submit_all.sh
+echo "\cp -vf /staging/groups/geoscience/insar/${ruser}/run_pair_gmtsar.sh . " >> submit_all.sh
+
 # initialize counters
 kount=0
 ngood=0
@@ -192,9 +196,9 @@ done < "$1"   # end of "while read" loop from above
 echo ""
 echo "Processed $ngood good lines of $kount lines total in file $1"
 
-# 2023/06/15
-echo 'sending files to submit-2'
-rsync -6 --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
+# 2023/06/19 --very long wait times
+#echo 'sending files to submit-2'
+#rsync -6 --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
 
 echo 'sending files to transfer'
 rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
@@ -204,7 +208,16 @@ echo "submitting jobs ..."
 
 # 2023/01/31 submit all the jobs 
 #cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
-cat submit_all.sh | ssh  -t ${ruser}@submit-2.chtc.wisc.edu 
+# 2023/06/19 -very slow because of long wait
+#cat submit_all.sh | ssh  -t ${ruser}@submit-2.chtc.wisc.edu 
+# 2023/06/19 
+echo '********'
+echo '********'
+echo '   '
+echo '   '
+echo 'After logging into submit-2.chtc.wisc.edu, issue the following commands'
+cat submit_all.sh 
+
 
 echo "Normal end of $0"
 

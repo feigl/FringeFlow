@@ -9,6 +9,7 @@
 # 2022/01/28 Try cleaning up /staging 
 # 2023/01/23 use tar ball without compression, changing "tar -xzvf" to "tar -xvf" and ".tgz to ".tar"
 # 2023/06/15 Kurt add user name to /staging folder
+# 2023/06/24 Kurt move rsync outside loop
 # TODO make ruser environment variable upper case throughout 
 
 if [ "$#" -eq 2 ]; then
@@ -49,6 +50,38 @@ echo "DATADIR is $DATADIR"
 kount=0
 ngood=0
 
+# start a list of files to retrieve
+if [[ -f getlist.txt ]]; then
+   \rm -rf getlist.txt
+fi
+touch getlist.txt
+
+# loop over tar balls
+while read -r a b c d e f g h i j k l m n o p q r s ; do
+   let "kount+=1"
+   [[ "$a" =~ ^#.*$ && "$a" != [[:blank:]]  ]] && continue
+        ref=$a
+        sec=$b
+
+        # set name of tarball     
+        tar1=In${ref}_${sec}.tar
+        echo "tar1 is now ${tar1}"
+
+        echo  "${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}/${tar1}" >> getlist.txt
+        #     exit_status=$?
+        #     if [ $exit_status -ne 0 ]; then
+        #         echo "Could not retrieve tarball named ${tar1}"
+        #     fi
+        # fi 
+done < "$1"  # end of "while read" loop from above        
+
+# TODO after testing, add following switch to following line: --remove-source-files      
+rsync  --human-readable --progress -av `cat getlist.txt` .
+ 
+# initialize counters
+kount=0
+ngood=0
+
 
 #the following "while read" reads each line and all variables of the PAIRSmake.txt (not all present) to make the .sub file for each pair
 # a         b         c      d      e                    f                    g    h    i    j       k          l      m       n      o      p      q    r                       s
@@ -85,16 +118,16 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
         tar1=In${ref}_${sec}.tar
         echo "tar1 is now ${tar1}"
 
-        if [[ ! -f ${tar1} ]]; then
-            # copy tarball and delete
-            #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tar1} .
-            rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}/${tar1} .
-            exit_status=$?
-            if [ $exit_status -ne 0 ]; then
-                echo "Could not retrieve tarball named ${tar1}"
-            fi
-        fi 
-        
+        # if [[ ! -f ${tar1} ]]; then
+        #     # copy tarball and delete
+        #     #rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${tar1} .
+        #     rsync --remove-source-files -rav ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}/${tar1} .
+        #     exit_status=$?
+        #     if [ $exit_status -ne 0 ]; then
+        #         echo "Could not retrieve tarball named ${tar1}"
+        #     fi
+        # fi 
+
         if [[ -f ${tar1} ]]; then
             echo "extracting files from tarball named ${tar1}"
             tar -xvf ${tar1}

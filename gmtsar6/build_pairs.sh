@@ -203,7 +203,7 @@ echo "Processed $ngood good lines of $kount lines total in file $1"
 #rsync -6 --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
 
 echo 'sending files to transfer'
-rsync --progress -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
+rsync --progress  --human-readable -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
 
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 

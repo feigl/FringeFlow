@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -vx
 # retrieve pairs
 # 2021/07/09 Kurt Feigl
 # 2021/11/04 edit batzli Added some comments and commented-out line 101 for making UTMs since that is already done on submit-2. Changed mast-->ref and slav-->sec on line 56.
@@ -76,8 +76,10 @@ while read -r a b c d e f g h i j k l m n o p q r s ; do
 done < "$1"  # end of "while read" loop from above        
 
 # TODO after testing, add following switch to following line: --remove-source-files      
-rsync  --human-readable --progress -av `cat getlist.txt` .
- 
+#rsync  --human-readable --progress -av `cat getlist.txt` .
+rsync  --human-readable --progress -av --remove-source-files `cat getlist.txt` .
+
+
 # initialize counters
 kount=0
 ngood=0

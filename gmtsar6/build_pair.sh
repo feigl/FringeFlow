@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash 
 
 # for debugging, add "-vx" switch after "bash" in the shebang line above.
 # switches in line above:
@@ -50,6 +50,7 @@ if [[ ! $# -eq 16 ]] ; then
     echo "  Number of arguments actually received ${#}"
     echo '	Usage: $0 sat trk ref sec user satparam demf filter_wv xmin xmax ymin ymax site unwrap dt bperp'
     echo '	$1=sat'
+    echo sat is $1
     echo '	$2=trk'
     echo '	$3=ref (reference image date in YYYYMMDD) formerly mast' 
     echo '	$4=sec (secondary image date in YYYYMMDD) formerly slav'

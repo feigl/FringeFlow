@@ -7,7 +7,8 @@
 # 2023/01/31 Kurt and Sam: change tgz to tar
 # 2023/03/26 Kurt move all set up stuff here
 # 2023/06/15 Kurt add user name to /staging folder
-# TODO make ruser environment variable upper case throughout 
+# 2023/06/24 Kurt use "mv" rather than "cp" from /staging  
+# TODO make ruser environment variable upper case throughout
 
 if [ "$#" -ne 1 ]; then
     bname=`basename $0`
@@ -73,7 +74,8 @@ if [[ -f ${tarfile} ]]; then
 elif [[ -f /staging/groups/geoscience/insar/${ruser}/${tarfile} ]]; then
   echo "looking for a copy on staging $ruser"
   ls -l /staging/groups/geoscience/insar/${ruser}/${tarfile}
-  time cp -v /staging/groups/geoscience/insar/${ruser}/${tarfile} .
+  #time cp -v /staging/groups/geoscience/insar/${ruser}/${tarfile} .
+  time mv -v /staging/groups/geoscience/insar/${ruser}/${tarfile} .
 elif [[ -f /staging/groups/geoscience/insar/${tarfile} ]]; then
   echo "looking for a copy on staging"
   ls -l /staging/groups/geoscience/insar/${tarfile}

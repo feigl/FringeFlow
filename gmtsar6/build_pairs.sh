@@ -218,8 +218,10 @@ echo '********'
 echo '   '
 echo '   '
 echo 'After logging into submit-2.chtc.wisc.edu, issue the following commands'
-cat submit_all.sh 
-
+cat submit_all.sh
+echo '   '
+echo "A copy of these commands is also located on submit-2.chtc.wisc.edu in the file named /staging/groups/geoscience/insar/${ruser}"
+echo '   '
 
 echo "Normal end of $0"
 

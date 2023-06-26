@@ -254,7 +254,8 @@ fi
 # use try "-t" switch this instead
 if [[ -f ${pairdir}.sub ]]; then
     # put copy instructions into script
-    echo "\cp /staging/groups/geoscience/insar/${ruser}/${pairdir}.sub . " >> submit_all.sh
+    #echo "\cp /staging/groups/geoscience/insar/${ruser}/${pairdir}.sub . " >> submit_all.sh    
+    echo "\mv /staging/groups/geoscience/insar/${ruser}/${pairdir}.sub . " >> submit_all.sh
     #ls -l ${pairdir}.sub
     #ssh -v ${ruser}@submit-2.chtc.wisc.edu 'ls -l *.sub'
     #uncomment the next two lines for auto submit

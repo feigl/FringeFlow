@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -vx
 
 # build directories for running gmtsar6. 
 # based on /home/batzli/bin_htcondor/run_pair_DAG_gmtsarv60.sh

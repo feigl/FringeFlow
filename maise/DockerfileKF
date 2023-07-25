@@ -4,11 +4,11 @@
 FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest
 
 # easy reference for the software versions (tags or commit hashes) which we're pulling & building
-ENV MINTPY_VERSION=v1.4.1
-ENV ISCE_VERSION=v2.6.1
+ENV MINTPY_VERSION=v1.5.1
+ENV ISCE_VERSION=v2.6.3
 ENV PYKML_VERSION=v1.1.0
-ENV PYAPS_VERSION=v0.3.1
-ENV ARIA_VERSION=v1.1.4
+ENV PYAPS_VERSION=v0.3.2
+ENV ARIA_VERSION=v1.1.5
 
 # number of processors used to build
 ARG NPROC=16
@@ -37,7 +37,12 @@ RUN cd /tools \
 # deal with permissions for SSARA
 # + /var/lib/condor/execute/slot1/dir_2103175/FringeFlow/docker/domagic.sh magic.tgz
 # cp: cannot remove '/opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg': Permission denied
-RUN chmod a+w /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg
+# RUN chmod a+w /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg
+
+#[ 6/19] RUN chmod a+w /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg:
+#10 0.258 chmod: cannot access '/opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg': No such file or directory
+# ------
+#executor failed running [/bin/sh -c chmod a+w /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg]: # exit code: 1 -->
 
 # # Traceback (most recent call last):
 #   File "/tools/isce2/src/isce2/contrib/stack/topsStack/stackSentinel.py", line 1003, in <module>

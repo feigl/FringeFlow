@@ -68,16 +68,20 @@ RUN apt-get update
 RUN apt install -y libgl1-mesa-glx
 
 
-# build & install isce2
-RUN cd /tools/isce2/build \
- && cmake /tools/isce2/src/isce2 \
-        -DCMAKE_INSTALL_PREFIX=/tools/isce2/install${ISCE_VERSION} \
-        -DPYTHON_MODULE_DIR="$(python3 -c 'import site; print(site.getsitepackages()[-1])')" \
-        -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
-        -DCMAKE_BUILD_TYPE=Release \
- && make -j $NPROC \
- && make install
+# build & install isce2 from source
+# RUN cd /tools/isce2/build \
+# && cmake /tools/isce2/src/isce2 \
+#        -DCMAKE_INSTALL_PREFIX=/tools/isce2/install${ISCE_VERSION} \
+#        -DPYTHON_MODULE_DIR="$(python3 -c 'import site; print(site.getsitepackages()[-1])')" \
+#        -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
+#        -DCMAKE_BUILD_TYPE=Release \
+# && make -j $NPROC \
+# && make install
 
+# install isce2 from forge
+RUN mamba install -c conda-forge isce2
+
+# set environment for isce2
 ENV PYTHONPATH=/tools/isce2/install${ISCE_VERSION}:$PYTHONPATH
 ENV ISCE_HOME=/tools/isce2/src/isce2
 ENV PATH=$ISCE_HOME/applications:$PATH

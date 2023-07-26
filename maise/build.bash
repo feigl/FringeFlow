@@ -20,3 +20,6 @@ echo "docker push docker.io/$DOCKERHUB_USERNAME/maise:latest"
 
 echo "docker tag docker.io/$DOCKERHUB_USERNAME/maise:latest docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
 echo "docker push docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
+
+# if you see errors about no space left on device, then try the following command
+# docker system prune -a -f

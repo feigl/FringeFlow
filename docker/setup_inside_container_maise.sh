@@ -38,6 +38,7 @@ if [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/ssara
     #export PATH=${PATH}:${HOME}/FringeFlow/siteinfo
     export PATH=${PATH}:${HOME}/FringeFlow/aria
+    export PATH=${PATH}:${HOME}/FringeFlow/maise
 fi
 
 

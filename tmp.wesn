@@ -1,3 +1,0 @@
-ERROR: /Users/feigl/FringeFlow/sh/get_site_dims.sh cannot find SITE_TABLE file named site_dims.txt (currently defined as: )
-consider rsync -rav askja.ssec.wisc.edu:/s12/insar/siteinfo /Users/feigl
-export SITE_TABLE=/Users/feigl/siteinfo/site_dims.txt

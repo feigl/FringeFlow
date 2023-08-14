@@ -11,7 +11,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DATETAG=$(date +"%Y%m%d")
 
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile $SCRIPT_DIR
-docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f DockerfileKF $SCRIPT_DIR
+#docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f DockerfileKF $SCRIPT_DIR
+docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile20230615 $SCRIPT_DIR
 echo "docker.io/$DOCKERHUB_USERNAME/maise:latest was built successfully."
 
 echo "The following commands are only being printed for your convenience:"

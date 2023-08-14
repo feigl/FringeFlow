@@ -193,16 +193,16 @@ pushd MINTPY
 # set Lat,Lon coordinates of reference pixel NE corner
 case $SITEUC in
   SANEM)
-    REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
+    REFLALO="$(get_site_dims.sh ${SITELC} N)","$(get_site_dims.sh ${SITELC} E)"
     ;;
     
   *)
-    REFLALO="$(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} E)"
+    REFLALO="$(get_site_dims.sh ${SITELC} S)","$(get_site_dims.sh ${SITELC} W)"
     ;;
     
 esac
 echo REFLALO is $REFLALO
-cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg | sed "s/REFLALO/$REFLALO/" > mintpy_aria.cfg
+cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg | sed "s/REFLALO/$REFLALO/" | sed "s/PROJECT_TXXX/${SITEUC}_T{$TRACK}/" > mintpy_aria.cfg
 
 # start MintPy
 run_mintpy.sh mintpy_aria.cfg

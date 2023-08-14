@@ -122,6 +122,7 @@ else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'tar -C $HOME -xzf siteinfo.tgz '
+echo 'tar -C $HOME -xzf FringeFlow.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_maise.sh'
 echo 'domagic.sh magic.tgz'
 # echo 'get_siteinfo.sh .'

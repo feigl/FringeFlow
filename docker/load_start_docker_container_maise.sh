@@ -85,7 +85,13 @@ else
 fi
 
 # 2021/01/10 siteinfo is no longer in repo
-if [[ -f $HOME/siteinfo.tgz ]]; then
+if [[ -d $HOME/siteinfo ]]; then
+   tar -C $HOME -czvf siteinfo.tgz siteinfo
+   # 2022/01/24 copy into run folder
+   echo Copying $HOME/siteinfo.tgz to $PWD
+   cp -rf $HOME/siteinfo.tgz $PWD
+   #tar -xzvf siteinfo.tgz
+elif [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to $PWD

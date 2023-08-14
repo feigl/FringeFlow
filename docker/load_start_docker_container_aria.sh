@@ -123,13 +123,17 @@ else
 fi
 
 # 2021/01/10 siteinfo is no longer in repo
+if [[ -d $HOME/siteinfo ]]; then
+  tar -C $HOME -czvf $HOME/siteinfo.tgz siteinfo
+fi
+
 if [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to $PWD
    cp -rf $HOME/siteinfo.tgz $PWD
 else
-   echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
+   echo "ERROR: cannot find file $HOME/siteinfo.tgz . Look on askja."
    exit -1
 fi
 

@@ -145,7 +145,7 @@ bbox="$(get_site_dims.sh ${SITEUC} S) $(get_site_dims.sh ${SITEUC} N) $(get_site
 # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
 # ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
-do_download=1
+do_download=0
 if [[ do_download -eq 1 ]]; then
     # clean start
     \rm -rf products
@@ -201,11 +201,18 @@ case $SITEUC in
     ;;
     
 esac
-echo REFLALO is $REFLALO
-cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg | sed "s/REFLALO/$REFLALO/" | sed "s/PROJECT_TXXX/${SITEUC}_T{$TRACK}/" > mintpy_aria.cfg
 
-# start MintPy
-run_mintpy.sh mintpy_aria.cfg
+# make custom config file for Mintpy
+echo REFLALO is $REFLALO
+cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg  > mintpy_aria.cfg
+cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
+cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
+
+# update the standard config file with custom version 
+smallbaselineApp.py -g mintpy_aria.cfg
+
+# start MintPy with updated config file
+run_mintpy.sh smallbaselineApp.cfg
 
 # make plots
 plot_maps_mintpy.sh $SITEUC

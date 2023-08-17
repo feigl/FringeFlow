@@ -5,7 +5,7 @@ FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest
 
 # easy reference for the software versions (tags or commit hashes) which we're pulling & building
 ENV MINTPY_VERSION=v1.5.1
-ENV ISCE_VERSION=v2.6.1
+ENV ISCE_VERSION=v2.6.1  
 ENV PYKML_VERSION=v1.1.0
 ENV PYAPS_VERSION=v0.3.2
 ENV ARIA_VERSION=v1.1.5
@@ -55,13 +55,14 @@ RUN cd /tools \
 # RUN apt-get update
 # RUN apt-get install ffmpeg libsm6 libxext6  -y
 # Even though the above solutions work. But their package sizes are quite big. libGL.so.1 is provided by package libgl1. So the following code is sufficient.
-#RUN apt-get install libgl1
-#RUN apt-get install ffmpeg libsm6 libxext6  -y
-# Kurt's feeble attempt to 
-#RUN mamba install -c conda-forge libgl1
-RUN apt-get update
+# RUN apt-get install libgl1
+# RUN apt-get install ffmpeg libsm6 libxext6  -y
+# The two lines above fail. Kurt's feeble attempt to repair 
+RUN mamba install -c conda-forge libgl1
+RUN apt-get update libgl1
 RUN apt install -y libgl1-mesa-glx
-
+RUN apt-get install libgl1
+RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 # build & install isce2
 RUN cd /tools/isce2/build \

@@ -23,8 +23,8 @@ Help()
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1"
-    echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c a"
-    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c a"
+    echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c 2"
+    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 3"
     exit -1
   }
 
@@ -190,7 +190,6 @@ else
    echo error cannot find aux.tgz
    exit -1
 fi
-
 
 echo "Downloading SLC files...."
 export SLCDIR=${PWD}/SLC

@@ -51,8 +51,18 @@ if [[ -f $fname ]]; then
     
 
     # print wrapped image
-    mdx.py ${fname}.geo -z -100 -wrap 6.28 -P 
-    convert out.ppm ${fname}.geo.pha.jpg
+    mdx.py ${fname}.geo -z -100 -wrap 6.28 -P
+
+    # do we have convert installed ?
+    #https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script
+    #command -v convert >/dev/null 2>&1 || { echo >&2 "I require convert from ImageMagick but it's not installed.  Aborting."; exit 1; }
+    
+    if [[  `command -v convert` ]]; then
+        convert out.ppm ${fname}.geo.pha.jpg
+    else
+        echo "WARNING $0 requires convert from ImageMagick but it is not installed."
+        mv -v out.ppm ${fname}.geo.pha.ppm
+    fi
 
     # make kml file
     mdx.py ${fname}.geo -wrap 6.28 -kml ${fname}.geo.kml
@@ -61,8 +71,18 @@ if [[ -f $fname ]]; then
     export NSAMP=`grep rasterXSize $fname.geo.vrt | awk '{print substr($2,13)}' | sed 's/"//g'`
     echo "Number of samples NSAMP is $NSAMP"
     mdx -P ${fname}.geo -c8mag -s $NSAMP
-    convert out.ppm ${fname}.geo.mag.jpg
 
+    # do we have convert installed ?
+    #https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script
+    #command -v convert >/dev/null 2>&1 || { echo >&2 "I require convert from ImageMagick but it's not installed.  Aborting."; exit 1; }
+    
+    if [[  `command -v convert` ]]; then
+       convert out.ppm ${fname}.geo.mag.jpg
+       rm out.ppm
+    else
+        echo "WARNING $0 requires convert from ImageMagick but it is not installed."
+        mv -v out.ppm ${fname}.geo.mag.ppm
+    fi
     ls -ltr ${fname}*
 
 fi

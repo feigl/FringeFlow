@@ -24,6 +24,7 @@ Help()
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1"
     echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c a"
+    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c a"
     exit -1
   }
 
@@ -134,15 +135,14 @@ if [[ ISCONDOR -eq 1 ]]; then
 #    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
 #    /
 
-
     
     # next line fails for lack of permissions
     tar -C ${HOME} -xzvf FringeFlow.tgz  
 
-
-
     # set up paths and environment
     # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+    #source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+    # 
     source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
 
     # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
@@ -184,6 +184,8 @@ popd
 echo "Retrieving AUX files...."
 if [[ -f ../aux.tgz ]]; then
    tar -xzf ../aux.tgz
+elif [[ -f aux.tgz ]]; then
+   tar -xzf aux.tgz
 else
    echo error cannot find aux.tgz
    exit -1
@@ -224,8 +226,14 @@ popd
 echo "Running ISCE...."
 mkdir -p ISCE
 pushd ISCE
-run_isce.sh $SITEUC $MISSION $TRACK $YYYYMMDD1 $YYYYMMDD2 | tee -a ../isce.log
 #run_isce.sh SANEM S1 64 20210331 20210507
+run_isce.sh $SITEUC $MISSION $TRACK $YYYYMMDD1 $YYYYMMDD2 | tee -a ../isce.log
+# plot pairs in radar geometry
+plot_interferograms.sh $SITEUC filt_fine.int | tee -a ../isce.log
+plot_interferograms.sh $SITEUC filt_fine.unw  | tee -a ../isce.log
+# geocode and plot pairs in geographic geometry 
+geocode_interferograms.sh $SITEUC filt_fine.int | tee -a ../isce.log
+geocode_interferograms.sh $SITEUC filt_fine.unw | tee -a ../isce.log
 popd
 
 echo "Running MINTPY..."

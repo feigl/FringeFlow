@@ -1,34 +1,27 @@
 #!/bin/bash -e
 # make geocoded images of all interferograms
 
-if [[ ("$#" -ne 1) ]]; then
+if [[ ("$#" -ne 2) ]]; then
     bname=`basename $0`
-    echo "$bname will create geocoded jpg and kml files for all interferometric pairs"
-    echo "usage:   $bname SITE reference_YYYYMMDD secondary_YYYYMMDD"
-    echo "example: $bname SANEM 20190110 20190122"
+    echo "$bname will create geocoded jpg and kml files for all interferometric pairs matching the template"
+    echo "usage:   $bname SITE fname"
+    echo "example: $bname SANEM filt_fine.int "
+    echo "example: $bname SANEM filt_fine.unw "
     exit -1
 fi
 
+echo "Starting script named $0"
+echo PWD is ${PWD}
+echo HOME is ${HOME} 
+
 export sit=$1
+export fname1=$2
 
 echo sit is $sit
-
-FILES="./merged/interferograms/*/filt_fine.int"
-
-for f in $FILES
-do
-  #echo "Processing $f file..."
-  pair=`echo $f | awk -F'/' '{print $4}'`
-  #echo "pair is $pair"
-  t0=`echo $pair | awk -F_ '{print $1}'`
-  #echo "first acquisition date t0 is $t0"
-  t1=`echo $pair | awk -F_ '{print $2}'`
-  #echo "second acquisition date t1 is $t1"
-
-  geocode_interferogram.sh $sit $t0 $t1
+echo fname1 is $fname1
+for fname2 in `ls -1 merged/interferograms/*/${fname1}` ; do
+    geocode_interferogram.sh $sit $fname2
 done
-
-
 
 
 

@@ -40,6 +40,8 @@ pushd $dirname
 # pull scripts and make a tar file
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT tarring FringeFlow
+elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
+  echo NOT tarring FringeFlow
 else
   if [[ -d $HOME/FringeFlow ]]; then
     pushd $HOME/FringeFlow
@@ -47,7 +49,7 @@ else
     popd 
 
     pushd $HOME
-    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+    tar --exclude FringeFlow/.git -czf $HOME/FringeFlow.tgz FringeFlow
     popd
   else
     echo Could not find $HOME/FringeFlow 
@@ -102,6 +104,7 @@ else
    exit -1
 fi
 
+dockertag="docker.io/feigl/maise:20221218"
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
 #docker pull docker.io/nbearson/isce_mintpy:20211110
@@ -109,6 +112,7 @@ fi
 #docker pull docker.io/nbearson/isce_chtc:20220204
 #docker pull docker.io/nbearson/isce_chtc:latest
 #docker pull docker.io/feigl/maise:20221218
+docker pull $dockertag
 
 # get the short (base) name of the current working directory
 #export MYDIR=`basename $PWD`
@@ -118,8 +122,10 @@ echo "Starting Docker image in container..."
 echo "Once container starts, consider the following commands"
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
    echo Using personal FringeFlow
+elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
+   echo Using personal FringeFlow
 else
-    echo 'tar -C $HOME -xzf FringeFlow.tgz '
+   echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'tar -C $HOME -xzf siteinfo.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_maise.sh'
@@ -132,50 +138,29 @@ echo '  '
 # go directory above container
 cd $dirname
 if [[ $(hostname) == "askja.ssec.wisc.edu" || $(hostname) == "maule.ssec.wisc.edu" ]]; then
-  #echo "unsharing"
+  echo "unsharing"
   podman unshare chown -R 1000:1000 $runname
 else
   echo "not unsharing"
 fi
+
 # go into container
 cd $runname
 
 # run script in container
 #docker run --name $runname -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy ./bin/run_pair.sh 20190110  20190122
 
-# start interactive shell in container 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -v "$PWD/../..":"$PWD/../.."  -w $PWD nbearson/isce_mintpy 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/../ISCE":"$PWD/../ISCE" -w $PWD nbearson/isce_mintpy 
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD nbearson/isce_mintpy:latest 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD isce/isce2:latest
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
-#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
-# inherit ssh keys with proper permissions
-#https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
-#docker run --rm -it -v ~/.ssh:/root/.ssh:ro
-#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
-# mount FringeFlow instead of copying it
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
-   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/maise:20220915
-   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/maise:20220919
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/feigl/maise:20221218
+
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
+    # mount FringeFlow instead of copying it 
+    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
+elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then
+    # mount FringeFlow instead of copying it 
+    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
-   #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
-  #uid=`id -u`
-  #gid=`id -g`
-  #--uidmap "$uid":1000 --gidmap "$gid":1000 
-  # above does not work
-  #docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
-  #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/maise:20220919
-  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/feigl/maise:20221218
+    docker run -it --rm -v "$PWD":"$PWD" -w $PWD $dockertag
 else 
-  #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
-  #docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/maise:20220919
-  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/feigl/maise:20221218
+  docker run -it --rm -v "$PWD":"$PWD" -w $PWD $dockertag
 fi
 
 

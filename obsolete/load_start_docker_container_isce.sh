@@ -26,77 +26,38 @@ echo HOME is ${HOME}
 # export trk=144
 # export t0=20190110
 # export t1=20190122
-if [[ "$#" -eq 5 ]]; then
-  echo "Arguments are $1 $2 $3 $4 $5"
-  export sat=$1
-  export trk=$2
-  export sit=$3
-  export t0=$4
-  export t1=$5
-elif [[ "$#" -eq 3 ]]; then
-  echo "Arguments are $1 $2 $3"
-  export sat=$1
-  export trk=$2
-  export sit=$3
-  export t0='';
-  export t1='';
-else
+if [[ "$#" -eq 1 ]]; then
   export dirname=$1
   export runname=$dirname
+else
+  echo ERROR need target directory
+  exit -1
 fi
 
-if [[ (( "$#" -eq 3) || ( "$#" -eq 5 )) ]]; then
-  echo sat is $sat
-  echo trk is $trk
-  echo sit is $sit
-  echo t0 is $t0
-  echo t1 is $t1
-  export runname="${sat}_${trk}_${sit}_${t0}_${t1}"
+pushd $dirname
 
-  case $HOSTNAME in
-      askja.ssec.wisc.edu)
-      dirname=/s12/insar/$sit/$sat
-      ;;
-      maule.ssec.wisc.edu)
-      dirname=/s22/insar/$sit/$sat
-      ;;
-      *)
-      dirname=/System/Volumes/Data/mnt/t31/insar/$sit/$sat
-      ;;
-  esac
+# pull scripts and make a tar file
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
+  echo NOT tarring FringeFlow
+else
+  if [[ -d $HOME/FringeFlow ]]; then
+    pushd $HOME/FringeFlow
+    git pull 
+    popd 
+
+    pushd $HOME
+    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+    popd
+  else
+    echo Could not find $HOME/FringeFlow 
+    exit -1
+  fi
 fi
-
-pushd $PWD
-
-# # pull scripts and make a tar file
-# if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-#   echo NOT tarring FringeFlow
-# else
-#   if [[ -d $HOME/FringeFlow ]]; then
-#     cd $HOME/FringeFlow
-#     git pull 
-#     cd $HOME
-#     \rm $HOME/FringeFlow.tgz
-#     tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
-#     popd
-#   else
-#       echo Could not find $HOME/FringeFlow 
-#       exit -1
-#   fi
-# fi
 
 # make directory
 echo "directory name dirname is $dirname"
 mkdir -p $dirname
-cd $dirname
-#runname=`basename $dirname`
-
-# if [ -d $runname ]; then
-#     rm -rf $runname
-# fi
-echo runname is $runname
-mkdir -p $runname
-pushd $runname
+pushd $dirname
 
 ## copy keys here
 # cp -v $HOME/.netrc . 
@@ -104,17 +65,11 @@ pushd $runname
 # cp -v $HOME/SSARA-master/password_config.py .
 # cp -v $HOME/site_dims.txt .
 cp -v $HOME/magic.tgz .
-cp -v $HOME/.ssh/id_rsa .
 
 # copy code
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT copying FringeFlow
 else
-  pushd $HOME/FringeFlow; 
-  git pull;
-  pushd $HOME; 
-  tar --exclude FringeFlow/.git -czvf FringeFlow.tgz FringeFlow/
-  popd -2
   echo Copying $HOME/FringeFlow.tgz to $PWD
   \cp -rfv $HOME/FringeFlow.tgz .
 fi
@@ -126,24 +81,19 @@ else
    echo error could not find $HOME/aux.tgz 
    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
    echo consider wget https://qc.sentinel1.groupcls.com/product/S1A/AUX_CAL/2014/09/08/S1A_AUX_CAL_V20140908T000000_G20190626T100201.SAFE.TGZ
-   exit -1
 fi
 
 # 2021/01/10 siteinfo is no longer in repo
 if [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
-   echo Copying $HOME/siteinfo.tgz to .
-   \cp -rfv $HOME/siteinfo.tgz .
+   echo Copying $HOME/siteinfo.tgz to $PWD
+   cp -rf $HOME/siteinfo.tgz $PWD
    #tar -xzvf siteinfo.tgz
 else
    echo "ERROR: cannot find folder $HOME/siteinfo. Look on askja."
    exit -1
 fi
-
-# make a tar file
-#tar -czvf ../${runname}.tgz .
-
 
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
@@ -163,12 +113,13 @@ if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
 else
     echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
+echo 'tar -C $HOME -xzf siteinfo.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
 echo 'domagic.sh magic.tgz'
-#echo 'get_siteinfo.sh .'
-echo 'tar -C $HOME -xzf siteinfo.tgz '
+# echo 'get_siteinfo.sh .'
 echo '  '
 echo '  '
+
 ## arrange permissions
 # go directory above container
 cd $dirname
@@ -201,14 +152,13 @@ cd $runname
 # mount FringeFlow instead of copying it
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
-   #docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/feigl/isce_mintpy_aria 
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
    #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
   #uid=`id -u`
   #gid=`id -g`
   #--uidmap "$uid":1000 --gidmap "$gid":1000 
   # above does not work
-  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204  
+  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
 else 
   docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
 fi

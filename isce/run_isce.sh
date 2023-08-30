@@ -3,7 +3,8 @@
 # 20210809 update SLCdir
 # 20211006 fix SLCdir
 # 20220810 clean up
-
+# 20230829 make it work with MintPy under MAISE
+#          try geocoding
 bname=`basename $0`
 
 Help()
@@ -11,7 +12,7 @@ Help()
    # Display Help
     echo "$bname runs ISCE"
     echo "usage:   $bname SITE MISSION TRACK YYYYMMDD1 YYYYMMDD2"
-    echo "example: $baname SANEM     S1   144  20220331 20220506"
+    echo "example: $bname SANEM     S1   144  20220331 20220506"
     exit -1
   }
 
@@ -190,9 +191,9 @@ tail -1 isce.log | tee -a run_isce_jobs.log
 
 
 # count number of interferograms
-npairs=`ls -d merged/interferograms |  wc`
+npairs=`ls -d merged/interferograms/* |  wc -l`
 echo number of pairs requested npairs is ${npairs} | tee -a run_isce_jobs.log 
-npairs_unw=`ls merged/interferograms/*/filt_fine.unw | wc`
+npairs_unw=`ls merged/interferograms/*/filt_fine.unw | wc -l `
 echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_jobs.log 
 
 # graphics output
@@ -201,6 +202,8 @@ echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_job
 # convert out.ppm out.jpg
 # ls -l out.*
 #display out.jpg
+
+plot_interferograms.sh
 
 # geocode
 #geocodeIsce.py -f merged/interferograms/20190110_20190122/filt_fine.int -d demLat_N40_N41_Lon_W120_W119.dem.wgs84 -m ./reference -s ./secondarys/20190122/ -a 2 -r 6 -b '40.348 40.449 -119.46 -119.375' 
@@ -211,7 +214,7 @@ echo number of pairs completed npairs_unw is ${npairs_unw} | tee -a run_isce_job
 #     convert out.ppm merged/interferograms/${t0}_${t1}/filt_fine_geo_crop.jpg
 # fi
 
-plot_interferograms.sh
+
 
 
 

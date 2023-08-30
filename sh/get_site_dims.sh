@@ -9,6 +9,7 @@
 #            definitive version of this script lives in FringeFlow/sh
 # 2021/11/08 Kurt clarify error message for SITE_TABLE
 # 2023/06/12 Kurt make this thing work
+# 2023/08/29 Kurt add -W option for Well Known Text (WKT) format
 
 # SITE 5 LETTER CODE NAMES
 #
@@ -76,32 +77,32 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
         1 | 2 | 3)
             grep -i $site -A${coord_id} $SITE_TABLE | tail -1
             exit 0
-        ;;
+            ;;
         W )
             # output W, 
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$1)}' 
             exit 0
-        ;;
+            ;;
         E)
             # output E, 
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$2)}' 
             exit 0
-        ;;
+            ;;
         S)
             # output S, 
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$3)}' 
             exit 0
-        ;;
+            ;;
         N)
             # output N, 
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%.10f\n",$4)}' 
             exit 0
-        ;;
+            ;;
         -1 )
             # output W, E, S, N separately
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %20.10f\n E = %20.10f\n S = %20.10f\n N = %20.10f\n",$1,$2,$3,$4)}' 
             exit 0
-        ;;
+            ;;
         i) 
             # output integer bounds S, N, W, E
             # fails for negative longitude
@@ -122,6 +123,23 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             ;;
         -2 )
             grep -i $site $SITE_TABLE -A2 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %12.3f\n E = %12.3f\n S = %12.3f\n N = %12.3f\n",$1,$2,$3,$4)}' 
+            exit 0
+            ;;
+        -wkt ) 
+            # Well Known Text WTK format 
+            # polygon, a line segment (“linestring”), or a point defined in 2-D
+            # Well-Known Text (WKT). Each polygon must be explicitly closed,
+            # i.e. the first vertex and the last vertex of each listed polygon
+            # must be identical. Coordinate pairs for each vertex are in decimal
+            # degrees: longitude is followed by latitude. Bounding polygon in
+            # the digital long/lat format; enter coordinates in counter
+            # clockwise direction, repeat the first point at the end to close
+            # the polygon: in the format ABCDA
+
+            # validate here http://arthur-e.github.io/Wicket/sandbox-gmaps3.html
+            
+            # polygon((-119.543 37.925, -118.443 37.7421, -118.682 36.8525, -119.77 37.0352, -119.543 37.925 ))
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("polygon((%.7f %.7f, %.7f %.7f, %.7f %.7f, %.7f %.7f, %.7f %.7f))\n",$1,$3, $2,$3, $2,$4, $1,$4, $1,$3)}' 
             exit 0
             ;;
         *)

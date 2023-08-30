@@ -26,19 +26,23 @@ else
 
         # cp -v $HOME/.netrc . 
         if [[ -f $HOME/magic/.netrc ]]; then
-            echo "File named $HOME/.netrc exists"
+            echo "File named $HOME/magic/.netrc exists"
             cp -vf $HOME/magic/.netrc $HOME/.netrc
+        elif [[ -f $HOME/.netrc ]]; then
+            echo "File named $HOME/.netrc exists"
         else
-            echo "ERROR: could not find named $HOME/magic/.netrc"
+            echo "ERROR: could not find named .netrc"
             exit -1
         fi
 
         # Add your Open Topo API key to `~/.topoapi`.Refer to ARIAtools installation instructions.
         if [[ -f $HOME/magic/.topoapi ]]; then
-            echo "File named $HOME/.topoapi exists"
+            echo "File named $HOME/magic/.topoapi exists"
             cp -vf $HOME/magic/.topoapi $HOME/.topoapi
+        elif [[ -f $HOME/.topoapi ]]; then
+            echo "File named $HOME/.topoapi exists"
         else
-            echo "ERROR: could not find named $HOME/magic/.topapi"
+            echo "ERROR: could not find named .topapi"
             exit -1
         fi
 

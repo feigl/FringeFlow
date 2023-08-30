@@ -103,7 +103,7 @@ if [[ -n ${YYYYMMDD2+set} ]]; then
 else
     export YYYYMMDD2="20240101" # 
 fi
-if [[ -n ${STACK_SENTINEL_NUM_CONNECTIONS} ]]; then
+if [[ -n ${STACK_SENTINEL_NUM_CONNECTIONS+set} ]]; then
    echo STACK_SENTINEL_NUM_CONNECTIONS  is $STACK_SENTINEL_NUM_CONNECTIONS
 else
    export STACK_SENTINEL_NUM_CONNECTIONS=1
@@ -136,17 +136,29 @@ if [[ ISCONDOR -eq 1 ]]; then
 #    /
 
     
-    # next line fails for lack of permissions
-    tar -C ${HOME} -xzvf FringeFlow.tgz  
-
     # set up paths and environment
+    if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then
+        tar -C ${_CONDOR_SCRATCH_DIR} -xzvf FringeFlow.tgz
+        source  ${_CONDOR_SCRATCH_DIR}/FringeFlow/docker/setup_inside_container_maise.sh
+        # magic files must be in $HOME
+        export HOME1=${HOME} 
+        export HOME=${_CONDOR_SCRATCH_DIR}
+        ${_CONDOR_SCRATCH_DIR}/FringeFlow/docker/domagic.sh magic.tgz
+        export HOME=${HOME1}
+    else
+        tar -C ${HOME} -xzvf FringeFlow.tgz 
+        source ${HOME}/FringeFlow/docker/setup_inside_container_maise.sh 
+        $HOME/FringeFlow/docker/domagic.sh magic.tgz
+    fi
+
+    
     # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
     #source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
     # 
-    source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
+    
 
     # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
-    $HOME/FringeFlow/docker/domagic.sh magic.tgz
+    # $HOME/FringeFlow/docker/domagic.sh magic.tgz
 
     # uncompress siteinfo
     #tar -C ${HOME} -xzvf siteinfo.tgz
@@ -257,9 +269,9 @@ pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
 if [[  -d /staging/groups/geoscience ]]; then
     cp -vf ../_condor_stdout .
     cp -vf ../_condor_stderr .
-    tar -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY ../_condor_stdout ../_condor_stderr
+    tar -C $RUNNAME -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY ../_condor_stdout ../_condor_stderr
     mkdir -p "/staging/groups/geoscience/isce/output/"
-    cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
+    mv -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2
     rm -rf $WORKDIR/*
 else
@@ -267,5 +279,9 @@ else
 fi
 popd
 
+if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then      
+        export HOME=${HOME1}
+fi        
+  
 # exit cleanly
 exit 0

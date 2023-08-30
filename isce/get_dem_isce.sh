@@ -13,7 +13,12 @@ else
     exit -1
 fi
 
-
+# set up paths and environment
+if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then
+    export HOME1=${HOME} 
+    export HOME=${_CONDOR_SCRATCH_DIR}
+fi
+  
 # make the DEM
 echo "Getting a DEM from NASA"
 echo dem.py -a stitch -b $(get_site_dims.sh $site5 i) -r -s 1 -c 
@@ -46,3 +51,9 @@ else
         exit -1
     fi
 fi
+
+# reset environment variable
+if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then
+    export HOME=${HOME1}
+fi
+

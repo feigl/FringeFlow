@@ -35,7 +35,7 @@ executable = run_ssara_isce_mintpy.sh
 # To actually submit this file
     # condor_submit run_ssara_isce_mintpy.sub
 
-transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
+transfer_input_files = run_ssara_isce_mintpy.sh, FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 
 # 20220822 # new standard order
 #arguments = "-n SANEM -m S1 -1 20220331 -2 20220506 -c 1"
@@ -46,7 +46,8 @@ transfer_input_files = FringeFlow.tgz, magic.tgz, siteinfo.tgz, aux.tgz
 # 2022-05-01
 # 2022-05-13
 # 2022-05-25
-arguments = "-n SANEM -m S1 -t 64 -1 20220326 -2 20220501 -c 1"
+arguments = "-n SANEM -m S1 -t 144 -1 20220326 -2 20220501 -c 1"
+#arguments = "-n SANEM -m S1 -t 64 -1 20220326 -2 20220501 -c 1"
 # There is a variable $_CONDOR_SCRATCH_DIR that gets set when the job starts
 #that points to this location, so you could use that in a wrapper script
 #("export HOME=$_CONDOR_SCRATCH_DIR") before running the rest of your job.

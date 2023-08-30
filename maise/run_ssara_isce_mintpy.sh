@@ -240,6 +240,42 @@ mkdir -p MINTPY
 pushd MINTPY
 \cp $HOME/FringeFlow/mintpy/mintpy_template.cfg .
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
+
+# FAILS with template
+# timeseries2velocity.py /s12/insar/SANEM/S1/T144/SANEM_S1_144_20220331_20220506/MINTPY/inputs/ERA5.h5 -t /s12/insar/SANEM/S1/T144/SANEM_S1_144_20220331_20220506/MINTPY/smallbaselineApp.cfg -o /s12/insar/SANEM/S1/T144/SANEM_S1_144_20220331_20220506/MINTPY/velocityERA5.h5 --update --ref-date 20220331 --ref-yx 739 535
+# read options from template file: smallbaselineApp.cfg
+# update mode: ON
+# 1) output file /s12/insar/SANEM/S1/T144/SANEM_S1_144_20220331_20220506/MINTPY/velocityERA5.h5 NOT found.
+# run or skip: run.
+# open timeseries file: ERA5.h5
+#     sys.exit(load_entry_point('mintpy==1.4.1', 'console_scripts', 'smallbaselineApp.py')())
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/smallbaselineApp.py", line 1291, in main
+#     app.run(steps=inps.runSteps)
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/smallbaselineApp.py", line 1086, in run
+#     self.run_timeseries2velocity(sname)
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/smallbaselineApp.py", line 925, in run_timeseries2velocity
+#     mintpy.timeseries2velocity.main(iargs)
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/timeseries2velocity.py", line 794, in main
+#     run_timeseries2time_func(inps)
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/timeseries2velocity.py", line 330, in run_timeseries2time_func
+#     inps = read_date_info(inps)
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/timeseries2velocity.py", line 285, in read_date_info
+#     ts_obj.open()
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/objects/stack.py", line 171, in open
+#     self.get_metadata()
+#   File "/opt/conda/lib/python3.8/site-packages/mintpy-1.4.1-py3.8.egg/mintpy/objects/stack.py", line 213, in get_metadata
+#     self.metadata['REF_DATE'] = dateList[0]
+# IndexError: list index out of range
+# Dumping dates
+# HDF5 "inputs/ifgramStack.h5" {
+# DATASET "date" {
+#    DATATYPE  H5T_STRING {
+#       STRSIZE 8;
+#       STRPAD H5T_STR_NULLPAD;
+#       CSET H5T_CSET_ASCII;
+#       CTYPE H5T_C_S1;
+#    }
+
 if [[ -d geo ]]; then
     pushd geo
     plot_maps_mintpy.sh $SITEUC

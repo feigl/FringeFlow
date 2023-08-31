@@ -25,7 +25,7 @@ fi
 if [[ -f ${HOME}/siteinfo.tgz ]]; then
     tar -C $HOME -xzf ${HOME}/siteinfo.tgz
 elif [[ -f ${PWD}/siteinfo.tgz ]]; then 
-    tar -C $HOME -xzf ${PWD}/siteinfo.tgz
+    tar -xzf ${PWD}/siteinfo.tgz
 else
     echo "ERROR cannot find tar file named siteinfo.tgz"
     exit -1

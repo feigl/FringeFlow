@@ -27,7 +27,7 @@ echo "STEP is ${STEP}"
 rm -rf pic isce.log *.h5
 
 # TODO test on STEP
-#rm -rf inputs
+rm -rf inputs
 
 # copy keys for ERA PYAPS
 if [ -f ../model.cfg ]; then

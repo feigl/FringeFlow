@@ -140,12 +140,15 @@ fi
 #     --num_connections_ion 3 \
 #     --useGPU
 
-if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
-   cp $HOME/FringeFlow/isce/ion_param.txt .
-else
-   echo error cannot find ion_param.txt
-   exit -1
-fi
+# # Eventually we will want to do ionospheric corrections
+# if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
+#    cp $HOME/FringeFlow/isce/ion_param.txt .
+# elseif [[ -f /root/FringeFlow/isce/ion_param.txt  ]]; then
+#    cp /root/FringeFlow/isce/ion_param.txt  .
+# else
+#    echo error cannot find ion_param.txt
+#    exit -1
+# fi
 
 stackSentinel.py -w ./ \
     -d ${demfile} \

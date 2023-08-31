@@ -70,7 +70,6 @@ while getopts ":1:2:c:h:n:m:t:" option; do
     esac
 done
 
-
 # test existence of variables
 #https://unix.stackexchange.com/questions/212183/how-do-i-check-if-a-variable-exists-in-an-if-statement
 if [[ -n ${SITELC+set} ]]; then
@@ -109,9 +108,6 @@ else
    export STACK_SENTINEL_NUM_CONNECTIONS=1
 fi
 
-export WORKDIR=$PWD
-
-
 ## are we running under condor ?
 if [[  -d /staging/groups/geoscience ]]; then
     export ISCONDOR=1
@@ -122,20 +118,6 @@ echo ISCONDOR is $ISCONDOR
 
 # uncompress files for shell scripts 
 if [[ ISCONDOR -eq 1 ]]; then
-#TODO need to define HOME
-#   Interesting thought! I'm not sure if that variable is available in a submit file. These two quick tests were unsuccessful:
-#    Using:
-#       environment = "HOME=$_CONDOR_SCRATCH_DIR"
-#    gives me:
-#       I have no name!@bearson-10155730:/var/lib/condor/execute/slot1/dir_2266535$ echo $HOME
-#       $_CONDOR_SCRATCH_DIR
-# and:
-#     environment = "HOME=$(_CONDOR_SCRATCH_DIR)"
-#      gives me:
-#    I have no name!@bearson-10155732:/var/lib/condor/execute/slot2/dir_579990$ echo $HOME
-#    /
-
-    
     # set up paths and environment
     if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then
         tar -C ${_CONDOR_SCRATCH_DIR} -xzvf FringeFlow.tgz
@@ -150,21 +132,12 @@ if [[ ISCONDOR -eq 1 ]]; then
         source ${HOME}/FringeFlow/docker/setup_inside_container_maise.sh 
         $HOME/FringeFlow/docker/domagic.sh magic.tgz
     fi
-
-    
-    # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
-    #source $HOME/FringeFlow/docker/setup_inside_container_isce.sh
-    # 
-    
-
-    # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
-    # $HOME/FringeFlow/docker/domagic.sh magic.tgz
-
-    # uncompress siteinfo
-    #tar -C ${HOME} -xzvf siteinfo.tgz
-    get_siteinfo.sh .
+  get_siteinfo.sh .
 fi
 
+# set some more environment variables
+# get absolute path
+export WORKDIR=$PWD
 
 export TIMETAG=`date +"%Y%m%dT%H%M%S"`
 echo TIMETAG is ${TIMETAG}
@@ -172,26 +145,16 @@ echo TIMETAG is ${TIMETAG}
 export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
 echo RUNNAME is ${RUNNAME}
 
-RUNDIR="$WORKDIR/$RUNNAME"
+RUNDIR=${WORKDIR}/${RUNNAME}
 mkdir -p $RUNDIR
 pushd $RUNDIR
 pwd
-
-# set folder for SLC zip files
-# if [[ -n ${SLCDIR+set} ]]; then
-#    echo SLCDIR is $SLCDIR
-# else
-#    export SLCDIR="${RUNDIR}/SLC_${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
-# fi
-# echo SLCDIR is ${SLCDIR}
-
 
 echo "Getting DEM"
 mkdir -p DEM
 pushd DEM
 get_dem_isce.sh $SITELC
 popd
-
 
 echo "Retrieving AUX files...."
 if [[ -f ../aux.tgz ]]; then
@@ -204,34 +167,13 @@ else
 fi
 
 echo "Downloading SLC files...."
-export SLCDIR=${PWD}/SLC
+export SLCDIR=${WORKDIR}/SLC
 mkdir -p ${SLCDIR}
 pushd ${SLCDIR}
 echo PWD is now ${PWD}
 run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
 ls -ltr | tee -a ../slc.log
 popd
-
-
-#echo "Handling orbits"
-# mkdir -p ORBITS
-# cd ORBITS
-# get_orbits_from_askja.sh | tee -a ../orbits.log
-# cd ..
-# [chtc-nickb@bearson-9818685 ORBITS]$ get_orbits_from_askja.sh | tee -a ../orbits.log
-# ssh: connect to host askja.ssec.wisc.edu port 22: Connection refused
-# NICKB: FIXME: FIX WITH SSH or FIX WITH STAGING?
-# above: leaning towards FIX WITH STAGING right now
-# 2022/08/10 - ISCE can retrieve its own orbits
-# if [[ $ISCONDOR -eq 1 ]]; then 
-#     cp /staging/groups/geoscience/isce/input/orbits.tar.xz orbits.tar.xz
-#     tar xf orbits.tar.xz
-# else
-#    if [[ ! -d ORBITS ]]; then
-#    rsync -rav transfer.chtc.wisc.edu:/staging/groups/geoscience/isce/input/orbits.tar.xz .
-#    tar xf orbits.tar.xz
-#    fi
-# fi
 
 
 echo "Running ISCE...."
@@ -295,26 +237,30 @@ if [[ -d geo ]]; then
 fi
 popd
 
+### STORE RESULTS
 echo "Storing results...."
-# transfer output back to /staging/
-pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
-# I don't love using *.log here, as with `set -e` we will bail if there are no such log files
-#tar czf "$RUNNAME.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
-# 2022/08/08 Kurt - add folders only
+
+pushd $WORKDIR 
+
+# keep standard output
+if [[ $ISCONDOR -eq 1 ]]; then
+    cp -vf _condor_stdout $RUNNAME
+    cp -vf _condor_stderr $RUNNAME
+fi
+ 
+tar -czf ${RUNNAME}.tgz $RUNNAME
 
 if [[  -d /staging/groups/geoscience ]]; then
-    cp -vf ../_condor_stdout .
-    cp -vf ../_condor_stderr .
-    tar -C $RUNNAME -czf "$RUNNAME.tgz" DEM ORBITS ISCE/reference ISCE/baselines ISCE/merged ISCE/geom_reference MINTPY ../_condor_stdout ../_condor_stderr
-    mkdir -p "/staging/groups/geoscience/isce/output/"
-    mv -fv "$RUNNAME.tgz" "/staging/groups/geoscience/isce/output/$RUNNAME.tgz"
+    mkdir -p "/staging/groups/geoscience/maise/"
+    mv -fv $RUNNAME.tgz /staging/groups/geoscience/maise/
     # delete working dir contents to avoid transfering files back to /home/ on submit2
-    rm -rf $WORKDIR/*
+    #rm -rf $RUNNAME
 else
     echo keeping everything
 fi
 popd
 
+# restore environment variable
 if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then      
         export HOME=${HOME1}
 fi        

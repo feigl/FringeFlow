@@ -175,7 +175,6 @@ run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | 
 ls -ltr | tee -a ../slc.log
 popd
 
-
 echo "Running ISCE...."
 mkdir -p ISCE
 pushd ISCE

@@ -3,6 +3,12 @@
 
 FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest as maise
 
+# switch shell sh (default in Linux) to bash
+# https://github.com/containers/podman/issues/8477
+# https://stackoverflow.com/questions/55123637/activate-conda-environment-in-docker
+# also make it a login shell so it adds .bashrc before each RUN command
+SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
+
 # create new environment & initialize it (adds conda environment stuff to .bashrc)
 RUN mamba create --name maise --yes \
  && mamba init --system bash
@@ -10,15 +16,9 @@ RUN mamba create --name maise --yes \
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
 # because "each RUN in a Dockerfile is a separate run of bash"
 
-# switch shell sh (default in Linux) to bash
-# https://github.com/containers/podman/issues/8477
-# https://stackoverflow.com/questions/55123637/activate-conda-environment-in-docker
-# also make it a login shell so it adds .bashrc before each RUN command
-SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
-RUN echo "mamba activate maise" >> $HOME/.bashrc
-
 # install stuff that's available directory from conda-forge (isce2, mintpy)
-RUN mamba install --name maise --channel conda-forge isce2 mintpy --yes
+RUN mamba install --name maise --channel conda-forge isce2 mintpy imagemagick --yes \
+ && echo "conda activate maise" >> $HOME/.bashrc
 
 # check that ISCE_HOME was set in the current environment by the above
 RUN test -n "${ISCE_HOME-}"

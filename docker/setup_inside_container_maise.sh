@@ -13,20 +13,21 @@ else
 fi 
 # configure environment for ISCE
 #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
+# nickb note: isce2 environment is now set in the conda environment
 if [[ -f /tools/isce2/isce_env.sh ]]; then
    source /tools/isce2/isce_env.sh
 fi
 
-if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
-    export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
+if [[ -d /opt/conda/envs/maise/share/isce2/topsStack/ ]]; then
+    export PATH=/opt/conda/envs/maise/share/isce2/topsStack/:$PATH
 fi
 
-if [[ -d /tools/isce2/src/isce2/applications ]]; then
-    export PATH=${PATH}:/tools/isce2/src/isce2/applications
+if [[ -d /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications ]]; then
+    export PATH=${PATH}:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications
     if [[ -n ${PYTHONPATH+set} ]]; then
-        export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
+        export  PYTHONPATH=${PYTHONPATH}:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications
     else
-        export  PYTHONPATH=/tools/isce2/src/isce2/applications
+        export  PYTHONPATH=/opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications
     fi
 fi
 
@@ -59,7 +60,7 @@ fi
 
 # set up for MintPy
 if [[ -d /tools/MintPy ]]; then
-    export MINTPY_HOME=/tools/MintPy
+    export MINTPY_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/mintpy
     export PATH=${PATH}:${MINTPY_HOME}/mintpy
     export PATH=${PATH}:${MINTPY_HOME}/sh
     export PATH=${PATH}:${MINTPY_HOME}/simulation
@@ -74,25 +75,25 @@ fi
 
 if [[ -d /tools/PyAPS ]]; then
     if [[ -n ${PYTHONPATH+set} ]]; then
-        export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS
+        export PYTHONPATH=${PYTHONPATH}:/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3
     else
-        export PYTHONPATH=/tools/PyAPS
+        export PYTHONPATH=/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3
     fi
-    export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS/pyaps3
+    export PYTHONPATH=${PYTHONPATH}:/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3
 fi
 
-if [[ -d $HOME/ARIA-tools ]]; then
+if [[ -d /tools/ARIA-tools ]]; then
     if [[ -n ${PYTHONPATH+set} ]]; then
-        export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
+        export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools/tools/ARIAtools
     else
-        export PYTHONPATH=${HOME}/ARIA-tools/tools/ARIAtools
+        export PYTHONPATH=/tools/ARIA-tools/tools/ARIAtools
     fi
-    export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
-    export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
+    export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools/tools/ARIAtools
+    export PATH=${PATH}:/tools/ARIA-tools/tools/bin
 fi
 
-if [[ -d /opt/conda/share/proj ]]; then
-    export PROJ_LIB=/opt/conda/share/proj
+if [[ -d /opt/conda/envs/maise/share/proj/ ]]; then
+    export PROJ_LIB=/opt/conda/envs/maise/share/proj/
 fi
 
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/

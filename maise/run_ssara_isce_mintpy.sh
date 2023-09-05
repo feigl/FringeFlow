@@ -22,10 +22,11 @@ Help()
     echo '   -c number of connections in stack'
     echo '   -m mission e.g., S1 for Sentinel-1'
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
+    echo '   -t number of track'
     echo "example:"
-    echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1"
+    echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1 -t 42"
     echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c 2"
-    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 3"
+    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 3 -t 42"
     exit -1
   }
 

@@ -55,6 +55,9 @@ else
             elif [[ -f /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg ]]; then
                 echo "File named $HOME/magic/model.cfg exists. Copying it to opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg "
                 cp -fv $HOME/magic/model.cfg /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg
+            elif [[ -f /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg ]]; then
+                echo "File named $HOME/magic/model.cfg exists. Copying it to /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg"
+                cp -fv $HOME/magic/model.cfg /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg
             else
                 echo "ERROR $0 cannot find target."
             fi

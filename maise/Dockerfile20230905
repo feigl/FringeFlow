@@ -20,6 +20,13 @@ RUN echo "mamba activate maise" >> $HOME/.bashrc
 # install stuff that's available directory from conda-forge (isce2, mintpy)
 RUN mamba install --name maise --channel conda-forge isce2 mintpy --yes
 
+## To work around following error, get latest version of pip
+# DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+#   __import__('pkg_resources').require('ARIAtools==1.1.6')
+
+# get new version of pip
+RUN mamba install pip --yes
+
 # check that ISCE_HOME was set in the current environment by the above
 RUN test -n "${ISCE_HOME-}"
 
@@ -29,7 +36,8 @@ RUN mkdir -p /tools \
  && git clone https://github.com/aria-tools/ARIA-tools.git \
  && mamba install --name maise --channel conda-forge --file /tools/ARIA-tools/requirements.txt --yes \
  && cd /tools/ARIA-tools \
- && pip install -e .
+ && pip install -e  .
+
 
 # install SSARA
 RUN git clone https://www.unavco.org/gitlab/unavco_public/ssara_client.git /tools/SSARA \

@@ -105,7 +105,9 @@ else
 fi
 
 #dockertag="docker.io/feigl/maise:20221218"
-dockertag="docker.io/nbearson/maise:condaforge"
+#dockertag="docker.io/nbearson/maise:condaforge"
+dockertag="docker.io/feigl/maise:20230905"
+
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2
 #docker pull docker.io/nbearson/isce_mintpy:20211110

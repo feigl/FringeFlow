@@ -20,6 +20,14 @@ RUN echo "mamba activate maise" >> $HOME/.bashrc
 # install stuff that's available directory from conda-forge (isce2, mintpy)
 RUN mamba install --name maise --channel conda-forge isce2 mintpy --yes
 
+# work around following error
+#  File "/opt/conda/envs/maise/share/isce2/topsStack/Stack.py", line 1646, in getkmlQUAD
+#     import cv2
+# ModuleNotFoundError: No module named 'cv2'
+RUN grep cv2 /opt/conda/envs/maise/share/isce2/topsStack/Stack.py
+RUN sed -i 's/import cv2/#import cv2/' /opt/conda/envs/maise/share/isce2/topsStack/Stack.py
+RUN grep cv2 /opt/conda/envs/maise/share/isce2/topsStack/Stack.py
+
 ## To work around following error, get latest version of pip
 # DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
 #   __import__('pkg_resources').require('ARIAtools==1.1.6')

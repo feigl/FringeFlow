@@ -2,6 +2,7 @@
 # 2021/07/08 Kurt Feigl
 # 2021/12/07 Kurt and Nick
 # 2022/08/15 Kurt handle only environment variables here
+# 2023/09/16 adapt to smarter docker container which includes environment
 
 # set up paths and environment variables inside container
 # source this file
@@ -12,42 +13,35 @@ else
     export  PYTHONPATH=":"
 fi 
 
-# # configure environment for ISCE
-# if [[ -f /tools/isce2/src/isce2/docker/isce_env.sh ]]; then
-#     source /tools/isce2/src/isce2/docker/isce_env.sh
-# elif [[ -f /tools/isce2/isce_env.sh ]]; then
-#     #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
-#     source /tools/isce2/isce_env.sh 
-# else
-#     echo "WARNING cannot find file named isce_env.sh . Finding ..."
-#     find / -type f -name isce_env.sh 
-# fi
+if [[ -d /opt/conda/envs/maise/bin ]]; then
+    export PATH=$PATH:/opt/conda/envs/maise/bin
+fi
 
-# if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
-#     export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
-# else
-#     echo "WARNING cannot find directory named topsStack . Finding ..."
-#     find / -type d -name topsStack
-# fi
+# look for ISCE extras
+pathfound=`find /opt/conda/envs/maise -name dem.py | head -1`
+pathaddon=`dirname $pathfound`
+if [[ -d $pathaddon ]]; then
+   export PATH=$PATH:$pathaddon
+fi
 
-# if [[ -d /tools/isce2/src/isce2/applications ]]; then
-#     export PATH=${PATH}:/tools/isce2/src/isce2/applications
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
-#     else
-#         export  PYTHONPATH=/tools/isce2/src/isce2/applications
-#     fi
-# else
-#     echo "WARNING cannot find directory named applications . Finding ..."
-#     find / -type d -name applications
-# fi
+# look for MINTPY extras that include "proj" package
+# view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
+# ERROR 1: PROJ: proj_create_from_database: Open of /opt/conda/envs/maise/share/proj failed
+#https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error
+if [[ -d /opt/conda/envs/maise/share/proj ]]; then
+   export PROJ_LIB='/opt/conda/envs/maise/share/proj'
+else
+   echo 'WARNING: Cannot find proj library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
+fi
 
-# if [[ -f /tools/isce2/installv2.6.1/bin/mdx ]]; then
-#     export PATH=${PATH}:/tools/isce2/installv2.6.1/bin
-# else
-#     echo "WARNING cannot find file named mdx . Finding ..."
-#     find / -type f -name mdx
-# fi
+
+## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
+if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
+    export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH
+else
+    echo "WARNING cannot find a path to gdal . Consider following command:"
+    echo 'find / -type d -name gdal'
+fi
 
 # set up for Fringe Flow
 if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
@@ -88,6 +82,68 @@ else
     echo "WARNING cannot find a path to SSARA ." Finding ...
     find / -type d -name SSARA
 fi 
+
+# set up for siteinfo
+if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
+    export SITE_DIR=${_CONDOR_SCRATCH_DIR}/siteinfo  
+elif [[ -d ${HOME}/siteinfo ]]; then
+    export SITE_DIR=${HOME}/siteinfo  
+elif [[ -d ${PWD}/siteinfo ]]; then     
+    export SITE_DIR=${PWD}/siteinfo
+else
+    echo "WARNING cannot find directory named siteinfo"
+fi
+echo SITE_DIR is $SITE_DIR
+export SITE_TABLE=${SITE_DIR}/site_dims.txt
+echo SITE_TABLE is $SITE_TABLE
+
+# are we running under CONDOR, with the need for staging?
+if [[ -d /staging/groups/geoscience/ ]]; then
+    export ISCONDOR=1;
+else
+    export ISCONDOR=0;
+fi
+echo ISCONDOR is $ISCONDOR
+
+
+# configure environment for ISCE
+# if [[ -f /tools/isce2/src/isce2/docker/isce_env.sh ]]; then
+#     source /tools/isce2/src/isce2/docker/isce_env.sh
+# elif [[ -f /tools/isce2/isce_env.sh ]]; then
+#     #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
+#     source /tools/isce2/isce_env.sh 
+# else
+#     echo "WARNING cannot find file named isce_env.sh . Finding ..."
+#     find / -type f -name isce_env.sh 
+# fi
+
+# if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
+#     export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
+# else
+#     echo "WARNING cannot find directory named topsStack . Finding ..."
+#     find / -type d -name topsStack
+# fi
+
+# if [[ -d /tools/isce2/src/isce2/applications ]]; then
+#     export PATH=${PATH}:/tools/isce2/src/isce2/applications
+#     if [[ -n ${PYTHONPATH+set} ]]; then
+#         export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
+#     else
+#         export  PYTHONPATH=/tools/isce2/src/isce2/applications
+#     fi
+# else
+#     echo "WARNING cannot find directory named applications . Finding ..."
+#     find / -type d -name applications
+# fi
+
+# if [[ -f /tools/isce2/installv2.6.1/bin/mdx ]]; then
+#     export PATH=${PATH}:/tools/isce2/installv2.6.1/bin
+# else
+#     echo "WARNING cannot find file named mdx . Finding ..."
+#     find / -type f -name mdx
+# fi
+
+
 
 # # set up for MintPy
 # if [[ -d /tools/MintPy ]]; then
@@ -148,41 +204,13 @@ fi
 #     find / -type d -name ARIA-tools
 # fi
 
-# if [[ -d /opt/conda/share/proj ]]; then
-#     export PROJ_LIB=/opt/conda/share/proj
-# else
-#     echo "WARNING cannot find a path to proj ." Finding ...
-#     find / -type d -name proj
-# fi
-
-# ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
-# if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
-#     export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH
-# else
-#     echo "WARNING cannot find a path to gdal . Consider following command:"
-#     echo 'find / -type d -name gdal'
-# fi
-
-# set up for siteinfo
-if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
-    export SITE_DIR=${_CONDOR_SCRATCH_DIR}/siteinfo  
-elif [[ -d ${HOME}/siteinfo ]]; then
-    export SITE_DIR=${HOME}/siteinfo  
-elif [[ -d ${PWD}/siteinfo ]]; then     
-    export SITE_DIR=${PWD}/siteinfo
+if [[ -d /opt/conda/share/proj ]]; then
+    export PROJ_LIB=/opt/conda/share/proj
 else
-    echo "WARNING cannot find directory named siteinfo"
+    echo "WARNING cannot find a path to proj ." Finding ...
+    find / -type d -name proj
 fi
-echo SITE_DIR is $SITE_DIR
-export SITE_TABLE=${SITE_DIR}/site_dims.txt
-echo SITE_TABLE is $SITE_TABLE
 
-# are we running under CONDOR, with the need for staging?
-if [[ -d /staging/groups/geoscience/ ]]; then
-    export ISCONDOR=1;
-else
-    export ISCONDOR=0;
-fi
-echo ISCONDOR is $ISCONDOR
+
 
 

@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash -veux
 # 2022/08/04 Kurt Feigl
 # 2022/10/08 
 # 2023/09/05 
@@ -177,8 +177,6 @@ echo PWD is now ${PWD}
 run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
 ls -ltr | tee -a ../slc.log
 popd
-
-exit 
 
 echo "Running ISCE...."
 mkdir -p ISCE

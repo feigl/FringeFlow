@@ -33,6 +33,13 @@ if [[ -d /opt/conda/envs/maise/share/proj ]]; then
 else
    echo 'WARNING: Cannot find proj library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi
+if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
+   export GDAL_DATA='/opt/conda/envs/maise/lib/cmake/proj'
+else
+   echo 'WARNING: Cannot find GDAL data library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
+fi
+
+   
 
 
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
@@ -204,12 +211,12 @@ echo ISCONDOR is $ISCONDOR
 #     find / -type d -name ARIA-tools
 # fi
 
-if [[ -d /opt/conda/share/proj ]]; then
-    export PROJ_LIB=/opt/conda/share/proj
-else
-    echo "WARNING cannot find a path to proj ." Finding ...
-    find / -type d -name proj
-fi
+# if [[ -d /opt/conda/share/proj ]]; then
+#     export PROJ_LIB=/opt/conda/share/proj
+# else
+#     echo "WARNING cannot find a path to proj ." Finding ...
+#     find / -type d -name proj
+# fi
 
 
 

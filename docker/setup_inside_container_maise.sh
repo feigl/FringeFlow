@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash -veux
 # 2021/07/08 Kurt Feigl
 # 2021/12/07 Kurt and Nick
 # 2022/08/15 Kurt handle only environment variables here
@@ -10,12 +10,27 @@
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   
 else
-    export  PYTHONPATH=":"
+    export  PYTHONPATH="/opt/conda/pkgs"
 fi 
 
 if [[ -d /opt/conda/envs/maise/bin ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/bin
 fi
+if [[ -d /opt/conda/envs/maise/sbin ]]; then
+    export PATH=$PATH:/opt/conda/envs/maise/sbin
+fi
+
+if [[ -d /opt/conda/envs/isce ]]; then
+    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
+    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+ fi
 
 # look for ISCE extras
 pathfound=`find /opt/conda/envs/maise -name dem.py | head -1`

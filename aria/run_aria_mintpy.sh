@@ -145,7 +145,7 @@ bbox="$(get_site_dims.sh ${SITEUC} S) $(get_site_dims.sh ${SITEUC} N) $(get_site
 # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
 # ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
-do_download=0
+do_download=1
 if [[ do_download -eq 1 ]]; then
     # clean start
     \rm -rf products

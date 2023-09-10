@@ -126,8 +126,8 @@ echo "Starting Docker image in container..."
 echo "Once container starts, consider the following commands"
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
    echo Using personal FringeFlow
-elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
-   echo Using personal FringeFlow
+# elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
+#    echo Using personal FringeFlow
 else
    echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
@@ -158,9 +158,9 @@ cd $runname
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
     # mount FringeFlow instead of copying it 
     docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
-elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then
-    # mount FringeFlow instead of copying it 
-    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
+# elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then
+#     # mount FringeFlow instead of copying it 
+#     docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
     docker run -it --rm -v "$PWD":"$PWD" -w $PWD $dockertag
 else 

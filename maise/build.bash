@@ -21,8 +21,8 @@ echo "docker.io/$DOCKERHUB_USERNAME/maise:latest was built successfully."
 
 echo "The following commands are only being printed for your convenience:"
 
-echo "docker push docker.io/$DOCKERHUB_USERNAME/maise:latest"
-echo "docker tag docker.io/$DOCKERHUB_USERNAME/maise:latest docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
+#echo "docker push docker.io/$DOCKERHUB_USERNAME/maise:latest"
+#echo "docker tag docker.io/$DOCKERHUB_USERNAME/maise:latest docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
 echo "docker push docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
 echo "docker scan docker.io/$DOCKERHUB_USERNAME/maise:$DATETAG"
 

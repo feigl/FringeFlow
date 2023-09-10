@@ -60,7 +60,9 @@ else
                 # cp: cannot remove '/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg': Permission denied
 
                 echo "File named $HOME/magic/model.cfg exists. Copying it to /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg"
-                chmod a+w /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg
+                # chmod: changing permissions of '/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg': Operation not permitted
+                # 2023/09/10 - permissions are now set in docker image
+                # chmod a+w /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg
                 cp -fv $HOME/magic/model.cfg /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg
             else
                 echo "ERROR $0 cannot find target."

@@ -15,7 +15,8 @@ DATETAG=$(date +"%Y%m%d")
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f DockerfileKF $SCRIPT_DIR
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile20230615 $SCRIPT_DIR
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile20230815 $SCRIPT_DIR
-docker build -t docker.io/$DOCKERHUB_USERNAME/maise:20230905 -f Dockerfile20230905 $SCRIPT_DIR
+#docker build -t docker.io/$DOCKERHUB_USERNAME/maise:20230905 -f Dockerfile20230905 $SCRIPT_DIR
+docker build -t docker.io/$DOCKERHUB_USERNAME/maise:${DATETAG} -f Dockerfile${DATETAG} $SCRIPT_DIR
 echo "docker.io/$DOCKERHUB_USERNAME/maise:latest was built successfully."
 
 echo "The following commands are only being printed for your convenience:"

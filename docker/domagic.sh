@@ -56,6 +56,9 @@ else
                 echo "File named $HOME/magic/model.cfg exists. Copying it to opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg "
                 cp -fv $HOME/magic/model.cfg /opt/conda/lib/python3.8/site-packages/pyaps3/model.cfg
             elif [[ -f /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg ]]; then
+                # '/var/lib/condor/execute/slot1/dir_752360/magic/model.cfg' -> '/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg'
+                # cp: cannot remove '/opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg': Permission denied
+
                 echo "File named $HOME/magic/model.cfg exists. Copying it to /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg"
                 chmod a+w /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg
                 cp -fv $HOME/magic/model.cfg /opt/conda/envs/maise/lib/python3.11/site-packages/pyaps3/model.cfg

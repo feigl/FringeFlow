@@ -5,6 +5,7 @@
 # 2021/11/29 Kurt Feigl 
 # 2022/08/04 Kurt Feigl
 # 2022/09/12 Kurt Feigl and Nick Bearson
+# 2023/09/10 Kurt Feigl - when on askja, do not mount
 
 if [[ (( "$#" -ne 1 ) && ( "$#" -ne 5 ) && ("$#" -ne 3)) ]]; then
     bname=`basename $0`

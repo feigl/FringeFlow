@@ -29,7 +29,6 @@ if [[ -d /opt/conda/envs/maise ]]; then
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce
  fi
 
 # look for more for more paths

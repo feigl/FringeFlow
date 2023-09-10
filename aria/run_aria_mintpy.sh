@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -veux
 # set -v # verbose
 # set -x # for debugging
 # set -e # exit on error
@@ -182,7 +182,6 @@ fi
 # plot data
 #ariaPlot.py -v -f "products/*.nc" -plotall  --figwidth=wide -nt 1
 ariaPlot.py -v -f "products/*.nc" -plotbperpcoh  --figwidth=wide -nt 1
-
 
 # Prepare ARIA products for time series processing.
 ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v -nt 1

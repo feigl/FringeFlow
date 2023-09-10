@@ -20,7 +20,7 @@ if [[ -d /opt/conda/envs/maise/sbin ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/sbin
 fi
 
-if [[ -d /opt/conda/envs/isce ]]; then
+if [[ -d /opt/conda/envs/maise ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
@@ -31,6 +31,17 @@ if [[ -d /opt/conda/envs/isce ]]; then
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce
  fi
+
+# look for more for more paths
+# /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
+path1=`find /opt/conda/envs/maise -name dem.py | head -1`
+path2=`dirname $path1`
+if [[ -d $path2 ]]; then
+    export PATH=$PATH:$path2
+    export PYTHONPATH=$PYTHONPATH:$path2
+fi
+
+
 
 # look for ISCE extras
 pathfound=`find /opt/conda/envs/maise -name dem.py | head -1`
@@ -54,7 +65,42 @@ else
    echo 'WARNING: Cannot find GDAL data library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi
 
-   
+# # configure environment for ISCE
+# if [[ -f /tools/isce2/src/isce2/docker/isce_env.sh ]]; then
+#     source /tools/isce2/src/isce2/docker/isce_env.sh
+# elif [[ -f /tools/isce2/isce_env.sh ]]; then
+#     #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
+#     source /tools/isce2/isce_env.sh 
+# else
+#     echo "WARNING cannot find file named isce_env.sh . Finding ..."
+#     find / -type f -name isce_env.sh 
+# fi
+
+# if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
+#     export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
+# else
+#     echo "WARNING cannot find directory named topsStack . Finding ..."
+#     find / -type d -name topsStack
+# fi
+
+# if [[ -d /tools/isce2/src/isce2/applications ]]; then
+#     export PATH=${PATH}:/tools/isce2/src/isce2/applications
+#     if [[ -n ${PYTHONPATH+set} ]]; then
+#         export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
+#     else
+#         export  PYTHONPATH=/tools/isce2/src/isce2/applications
+#     fi
+# else
+#     echo "WARNING cannot find directory named applications . Finding ..."
+#     find / -type d -name applications
+# fi
+
+# if [[ -f /tools/isce2/installv2.6.1/bin/mdx ]]; then
+#     export PATH=${PATH}:/tools/isce2/installv2.6.1/bin
+# else
+#     echo "WARNING cannot find file named mdx . Finding ..."
+#     find / -type f -name mdx
+# fi  
 
 
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/

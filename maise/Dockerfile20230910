@@ -18,7 +18,8 @@ SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
 RUN echo "mamba activate maise" >> $HOME/.bashrc
 
 # install stuff that's available directory from conda-forge (isce2, mintpy)
-RUN mamba install --name maise --channel conda-forge isce2 mintpy --yes
+#RUN mamba install --name maise --channel conda-forge isce2 mintpy --yes
+RUN mamba install --name maise --channel conda-forge isce2 mintpy imageMagick --yes
 
 # work around following error
 #  File "/opt/conda/envs/maise/share/isce2/topsStack/Stack.py", line 1646, in getkmlQUAD

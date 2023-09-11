@@ -42,6 +42,13 @@ if [[ -d /opt/conda/envs/maise ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
 fi
 
+# 2.1 Add the following path to your `${PYTHONPATH}` environment vavriable:
+# export ISCE_STACK={full_path_to_your_contrib/stack}
+# export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}
+# 2.2 Depending on which stack processor you want to use, add the following path to your `${PATH}` environment variable:
+# + For Sentinel-1 TOPS data
+# export PATH=${PATH}:${ISCE_STACK}/topsStack
+
 # set PYTHONPATH
 if [[ -d /opt/conda/envs/maise ]]; then
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
@@ -49,9 +56,12 @@ if [[ -d /opt/conda/envs/maise ]]; then
     # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
     # to avoid the naming conflicts.
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/topsStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/components/contrib/demUtils/
  fi
 
 # look for more for more paths
@@ -63,14 +73,14 @@ if [[ -d $path2 ]]; then
     export PYTHONPATH=$PYTHONPATH:$path2
 fi
 
-
-
 # look for ISCE extras
 pathfound=`find /opt/conda/envs/maise -name dem.py | head -1`
 pathaddon=`dirname $pathfound`
 if [[ -d $pathaddon ]]; then
    export PATH=$PATH:$pathaddon
 fi
+
+# sed -i 's/import isce/import isce2 as isce/' /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 
 # look for MINTPY extras that include "proj" package
 # view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray

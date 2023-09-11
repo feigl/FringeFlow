@@ -200,6 +200,10 @@ echo SITE_TABLE is $SITE_TABLE
 # are we running under CONDOR, with the need for staging?
 if [[ -d /staging/groups/geoscience/ ]]; then
     export ISCONDOR=1;
+    source /etc/profile.d/conda.sh
+    conda activate maise
+    # test
+    # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 else
     export ISCONDOR=0;
 fi

@@ -1,4 +1,4 @@
-#!/bin/bash -veux
+#!/bin/bash
 # 2021/07/08 Kurt Feigl
 # 2021/12/07 Kurt and Nick
 # 2022/08/15 Kurt handle only environment variables here
@@ -6,6 +6,12 @@
 
 # set up paths and environment variables inside container
 # source this file
+
+set -v # verbose
+set -x # for debugging "eXamine"
+# set -e # exit on error "Exit"
+# set -u # error on unset variables
+
 
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   

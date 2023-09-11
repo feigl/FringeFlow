@@ -12,6 +12,21 @@ set -x # for debugging "eXamine"
 # set -e # exit on error "Exit"
 # set -u # error on unset variables
 
+# are we running under CONDOR, with the need for staging?
+if [[ -d /staging/groups/geoscience/ ]]; then
+    export ISCONDOR=1;
+    # unset variable that stops running on unbound (undeclared) variable
+    set +u
+    source /etc/profile.d/conda.sh
+    # Next line will deactivate conda environment if necessary
+    conda activate maise
+    # test
+    # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
+else
+    export ISCONDOR=0;
+fi
+echo ISCONDOR is $ISCONDOR
+
 
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   
@@ -203,17 +218,6 @@ echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
 
-# are we running under CONDOR, with the need for staging?
-if [[ -d /staging/groups/geoscience/ ]]; then
-    export ISCONDOR=1;
-    source /etc/profile.d/conda.sh
-    conda activate maise
-    # test
-    # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
-else
-    export ISCONDOR=0;
-fi
-echo ISCONDOR is $ISCONDOR
 
 
 # configure environment for ISCE

@@ -20,14 +20,33 @@ if [[ -d /opt/conda/envs/maise/sbin ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/sbin
 fi
 
+# 2023/09/11 with Nick.
+# Here are results from a working container
+# echo $ISCE_HOME
+# /opt/conda/envs/maise/lib/python3.11/site-packages/isce
+export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+
+# (maise) root@63015c028655:/home/nickb/FringeFlow# echo $PYTHONPATH
+# :/opt/conda/envs/maise/share/isce2
+#export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
+
+
+# set PATH 
 if [[ -d /opt/conda/envs/maise ]]; then
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    # only one stack at a time
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+fi
+
+# set PYTHONPATH
+if [[ -d /opt/conda/envs/maise ]]; then
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
+    # only one stack at a time
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
  fi
 

@@ -33,7 +33,9 @@ export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
 
 # set PATH 
 if [[ -d /opt/conda/envs/maise ]]; then
-    # only one stack at a time
+    # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
+    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
+    # to avoid the naming conflicts.
     # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
     # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
@@ -43,7 +45,9 @@ fi
 # set PYTHONPATH
 if [[ -d /opt/conda/envs/maise ]]; then
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
-    # only one stack at a time
+     # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
+    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
+    # to avoid the naming conflicts.
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
     export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack

@@ -1,10 +1,10 @@
-#!/bin/bash -veux
+#!/bin/bash
 # 2022/08/04 Kurt Feigl
 # 2022/10/08 
 # 2023/09/05 
 
-# set -v # verbose
-# set -x # for debugging
+set -v # verbose
+set -x # for debugging
 # set -e # exit on error
 # set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130

@@ -194,7 +194,12 @@ popd
 echo "Running MINTPY..."
 mkdir -p MINTPY
 pushd MINTPY
-\cp $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+if [[ -f $HOME/FringeFlow/mintpy/mintpy_template.cfg ]]; then
+  cp -vf $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+elif [[ -f ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg ]]; then
+  cp -vf ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg .
+fi
+
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 
 if [[ -d geo ]]; then

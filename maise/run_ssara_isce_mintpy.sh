@@ -219,7 +219,16 @@ if [[ $ISCONDOR -eq 1 ]]; then
     cp -vf _condor_stdout $RUNNAME
     cp -vf _condor_stderr $RUNNAME
 fi
- 
+
+# remove intermediate steps
+if [[ -f ${WORKDIR}/${RUNNAME}/MINTPY/geo/geo_velocity.h5 ]]; then
+    rm -vrf ${WORKDIR}/${RUNNAME}/SLC
+    rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/interferograms
+    rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/reference
+fi
+
+# keep everything
+
 tar -czf ${RUNNAME}.tgz $RUNNAME
 
 if [[  -d /staging/groups/geoscience ]]; then

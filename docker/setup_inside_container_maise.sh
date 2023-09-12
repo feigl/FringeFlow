@@ -1,4 +1,4 @@
-#!/bin/bash -veux
+#!/bin/bash
 # 2021/07/08 Kurt Feigl
 # 2021/12/07 Kurt and Nick
 # 2022/08/15 Kurt handle only environment variables here
@@ -6,6 +6,32 @@
 
 # set up paths and environment variables inside container
 # source this file
+
+set -v # verbose
+set -x # for debugging "eXamine"
+# set -e # exit on error "Exit"
+# set -u # error on unset variables
+
+# are we running under CONDOR, with the need for staging?
+if [[ -d /staging/groups/geoscience/ ]]; then
+    export ISCONDOR=1;
+    # unset variable that stops running on unbound (undeclared) variable
+    set +u
+    source /etc/profile.d/conda.sh
+    # Next line will deactivate conda environment if necessary
+    conda activate maise
+    
+    # Matplotlib created a temporary cache directory at /tmp/matplotlib-a8hsjr85
+    # because the default path (/.config/matplotlib) is not a writable directory; it
+    # is highly recommended to set the MPLCONFIGDIR environment variable to a
+    # writable directory, in particular to speed up the import of Matplotlib and to
+    # better support multiprocessing.
+    export MPLCONFIGDIR=${_CONDOR_SCRATCH_DIR}
+else
+    export ISCONDOR=0;
+fi
+echo ISCONDOR is $ISCONDOR
+
 
 if [[ -n ${PYTHONPATH+set} ]]; then
     echo inheriting PYTHONPATH as ${PYTHONPATH}   
@@ -20,18 +46,44 @@ if [[ -d /opt/conda/envs/maise/sbin ]]; then
     export PATH=$PATH:/opt/conda/envs/maise/sbin
 fi
 
+# 2023/09/11 with Nick.
+# Here are results from a working container
+# echo $ISCE_HOME
+# /opt/conda/envs/maise/lib/python3.11/site-packages/isce
+export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+
+# (maise) root@63015c028655:/home/nickb/FringeFlow# echo $PYTHONPATH
+# :/opt/conda/envs/maise/share/isce2
+#export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
+
+# set PATH 
 if [[ -d /opt/conda/envs/maise ]]; then
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
+    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
+    # to avoid the naming conflicts.
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    # For Sentinel-1 TOPS data
     export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+
+fi
+
+# set PYTHONPATH
+if [[ -d /opt/conda/envs/maise ]]; then
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
+     # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
+    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
+    # to avoid the naming conflicts.
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
+    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/
+    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/topsStack
  fi
 
-# look for more for more paths
+# look for more for more paths - dem.py
 # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 path1=`find /opt/conda/envs/maise -name dem.py | head -1`
 path2=`dirname $path1`
@@ -40,14 +92,16 @@ if [[ -d $path2 ]]; then
     export PYTHONPATH=$PYTHONPATH:$path2
 fi
 
-
-
-# look for ISCE extras
-pathfound=`find /opt/conda/envs/maise -name dem.py | head -1`
+# look for ISCE extras - mdx 
+# # mdx executable lives here
+#export PATH=$PATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/bin
+pathfound=`find /opt/conda/envs/maise -name mdx | head -1`
 pathaddon=`dirname $pathfound`
 if [[ -d $pathaddon ]]; then
    export PATH=$PATH:$pathaddon
 fi
+
+# sed -i 's/import isce/import isce2 as isce/' /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 
 # look for MINTPY extras that include "proj" package
 # view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
@@ -63,44 +117,6 @@ if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
 else
    echo 'WARNING: Cannot find GDAL data library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi
-
-# # configure environment for ISCE
-# if [[ -f /tools/isce2/src/isce2/docker/isce_env.sh ]]; then
-#     source /tools/isce2/src/isce2/docker/isce_env.sh
-# elif [[ -f /tools/isce2/isce_env.sh ]]; then
-#     #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
-#     source /tools/isce2/isce_env.sh 
-# else
-#     echo "WARNING cannot find file named isce_env.sh . Finding ..."
-#     find / -type f -name isce_env.sh 
-# fi
-
-# if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
-#     export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
-# else
-#     echo "WARNING cannot find directory named topsStack . Finding ..."
-#     find / -type d -name topsStack
-# fi
-
-# if [[ -d /tools/isce2/src/isce2/applications ]]; then
-#     export PATH=${PATH}:/tools/isce2/src/isce2/applications
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
-#     else
-#         export  PYTHONPATH=/tools/isce2/src/isce2/applications
-#     fi
-# else
-#     echo "WARNING cannot find directory named applications . Finding ..."
-#     find / -type d -name applications
-# fi
-
-# if [[ -f /tools/isce2/installv2.6.1/bin/mdx ]]; then
-#     export PATH=${PATH}:/tools/isce2/installv2.6.1/bin
-# else
-#     echo "WARNING cannot find file named mdx . Finding ..."
-#     find / -type f -name mdx
-# fi  
-
 
 ## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
 if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
@@ -163,52 +179,6 @@ fi
 echo SITE_DIR is $SITE_DIR
 export SITE_TABLE=${SITE_DIR}/site_dims.txt
 echo SITE_TABLE is $SITE_TABLE
-
-# are we running under CONDOR, with the need for staging?
-if [[ -d /staging/groups/geoscience/ ]]; then
-    export ISCONDOR=1;
-else
-    export ISCONDOR=0;
-fi
-echo ISCONDOR is $ISCONDOR
-
-
-# configure environment for ISCE
-# if [[ -f /tools/isce2/src/isce2/docker/isce_env.sh ]]; then
-#     source /tools/isce2/src/isce2/docker/isce_env.sh
-# elif [[ -f /tools/isce2/isce_env.sh ]]; then
-#     #/opt/isce2/isce_env.sh: line 1: PYTHONPATH: unbound variable
-#     source /tools/isce2/isce_env.sh 
-# else
-#     echo "WARNING cannot find file named isce_env.sh . Finding ..."
-#     find / -type f -name isce_env.sh 
-# fi
-
-# if [[ -d /tools/isce2/src/isce2/contrib/stack/topsStack ]]; then
-#     export PATH=/tools/isce2/src/isce2/contrib/stack/topsStack:$PATH
-# else
-#     echo "WARNING cannot find directory named topsStack . Finding ..."
-#     find / -type d -name topsStack
-# fi
-
-# if [[ -d /tools/isce2/src/isce2/applications ]]; then
-#     export PATH=${PATH}:/tools/isce2/src/isce2/applications
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export  PYTHONPATH=${PYTHONPATH}:/tools/isce2/src/isce2/applications
-#     else
-#         export  PYTHONPATH=/tools/isce2/src/isce2/applications
-#     fi
-# else
-#     echo "WARNING cannot find directory named applications . Finding ..."
-#     find / -type d -name applications
-# fi
-
-# if [[ -f /tools/isce2/installv2.6.1/bin/mdx ]]; then
-#     export PATH=${PATH}:/tools/isce2/installv2.6.1/bin
-# else
-#     echo "WARNING cannot find file named mdx . Finding ..."
-#     find / -type f -name mdx
-# fi
 
 
 

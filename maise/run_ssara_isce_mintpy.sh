@@ -1,10 +1,10 @@
-#!/bin/bash -veux
+#!/bin/bash
 # 2022/08/04 Kurt Feigl
 # 2022/10/08 
 # 2023/09/05 
 
-# set -v # verbose
-# set -x # for debugging
+set -v # verbose
+set -x # for debugging
 # set -e # exit on error
 # set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
@@ -194,7 +194,12 @@ popd
 echo "Running MINTPY..."
 mkdir -p MINTPY
 pushd MINTPY
-\cp $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+if [[ -f $HOME/FringeFlow/mintpy/mintpy_template.cfg ]]; then
+  cp -vf $HOME/FringeFlow/mintpy/mintpy_template.cfg .
+elif [[ -f ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg ]]; then
+  cp -vf ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg .
+fi
+
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 
 if [[ -d geo ]]; then
@@ -214,7 +219,16 @@ if [[ $ISCONDOR -eq 1 ]]; then
     cp -vf _condor_stdout $RUNNAME
     cp -vf _condor_stderr $RUNNAME
 fi
- 
+
+# remove intermediate steps
+if [[ -f ${WORKDIR}/${RUNNAME}/MINTPY/geo/geo_velocity.h5 ]]; then
+    rm -vrf ${WORKDIR}/${RUNNAME}/SLC
+    rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/interferograms
+    rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/reference
+fi
+
+# keep everything
+
 tar -czf ${RUNNAME}.tgz $RUNNAME
 
 if [[  -d /staging/groups/geoscience ]]; then

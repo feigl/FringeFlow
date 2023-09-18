@@ -203,11 +203,13 @@ case $SITEUC in
     # REFLALO="40.416526384799042, -119.3554577197500"
     # get corner 10% in from NE
     REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.9*($4-$3), $1+0.9*($2-$1))}'`
-    if [[ $TRACK -eq 42 ]]; then
-        REFDATE="20220312"
-    else
-        REFDATE="auto"
-    fi
+    # reference date must be in list
+    # if [[ $TRACK -eq 42 ]]; then
+    #     REFDATE="20220312"
+    # else
+    #     REFDATE="auto"
+    # fi
+    REFDATE="auto"
     ;;
   FORGE)
     # Should use GPS station named UTM2
@@ -217,11 +219,8 @@ case $SITEUC in
     REFDATE="auto"
     ;;  
   *)
-    # SW
-    # fails for FORGE because SW corner is OUT of masked area
-    # mintpy.reference.lalo          = 40.375,-119.460 
-    # ValueError: input reference point is in masked OUT area defined by maskConnComp.h5!
-    REFLALO="$(get_site_dims.sh ${SITELC} S)","$(get_site_dims.sh ${SITELC} W)"
+    # get corner 10% in from SW
+    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}'`
     REFDATE="auto"
     ;;
     

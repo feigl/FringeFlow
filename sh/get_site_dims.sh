@@ -10,6 +10,7 @@
 # 2021/11/08 Kurt clarify error message for SITE_TABLE
 # 2023/06/12 Kurt make this thing work
 # 2023/08/29 Kurt add -W option for Well Known Text (WKT) format
+# 2023/09/18 Kurt add -K option for 10 percent SW corner
 
 # SITE 5 LETTER CODE NAMES
 #
@@ -119,6 +120,16 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("\047%20.10f %20.10f  %20.10f %20.10f\047\n",$3,$4,$1,$2)}' 
             # output Bounding box S, N, W, E with double quotes
             #grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("\047\x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22 \x22%.10f\x22\047\n",$3,$4,$1,$2)}' 
+            exit 0
+            ;;
+        c) 
+            # output (lat, lon) center
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f %20.10f\n",$3+0.5*($4-$3), $1+0.5*($2-$1))}' 
+            exit 0
+            ;;
+        k) 
+            # output (lat, lon) corner 10% inward from SW corner
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}' 
             exit 0
             ;;
         -2 )

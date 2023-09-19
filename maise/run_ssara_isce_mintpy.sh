@@ -200,6 +200,35 @@ elif [[ -f ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg ]]; then
   cp -vf ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg .
 fi
 
+# set Lat,Lon coordinates of reference pixel 
+case $SITEUC in
+  SANEM)
+    # get corner 10% in from NE
+    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.9*($4-$3), $1+0.9*($2-$1))}'`
+    REFDATE="auto"
+    ;;
+  FORGE)
+    # Should use GPS station named UTM2
+    # instead use town of Milford Utah
+    # 38.3969° N, 113.0108° W
+    REFLALO="38.3969, -1113.0108"
+    REFDATE="auto"
+    ;;  
+  *)
+    # get corner 10% in from SW
+    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}'`
+    REFDATE="auto"
+    ;;   
+esac
+
+# make custom config file for Mintpy
+echo REFLALO is $REFLALO
+cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg  > mintpy_aria.cfg
+cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
+cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
+cat mintpy_aria.cfg | grep -v mintpy.reference.date > tmp.cfg; echo "mintpy.reference.date = $REFDATE"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg 
+# update the standard config file with custom version 
+smallbaselineApp.py -g mintpy_aria.cfg
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 
 if [[ -d geo ]]; then

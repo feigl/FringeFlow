@@ -140,6 +140,7 @@ pushd $RUNDIR
 pwd
 
 bbox="$(get_site_dims.sh ${SITEUC} S) $(get_site_dims.sh ${SITEUC} N) $(get_site_dims.sh ${SITEUC} W) $(get_site_dims.sh ${SITEUC} E)"
+echo bbox is $bbox
 
 # cd MetaData
 # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
@@ -190,14 +191,37 @@ mkdir -p MINTPY
 pushd MINTPY
 
 
-# set Lat,Lon coordinates of reference pixel NE corner
+# set Lat,Lon coordinates of reference pixel 
 case $SITEUC in
   SANEM)
-    REFLALO="$(get_site_dims.sh ${SITELC} N)","$(get_site_dims.sh ${SITELC} E)"
+    # NE corner
+    # fails because NE corner is OUT of masked area
+    # ValueError: input reference point is in masked OUT area defined by maskConnComp.h5!
+    # REFLALO="$(get_site_dims.sh ${SITELC} N)","$(get_site_dims.sh ${SITELC} E)"
+    # use GARL mean(T.x_latitude_deg_) 40.416526384799042
+    # mean(T.x_longitude_deg_) -1.193554577197500e+02
+    # REFLALO="40.416526384799042, -119.3554577197500"
+    # get corner 10% in from NE
+    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.9*($4-$3), $1+0.9*($2-$1))}'`
+    # reference date must be in list
+    # if [[ $TRACK -eq 42 ]]; then
+    #     REFDATE="20220312"
+    # else
+    #     REFDATE="auto"
+    # fi
+    REFDATE="auto"
     ;;
-    
+  FORGE)
+    # Should use GPS station named UTM2
+    # instead use town of Milford Utah
+    # 38.3969° N, 113.0108° W
+    REFLALO="38.3969, -1113.0108"
+    REFDATE="auto"
+    ;;  
   *)
-    REFLALO="$(get_site_dims.sh ${SITELC} S)","$(get_site_dims.sh ${SITELC} W)"
+    # get corner 10% in from SW
+    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}'`
+    REFDATE="auto"
     ;;
     
 esac
@@ -207,7 +231,7 @@ echo REFLALO is $REFLALO
 cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg  > mintpy_aria.cfg
 cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
 cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
-
+cat mintpy_aria.cfg | grep -v mintpy.reference.date > tmp.cfg; echo "mintpy.reference.date = $REFDATE"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg 
 # update the standard config file with custom version 
 smallbaselineApp.py -g mintpy_aria.cfg
 

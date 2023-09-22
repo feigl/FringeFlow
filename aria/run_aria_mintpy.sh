@@ -17,14 +17,16 @@ Help()
    # Display Help
     echo "$bname will get ARIA products and then run MintPy"
     echo "usage:   $bname [options]"
-    echo "   -1 first date YYYYMMDD"
-    echo "   -2 last  date YYYYMMDD"
-    echo '   -c number of connections in stack'
     echo '   -m mission e.g., S1 for Sentinel-1'
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
+    echo "   -1 first date YYYYMMDD"
+    echo "   -2 last  date YYYYMMDD"
+    #echo '   -c number of connections in stack'
+    echo '   -t number of track'
     echo "examples:"
     echo "    $bname -n SANEM -m S1 -1 20220331 -2 20220506 -t 42"
     echo "    $bname -n FORGE -m S1 -1 20190101 -2 20220901 -t 20"
+    echo "    $bname -n SANEM -m S1 -1 20220331 -2 20220506 -t 144 -c 1"
     exit -1
   }
 

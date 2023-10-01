@@ -76,7 +76,7 @@ for vfile in `ls *velocity.h5 *velocity*.h5` ; do
 done
 
 
-for tfile in `ls *timeseries*.h5` ; do
+for tfile in `ls *timeseries.h5 *timeseries*.h5` ; do
     echo tfile is $tfile
     if [[ -f $tfile ]]; then
         ftsr=`echo $tfile | sed 's/.h5//'` 
@@ -100,6 +100,7 @@ for tfile in `ls *timeseries*.h5` ; do
 
 done
 
+exit
 
 if [[ -f geo_timeseries.h5 ]]; then
     view.py -o geo_timeseries.pdf     --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries.h5

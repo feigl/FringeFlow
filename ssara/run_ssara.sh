@@ -43,9 +43,21 @@ fi
 #     exit -1
 # fi
 
-# export PATH=${PATH}:${PWD}/ssara_client
-# export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
-# export SSARA_HOME=${PWD}
+#if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
+
+
+# Check if a command exists in the $PATH
+command_to_check="ssara_federated_query.py"
+
+if command -v "$command_to_check" &> /dev/null ; then
+    echo "$command_to_check exists in the PATH."
+else
+    echo "$command_to_check does not exist in the PATH."
+    export PATH=${PATH}:${HOME}/tools/ssara_client
+    export PYTHONPATH=${HOME}/tools/ssara_client:${PYTHONPATH}
+    export SSARA_HOME=${PWD}
+fi
+
 
 echo SSARA_HOME is $SSARA_HOME
 

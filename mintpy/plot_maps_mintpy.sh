@@ -4,6 +4,7 @@
 # 2021/06/10 Kurt Feigl
 # 2022/09/29 Kurt Feigl - adapt to MINTPY output from ARIA
 # 2022/10/07 Kurt Feigl - adapt to time series, too
+# 2023/09/30 Kurt Feigl - plot geo_velocity.h5
 
 if [[ ( "$#" -ne 1 )  ]]; then
     bname=`basename $0`
@@ -42,7 +43,7 @@ echo sublon is $sublon
 cat $SITE_DIR/$SITELC/*wells.txt | awk '{print $2,$1}' > wells.lalo
 
 
-for vfile in `ls *velocity*.h5` ; do
+for vfile in `ls *velocity.h5 *velocity*.h5` ; do
     echo vfile is $vfile
     ## average velocity
     if [[ -f $vfile ]]; then
@@ -55,7 +56,7 @@ for vfile in `ls *velocity*.h5` ; do
     echo fvel is $fvel
     ls -l ${fvel}.h5
 
-    figtitle=`echo $PWD ${fvel} | awk '{print $1"_"$2"_wrtNEcorner"}'` # must be one word 
+    figtitle=`echo $PWD ${fvel} | awk '{print $1"/_"$2}'` # must be one word 
     echo figtitle is $figtitle
 
     # make KMZ file for Google Earth
@@ -63,15 +64,17 @@ for vfile in `ls *velocity*.h5` ; do
 
     # map of average velocity over whole area
     view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay --save  \
-    --lalo-max-num 4 --fontsize 10   --unit mm \
+    --lalo-max-num 4 --fontsize 10   --unit mm --ref-lalo ${reflalo} \
     --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
 
     # map of average velocity over study area
-    view.py -o ${fvel}_sub.pdf --figtitle ${figtitle} --nodisplay --save  --sub-lat $sublat --sub-lon $sublon \
+    view.py -o ${fvel}_sub.pdf --figtitle ${figtitle} --nodisplay --save  \
+    --sub-lat $sublat --sub-lon $sublon --ref-lalo ${reflalo} \
     --lalo-max-num 4 --fontsize 10   --unit mm \
     --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
 
 done
+
 
 for tfile in `ls *timeseries*.h5` ; do
     echo tfile is $tfile
@@ -96,7 +99,7 @@ for tfile in `ls *timeseries*.h5` ; do
     fi
 
 done
-exit
+
 
 if [[ -f geo_timeseries.h5 ]]; then
     view.py -o geo_timeseries.pdf     --save --nodisplay --cbar-label "LOS_displacement_[mm]_$PWD" --unit mm  --lalo-max-num 4 geo_timeseries.h5

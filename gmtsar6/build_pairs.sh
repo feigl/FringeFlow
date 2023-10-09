@@ -43,7 +43,7 @@
 # edit 20230619 Kurt use -6 switch on ssh and rsync to submit-2.chtc.wisc.edu
 # edit 20230619 Reduce number of transfers to one only.
 # TODO make ruser an environment variable and upper case throughout 
-# 2023/10/09 Kurt and Sam submit all jobs as MFA number 2
+# 2023/10/09 Kurt and Sam: submit all jobs as MFA number 2
 
 
 if [ "$#" -eq 1 ]; then

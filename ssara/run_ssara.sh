@@ -1,9 +1,13 @@
-#!/bin/bash -x
+#!/bin/bash 
+## run SSARA for downloading data
 # 2021/06/21 Kurt Feigl
 # 2022/08/15 Kurt Feigl - make it work everywhere
+# 2023/09/26 Kurt Feigl - increase ASF timeout to 5 minutes = 300 seconds
+set -v # verbose
+set -x # for debugging
+# set -e # exit on error
+# set -u # error on unset variables
 
-
-## SSARA for downloading data
 
 if [ "$#" -eq 5 ]; then
     action='print'
@@ -39,9 +43,21 @@ fi
 #     exit -1
 # fi
 
-# export PATH=${PATH}:${PWD}/ssara_client
-# export PYTHONPATH=${PWD}/ssara_client:${PYTHONPATH}
-# export SSARA_HOME=${PWD}
+#if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
+
+
+# Check if a command exists in the $PATH
+command_to_check="ssara_federated_query.py"
+
+if command -v "$command_to_check" &> /dev/null ; then
+    echo "$command_to_check exists in the PATH."
+else
+    echo "$command_to_check does not exist in the PATH."
+    export PATH=${PATH}:${HOME}/tools/ssara_client
+    export PYTHONPATH=${HOME}/tools/ssara_client:${PYTHONPATH}
+    export SSARA_HOME=${PWD}
+fi
+
 
 echo SSARA_HOME is $SSARA_HOME
 
@@ -85,7 +101,7 @@ export POLYGON="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LON
 echo POLYGON is $POLYGON
 
 echo "Starting query to print."
-ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=300 --relativeOrbit=${TRACK} \
 --start=${date_first} --end=${date_last} \
 --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
 --print | tee ssara_${timetag}.log
@@ -95,7 +111,7 @@ if [[ ! ${action} == "print" ]]; then
     # make KML file
     echo "Making KML file"
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${date_first} --end="${date_last} 23:59:59"  --kml
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=300 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
     --kml | tee -a ssara_${timetag}.log
@@ -106,7 +122,7 @@ if [[ ! ${action} == "print" ]]; then
     #ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=144 --intersectsWith='POINT(-119.3987026 40.37426071)' --start=${date_first} --end="${date_last} 23:59:59" --download
 
     echo "Downloading data"
-    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=30 --relativeOrbit=${TRACK} \
+    ssara_federated_query.py --platform=SENTINEL-1A,SENTINEL-1B --asfResponseTimeout=300 --relativeOrbit=${TRACK} \
     --start=${date_first} --end=${date_last} \
     --intersectsWith="POLYGON(($LONMIN $LATMIN, $LONMAX $LATMIN, $LONMAX $LATMAX, $LONMIN $LATMAX, $LONMIN $LATMIN))" \
     --download | tee -a ssara_${timetag}.log

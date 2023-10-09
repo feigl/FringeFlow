@@ -42,7 +42,8 @@
 # edit 20230615 Kurt move transfers outside loop
 # edit 20230619 Kurt use -6 switch on ssh and rsync to submit-2.chtc.wisc.edu
 # edit 20230619 Reduce number of transfers to one only.
-# TODO make ruser environment variable upper case throughout 
+# TODO make ruser an environment variable and upper case throughout 
+# 2023/10/09 Kurt and Sam submit all jobs as MFA number 2
 
 
 if [ "$#" -eq 1 ]; then
@@ -201,18 +202,18 @@ echo "Processed $ngood good lines of $kount lines total in file $1"
 # 2023/06/19 --very long wait times
 #echo 'sending files to submit-2'
 #rsync -6 --progress -av `cat send2.lst` ${ruser}@submit-2.chtc.wisc.edu:
+# TODO delete send2.lst - no longer needed
 
-echo 'sending files to transfer'
+# Send big tar files to transfer box - requiring MFA number 1
+echo 'Starting to send $kount tar files to transfer.chtc.wisc.edu ... this could take some time'
 rsync --progress  --human-readable -av `cat send0.lst` ${ruser}@transfer.chtc.wisc.edu:/staging/groups/geoscience/insar/${ruser}
 
 echo "submitting jobs ..."
 #echo "condor_submit ${pairdir}.sub" | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
 
-# 2023/01/31 submit all the jobs 
-#cat submit_all.sh | ssh -t ${ruser}@submit-2.chtc.wisc.edu 
-# 2023/06/19 -very slow because of long wait
-#cat submit_all.sh | ssh  -t ${ruser}@submit-2.chtc.wisc.edu 
-# 2023/06/19 
+# 2023/10/09 submit all jobs - requiring MFA number 2
+cat submit_all.sh | ssh  -t ${ruser}@submit-2.chtc.wisc.edu 
+
 echo '********'
 echo '********'
 echo '   '

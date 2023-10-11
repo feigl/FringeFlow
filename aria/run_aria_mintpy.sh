@@ -1,4 +1,4 @@
-#!/bin/bash -veux
+#!/bin/bash -vx
 # set -v # verbose
 # set -x # for debugging
 # set -e # exit on error
@@ -154,7 +154,8 @@ echo bbox is $bbox
 do_download=1
 if [[ do_download -eq 1 ]]; then
     # clean start
-    \rm -rf products
+    #\rm -rf products
+    mkdir -p products
 
     # no data
     #ariaDownload.py --bbox "${bbox}" --output url --start 20200101 --end 20220630 --track 144

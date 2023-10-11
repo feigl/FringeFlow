@@ -23,12 +23,6 @@ fi
 echo "Config file CFG is $CFG"
 echo "STEP is ${STEP}"
 
-# clean start
-# rm -rf pic isce.log *.h5
-
-# TODO test on STEP
-# rm -rf inputs
-
 # copy keys for ERA PYAPS
 if [ -f ../model.cfg ]; then
    cp -v ../model.cfg /home/ops/PyAPS/pyaps3/model.cfg
@@ -86,6 +80,7 @@ view.py --dpi 150 --noverbose --nodisplay --update avgPhaseVelocity.h5
 view.py --dpi 150 --noverbose --nodisplay --update avgSpatialCoh.h5 -c gray -v 0 1
 view.py --dpi 150 --noverbose --nodisplay --update maskConnComp.h5 -c gray -v 0 1
 view.py --dpi 150 --noverbose --nodisplay --update timeseries.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
+
 if [[ -f timeseries_ERA5.h5 ]]; then
    view.py --dpi 150 --noverbose --nodisplay --update timeseries_ERA5.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
 fi

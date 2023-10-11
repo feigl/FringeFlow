@@ -26,7 +26,6 @@ Help()
     echo "examples:"
     echo "    $bname -n SANEM -m S1 -1 20220331 -2 20220506 -t 42"
     echo "    $bname -n FORGE -m S1 -1 20190101 -2 20220901 -t 20"
-    echo "    $bname -n SANEM -m S1 -1 20220331 -2 20220506 -t 144 -c 1"
     exit -1
   }
 
@@ -148,6 +147,10 @@ echo bbox is $bbox
 # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
 # ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
+# test case
+# ariaDownload.py -v --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --output url --start 20220331 --end 20220506 --track 42
+# ariaTSsetup.py -f 'products/*.nc' --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --mask Download --layers all -v -nt 1
+
 do_download=1
 if [[ do_download -eq 1 ]]; then
     # clean start
@@ -162,8 +165,8 @@ if [[ do_download -eq 1 ]]; then
     # for WHOLESCALE
     #ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20220902 --track 42
 
-   # for anything
-    ariaDownload.py -v --bbox "${bbox}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK}
+    # for anything
+    ariaDownload.py -v --bbox "${bbox}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK} -w ./products
     
     pushd products
 
@@ -234,6 +237,7 @@ cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg  > mintpy_aria.cfg
 cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
 cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
 cat mintpy_aria.cfg | grep -v mintpy.reference.date > tmp.cfg; echo "mintpy.reference.date = $REFDATE"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg 
+
 # update the standard config file with custom version 
 smallbaselineApp.py -g mintpy_aria.cfg
 
@@ -245,13 +249,23 @@ plot_maps_mintpy.sh $SITEUC
 
 echo "Storing results...."
 # transfer output back to /staging/
-pushd $WORKDIR/$RUNNAME # I think we should already be there, but just in case
-# I don't love using *.log here, as with `set -e` we will bail if there are no such log files
-#tar czf "$RUNNAME.tgz" ISCE/merged ISCE/baselines ISCE/interferograms ISCE/JPGS.tgz ISCE/*.log *.log
-# 2022/08/08 Kurt - add folders only
+pushd $WORKDIR 
+
+# make a list of files to include in tarball
+rm -f tarlist.txt
+touch tarlist.txt
+if [[ -f _condor_stdout ]]; then echo _condor_stdout >> tarlist.txt ; fi
+if [[ -f _condor_stdout ]]; then echo _condor_stdout >> tarlist.txt ; fi
+find . -type f -name "*.log" >> tarlist.txt
+find . -type d -name MINTPY  >> tarlist.txt
+find . -type f -name "*.png" >> tarlist.txt
+find . -type f -name "*.eps" >> tarlist.txt
+find . -type f -name "*.log" >> tarlist.txt
+
+# run the tar process to make tar ball
+tar -czf "$RUNNAME.tgz" `cat tarlist.txt`
 
 if [[  -d /staging/groups/geoscience ]]; then
-    tar -czf "$RUNNAME.tgz"  MINTPY _condor_stdout _condor_stderr
     mkdir -p "/staging/groups/geoscience/maise/output/"
     cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/maise/output/$RUNNAME.tgz"
     # delete working dir contents to avoid transfering files back to /home/ on submit2

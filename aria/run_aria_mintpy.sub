@@ -6,24 +6,18 @@
 # 2022/08/09 Kurt Feigl 
 # 2022/10/12 Kurt Feigl
 # 2022/10/16 Kurt Feigl - adapt from earlier
+# 2023/10/09 Kurt Feigl - 
 
 
 universe = docker
 
 # Docker image
-#docker_image = docker.io/nbearson/isce_mintpy:latest 
-#docker_image = docker.io/isce/isce2:latest
-#docker_image = docker.io/benjym/insar
-#docker_image = docker.io/nbearson/isce_mintpy:20211110
-#docker_image = docker.io/nbearson/chtctest:latest
-#docker_image = docker.io/nbearson/isce_chtc:20220204
-#docker_image = docker.io/nbearson/isce_mintpy:latest
- docker_image = docker.io/nbearson/maise:20220919
+ docker_image = docker.io/feigl/maise:20230910
 
 # files
-log    = run_aria_mintpy.$(Cluster).$(Process).log 
-output = run_aria_mintpy.$(Cluster).$(Process).out
-error  = run_aria_mintpy.$(Cluster).$(Process).err
+log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
+output = run_ssara_isce_mintpy.$(Cluster).$(Process).out
+error  = run_ssara_isce_mintpy.$(Cluster).$(Process).err
 
 executable = run_aria_mintpy.sh
 
@@ -71,22 +65,10 @@ manifest = true
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
 queue arguments from (
 "-n SANEM -m S1 -t 42 -1 20210101 -2 20210501"  
+"-n SANEM -m S1 -t 42 -1 20220101 -2 20220501"  
+"-n SANEM -m S1 -t 42 -1 20230101 -2 20230901"  
 )
 
 
-### Think about multiple runs
-    #https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
-    # Example 3
-    #   queue input,arguments from (
-    #    file1, -a -b 26
-    #    file2, -c -d 92
-    # )
-    #Using the from form of the options, each of the two variables specified is given a value from the list of items. For this example the queue command expands to
-    #  input = file1
-    #  arguments = -a -b 26
-    #  queue 
-    #  input = file2
-    #  arguments = -c -d 92
-    #  queue
 
 

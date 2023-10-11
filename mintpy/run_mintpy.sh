@@ -24,10 +24,10 @@ echo "Config file CFG is $CFG"
 echo "STEP is ${STEP}"
 
 # clean start
-rm -rf pic isce.log *.h5
+# rm -rf pic isce.log *.h5
 
 # TODO test on STEP
-rm -rf inputs
+# rm -rf inputs
 
 # copy keys for ERA PYAPS
 if [ -f ../model.cfg ]; then

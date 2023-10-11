@@ -51,7 +51,15 @@ RUN mkdir -p /tools \
 # install SSARA 
 #RUN git clone https://www.unavco.org/gitlab/unavco_public/ssara_client.git /tools/SSARA \
 #RUN git clone https://github.com/rgrapenthin/SSARA.git /tools/SSARA \
-RUN cp /Users/feigl/FringeFlow/ssara /tools/SSARA
+# neither of the above web sites is available
+# but I have a copy here
+# RUN cp /Users/feigl/FringeFlow/ssara /tools/SSARA
+#RUN wget -nd -r https://github.com/feigl/FringeFlow/tree/main/ssara /tools/SSARA
+RUN git clone https://github.com/feigl/FringeFlow.git /tools/FringeFlow
+RUN mkdir /tools/SSARA 
+RUN mv /tools/FringeFlow/ssara/* /tools/SSARA
+RUN rm -rf /tools/FringeFlow
+
 RUN chmod +x /tools/SSARA/ssara_federated_query.py
 ENV SSARA_HOME=/tools/SSARA
 

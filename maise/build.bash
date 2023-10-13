@@ -4,6 +4,8 @@ set -e
 set -u
 set -o pipefail
 
+# requires Docker Desktop https://www.docker.com/products/docker-desktop/
+
 #DOCKERHUB_USERNAME=nbearson
 #DOCKERHUB_USERNAME=feigl
 DOCKERHUB_USERNAME=$USER

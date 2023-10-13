@@ -155,7 +155,9 @@ do_download=1
 if [[ do_download -eq 1 ]]; then
     # clean start
     #\rm -rf products
-    mkdir -p products
+    if [[ -d products ]]; then
+        mkdir -p products
+    fi
 
     # no data
     #ariaDownload.py --bbox "${bbox}" --output url --start 20200101 --end 20220630 --track 144

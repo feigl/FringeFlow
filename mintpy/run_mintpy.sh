@@ -1,5 +1,11 @@
-#!/bin/bash 
+#!/bin/bash -vx
+# set -v # verbose
+# set -x # for debugging
+# set -e # exit on error
+# set -u # error on unset variables
+# 
 ## 2021/08/05 Kurt Feigl
+# 
 
 # Run epochs for MINTPY
 bname=`basename $0`
@@ -101,6 +107,13 @@ if [[ -d geo ]]; then
       view.py --dpi 150 --noverbose --nodisplay --update geo/geo_timeseries_ERA5_demErr.h5 --mask maskTempCoh.h5 --noaxis -u mm --wrap-range -10 10
    fi
 fi
+
+echo Consider following commands
+echo plot_time_series_SANEM.sh timeseries.h5
+echo plot_time_series_SANEM.sh timeseries_ERA5.h5
+echo plot_time_series_SANEM.sh timeseries_ERA5_ramp.h5
+echo plot_time_series_SANEM.sh timeseries_ERA5_ramp_demErr.h5
+
 
 #copy *.txt files into ./pic directory.
 #move *.png/pdf/kmz files to ./pic directory.

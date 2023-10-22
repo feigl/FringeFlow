@@ -5,8 +5,8 @@
 
 set -v # verbose
 set -x # for debugging
-# set -e # exit on error
-# set -u # error on unset variables
+set -e # exit on error
+set -u # error on unset variables
 # S1  20 FORGE 20200101  20200130
 # S1 144 SANEM 20190301  20190401 1  
 
@@ -118,29 +118,27 @@ else
 fi
 echo ISCONDOR is $ISCONDOR
 
+
 # uncompress files for shell scripts 
 if [[ ISCONDOR -eq 1 ]]; then
+    tar -C ${HOME} -xzvf FringeFlow.tgz
+
     # set up paths and environment
-    if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then
-        tar -C ${_CONDOR_SCRATCH_DIR} -xzf siteinfo.tgz 
-        tar -C ${_CONDOR_SCRATCH_DIR} -xzvf FringeFlow.tgz
-        source  ${_CONDOR_SCRATCH_DIR}/FringeFlow/docker/setup_inside_container_maise.sh
-        # magic files must be in $HOME
-        export HOME1=${HOME} 
-        export HOME=${_CONDOR_SCRATCH_DIR}
-        ${_CONDOR_SCRATCH_DIR}/FringeFlow/docker/domagic.sh magic.tgz
-        export HOME=${HOME1}
-    else
-        tar -C ${HOME} -xzf siteinfo.tgz 
-        tar -C ${HOME} -xzvf FringeFlow.tgz 
-        source ${HOME}/FringeFlow/docker/setup_inside_container_maise.sh 
-        $HOME/FringeFlow/docker/domagic.sh magic.tgz
-    fi
+    # NICKB: does something in setup_inside_container_isce.sh require domagic.sh?
+    source $HOME/FringeFlow/docker/setup_inside_container_maise.sh
+
+    # NICKB: this does not appear to run in the run_pairs_isce.sh workflow; taken from docker/load_start_docker_container_isce.sh
+    $HOME/FringeFlow/docker/domagic.sh magic.tgz
+
+    # uncompress siteinfo
+    #tar -C ${HOME} -xzvf siteinfo.tgz
+    get_siteinfo.sh .
 fi
 
 # set some more environment variables
 # get absolute path
-export WORKDIR=$PWD
+export WORKDIR=${PWD}
+echo WORKDIR is $WORKDIR
 
 export TIMETAG=`date +"%Y%m%dT%H%M%S"`
 echo TIMETAG is ${TIMETAG}
@@ -148,19 +146,31 @@ echo TIMETAG is ${TIMETAG}
 export RUNNAME="${SITEUC}_${MISSION}_${TRACK}_${YYYYMMDD1}_${YYYYMMDD2}"
 echo RUNNAME is ${RUNNAME}
 
-RUNDIR=${WORKDIR}/${RUNNAME}
-mkdir -p $RUNDIR
-pushd $RUNDIR
+export SLCDIR="$WORKDIR/$RUNNAME/SLC"
+export DEMDIR="$WORKDIR/$RUNNAME/DEM"
+export ISCEDIR="$WORKDIR/$RUNNAME/ISCE"
+export MINTPYDIR="$WORKDIR/$RUNNAME/MINTPY"
+
+echo SLCDIR is $SLCDIR
+echo DEMDIR is $DEMDIR
+echo ISCEDIR is $ISCEDIR
+echo MINTPYDIR is $MINTPYDIR
+
+
+mkdir -p $RUNNAME
+pushd $RUNNAME
 pwd
 
 echo "Getting DEM"
-mkdir -p DEM
-pushd DEM
+mkdir -p $DEMDIR
+pushd $DEMDIR
 get_dem_isce.sh $SITELC
-popd
+cd $WORKDIR/
 
 echo "Retrieving AUX files...."
-if [[ -f ../aux.tgz ]]; then
+if [[ -f ../../aux.tgz ]]; then
+   tar -xzf ../../aux.tgz
+elif [[ -f ../aux.tgz ]]; then
    tar -xzf ../aux.tgz
 elif [[ -f aux.tgz ]]; then
    tar -xzf aux.tgz
@@ -169,18 +179,19 @@ else
    exit -1
 fi
 
+### get SLC files
 echo "Downloading SLC files...."
-export SLCDIR=${WORKDIR}/SLC
 mkdir -p ${SLCDIR}
 pushd ${SLCDIR}
 echo PWD is now ${PWD}
 run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
 ls -ltr | tee -a ../slc.log
-popd
 
+### now start ISCE
 echo "Running ISCE...."
-mkdir -p ISCE
-pushd ISCE
+mkdir -p ${ISCEDIR}
+pushd ${ISCEDIR}
+
 #run_isce.sh SANEM S1 64 20210331 20210507
 run_isce.sh $SITEUC $MISSION $TRACK $YYYYMMDD1 $YYYYMMDD2 | tee -a ../isce.log
 # plot pairs in radar geometry
@@ -189,16 +200,26 @@ plot_interferograms.sh $SITEUC filt_fine.unw  | tee -a ../isce.log
 # geocode and plot pairs in geographic geometry 
 geocode_interferograms.sh $SITEUC filt_fine.int | tee -a ../isce.log
 geocode_interferograms.sh $SITEUC filt_fine.unw | tee -a ../isce.log
-popd
 
+### STORE RESULTS
+echo "Storing results...."
+pushd $WORKDIR 
+
+# make a list of files to include in tarball
+rm -f tarlist.txt
+touch tarlist.txt
+find . -type f -name "*.log" >> tarlist.txt
+find . -type d -name ISCE    >> tarlist.txt
+find . -type f -name "*.png" >> tarlist.txt
+find . -type f -name "*.eps" >> tarlist.txt
+find . -type f -name "*.log" >> tarlist.txt
+
+tar_and_mv_to_staging.sh $RUNNAME /staging/groups/geoscience/insar/ISCE
+
+#### NOW START MINTPY
 echo "Running MINTPY..."
-mkdir -p MINTPY
-pushd MINTPY
-if [[ -f $HOME/FringeFlow/mintpy/mintpy_template.cfg ]]; then
-  cp -vf $HOME/FringeFlow/mintpy/mintpy_template.cfg .
-elif [[ -f ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg ]]; then
-  cp -vf ${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy/mintpy_template.cfg .
-fi
+mkdir -p $MINTPYDIR
+pushd $MINTPYDIR
 
 # set Lat,Lon coordinates of reference pixel 
 case $SITEUC in
@@ -221,14 +242,20 @@ case $SITEUC in
     ;;   
 esac
 
-# make custom config file for Mintpy
 echo REFLALO is $REFLALO
-cat $HOME/FringeFlow/mintpy/mintpy_aria.cfg  > mintpy_aria.cfg
-cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
-cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg
-cat mintpy_aria.cfg | grep -v mintpy.reference.date > tmp.cfg; echo "mintpy.reference.date = $REFDATE"            >> tmp.cfg; mv tmp.cfg mintpy_aria.cfg 
+
+# make custom config file for Mintpy
+if [[ -f $HOME/FringeFlow/mintpy/mintpy_isce_template_isce_era5.cfg ]]; then
+  cp -vf $HOME/FringeFlow/mintpy/mintpy_isce_template_isce_era5.cfg mintpy.cfg
+elif [[ -f ${WORKDIR}/FringeFlow/mintpy/mintpy_isce_template_isce_era5.cfg ]]; then
+  cp -vf ${WORKDIR}//FringeFlow/mintpy/mintpy_isce_template_isce_era5.cfg mintpy.cfg
+fi
+
+cat mintpy_aria.cfg | grep -v mintpy.reference.lalo > tmp.cfg; echo "mintpy.reference.lalo = $REFLALO"            >> tmp.cfg; mv tmp.cfg mintpy.cfg
+cat mintpy_aria.cfg | grep -v PROJECT_NAME          > tmp.cfg; echo "PROJECT_NAME          = ${SITEUC}_T{$TRACK}" >> tmp.cfg; mv tmp.cfg mintpy.cfg
+cat mintpy_aria.cfg | grep -v mintpy.reference.date > tmp.cfg; echo "mintpy.reference.date = $REFDATE"            >> tmp.cfg; mv tmp.cfg mintpy.cfg
 # update the standard config file with custom version 
-smallbaselineApp.py -g mintpy_aria.cfg
+smallbaselineApp.py -g mintpy.cfg
 run_mintpy.sh mintpy_template.cfg  | tee -a ../mintpy.log
 
 if [[ -d geo ]]; then
@@ -240,35 +267,19 @@ popd
 
 ### STORE RESULTS
 echo "Storing results...."
-
 pushd $WORKDIR 
 
-# keep standard output
-if [[ $ISCONDOR -eq 1 ]]; then
-    cp -vf _condor_stdout $RUNNAME
-    cp -vf _condor_stderr $RUNNAME
-fi
+# make a list of files to include in tarball
+rm -f tarlist.txt
+touch tarlist.txt
+find . -type f -name "*.log" >> tarlist.txt
+find . -type d -name MINTPY  >> tarlist.txt
+find . -type f -name "*.png" >> tarlist.txt
+find . -type f -name "*.eps" >> tarlist.txt
+find . -type f -name "*.log" >> tarlist.txt
 
-# remove intermediate steps
-if [[ -f ${WORKDIR}/${RUNNAME}/MINTPY/geo/geo_velocity.h5 ]]; then
-    rm -vrf ${WORKDIR}/${RUNNAME}/SLC
-    # rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/interferograms
-    # rm -vrf ${WORKDIR}/${RUNNAME}/ISCE/reference
-fi
+tar_and_mv_to_staging.sh $RUNNAME /staging/groups/geoscience/insar/MINTPY
 
-# keep everything
-
-tar -czf ${RUNNAME}.tgz $RUNNAME
-
-if [[  -d /staging/groups/geoscience ]]; then
-    mkdir -p "/staging/groups/geoscience/maise/"
-    mv -fv $RUNNAME.tgz /staging/groups/geoscience/maise/
-    # delete working dir contents to avoid transfering files back to /home/ on submit2
-    #rm -rf $RUNNAME
-else
-    echo keeping everything
-fi
-popd
 
 # restore environment variable
 if [[ -n ${_CONDOR_SCRATCH_DIR+set} ]]; then      

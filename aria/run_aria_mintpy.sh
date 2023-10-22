@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash -veux
 # set -v # verbose
 # set -x # for debugging
 # set -e # exit on error
@@ -103,6 +103,7 @@ else
 fi
 
 export WORKDIR=$PWD
+echo WORKDIR is $WORKDIR
 
 ## are we running under condor ?
 if [[  -d /staging/groups/geoscience ]]; then
@@ -140,36 +141,33 @@ mkdir -p $RUNDIR
 pushd $RUNDIR
 pwd
 
-bbox="$(get_site_dims.sh ${SITEUC} S) $(get_site_dims.sh ${SITEUC} N) $(get_site_dims.sh ${SITEUC} W) $(get_site_dims.sh ${SITEUC} E)"
-echo bbox is $bbox
+export BBOX="$(get_site_dims.sh ${SITEUC} S) $(get_site_dims.sh ${SITEUC} N) $(get_site_dims.sh ${SITEUC} W) $(get_site_dims.sh ${SITEUC} E)"
+echo BBOX is $BBOX
 
-# cd MetaData
-# curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
-# ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
-# test case
-# ariaDownload.py -v --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --output url --start 20220331 --end 20220506 --track 42
-# ariaTSsetup.py -f 'products/*.nc' --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --mask Download --layers all -v -nt 1
+### Start ARIA
+mkdir -p "$WORKDIR/$RUNNAME/ARIA"
+pushd "$WORKDIR/$RUNNAME/ARIA"
+
 
 do_download=1
 if [[ do_download -eq 1 ]]; then
     # clean start
+    # rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack mask user_bbox.json productBoundingBox amplitude bParallel 
+    # rm -rf DEM
+    # rm -rf figures
+
     #\rm -rf products
     if [[ -d products ]]; then
         mkdir -p products
     fi
 
-    # no data
-    #ariaDownload.py --bbox "${bbox}" --output url --start 20200101 --end 20220630 --track 144
-
-    # nice test case 
-    #ariaDownload.py -v --bbox "${bbox}" --output url --start 20220401 --end 20220515 --track 42
-
-    # for WHOLESCALE
-    #ariaDownload.py -v --bbox "${bbox}" --output url --start 20190101 --end 20220902 --track 42
+    # cd MetaData
+    # curl "https://api.daac.asf.alaska.edu/services/search/param?intersectsWith=POLYGON((-119.4738%2040.3014,-119.3544%2040.2985,-119.3431%2040.45,-119.4695%2040.4486,-119.4738%2040.3014))&platform=SENTINEL-1&instrument=C-SAR&start=2014-06-14T05:00:00Z&end=2022-09-01T04:59:59Z&processinglevel=SLC&beamSwath=IW&maxResults=5000&output=CSV" > test2.csv
+    # ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
     # for anything
-    ariaDownload.py -v --bbox "${bbox}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK} -w ./products
+    ariaDownload.py -v --bbox "${BBOX}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK} -w ./products
     
     pushd products
 
@@ -183,20 +181,24 @@ if [[ do_download -eq 1 ]]; then
     popd
 fi
 
-# clean start
-# rm -rf unwrappedPhase connectedComponents coherence incidenceAngle azimuthAngle stack mask user_bbox.json productBoundingBox amplitude bParallel 
-# rm -rf DEM
-# rm -rf figures
 
 # plot data
 #ariaPlot.py -v -f "products/*.nc" -plotall  --figwidth=wide -nt 1
 ariaPlot.py -v -f "products/*.nc" -plotbperpcoh  --figwidth=wide -nt 1
 
 # Prepare ARIA products for time series processing.
-ariaTSsetup.py -f "products/*.nc" --bbox "${bbox}" --mask Download --layers all -v -nt 1
+ariaTSsetup.py -f "products/*.nc" --bbox "${BBOX}" --mask Download --layers all -v -nt 1
 
-mkdir -p MINTPY
-pushd MINTPY
+## get back to where you started from
+cd $WORKDIR
+
+touch tarlist.txt
+ls -d $RUNNAME/ARIA >> tarlist.txt
+tar_and_mv_to_staging.sh $RUNNAME /staging/groups/geoscience/insar/ARIA
+
+#### Start MINTPY
+mkdir -p "$WORKDIR/$RUNNAME/MINTPY"
+pushd "$WORKDIR/$RUNNAME/MINTPY"
 
 
 # set Lat,Lon coordinates of reference pixel 
@@ -210,26 +212,26 @@ case $SITEUC in
     # mean(T.x_longitude_deg_) -1.193554577197500e+02
     # REFLALO="40.416526384799042, -119.3554577197500"
     # get corner 10% in from NE
-    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.9*($4-$3), $1+0.9*($2-$1))}'`
-    # reference date must be in list
+     export REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.9*($4-$3), $1+0.9*($2-$1))}'`
+     # reference date must be in list
     # if [[ $TRACK -eq 42 ]]; then
     #     REFDATE="20220312"
     # else
     #     REFDATE="auto"
     # fi
-    REFDATE="auto"
+    export REFDATE="auto"
     ;;
   FORGE)
     # Should use GPS station named UTM2
     # instead use town of Milford Utah
     # 38.3969° N, 113.0108° W
-    REFLALO="38.3969, -1113.0108"
-    REFDATE="auto"
+    export REFLALO="38.3969, -1113.0108"
+    export REFDATE="auto"
     ;;  
   *)
     # get corner 10% in from SW
-    REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}'`
-    REFDATE="auto"
+    export REFLALO=`grep -i $SITEUC $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f, %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}'`
+    export REFDATE="auto"
     ;;
     
 esac
@@ -246,37 +248,26 @@ smallbaselineApp.py -g mintpy_aria.cfg
 
 # start MintPy with updated config file
 run_mintpy.sh smallbaselineApp.cfg
+#smallbaselineApp.py
 
 # make plots
 plot_maps_mintpy.sh $SITEUC
 
 echo "Storing results...."
 # transfer output back to /staging/
-pushd $WORKDIR 
 
 # make a list of files to include in tarball
 rm -f tarlist.txt
 touch tarlist.txt
-if [[ -f _condor_stdout ]]; then echo _condor_stdout >> tarlist.txt ; fi
-if [[ -f _condor_stdout ]]; then echo _condor_stdout >> tarlist.txt ; fi
 find . -type f -name "*.log" >> tarlist.txt
 find . -type d -name MINTPY  >> tarlist.txt
 find . -type f -name "*.png" >> tarlist.txt
 find . -type f -name "*.eps" >> tarlist.txt
 find . -type f -name "*.log" >> tarlist.txt
 
-# run the tar process to make tar ball
-tar -czf "$RUNNAME.tgz" `cat tarlist.txt`
+tar_and_mv_to_staging.sh $RUNNAME /staging/groups/geoscience/insar/MINTPY
 
-if [[  -d /staging/groups/geoscience ]]; then
-    mkdir -p "/staging/groups/geoscience/maise/output/"
-    cp -fv "$RUNNAME.tgz" "/staging/groups/geoscience/maise/output/$RUNNAME.tgz"
-    # delete working dir contents to avoid transfering files back to /home/ on submit2
-    rm -rf $WORKDIR/*
-else
-    echo keeping everything
-fi
-popd
+pushd $WORKDIR
 
 # exit cleanly
 exit 0

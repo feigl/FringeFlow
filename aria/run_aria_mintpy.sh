@@ -167,7 +167,10 @@ if [[ do_download -eq 1 ]]; then
     # ariaAOIassist.py -f test2.csv --flag_partial_coverage --remove_incomplete_dates --lat_bounds '40.3480000000 40.4490000000' 
 
     # for anything
+    #ariaDownload.py -v --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --output url --start 20220331 --end 20220506 --track 42 -w ./products
     ariaDownload.py -v --bbox "${BBOX}" --output url --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK} -w ./products
+    #ariaDownload.py -v --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --output Download --start 20220331 --end 20220506 --track 42 -w ./products
+    #ariaDownload.py -v --bbox "${BBOX}" --output Download --start ${YYYYMMDD1} --end ${YYYYMMDD2} --track ${TRACK} -w ./products
     
     pushd products
 
@@ -187,6 +190,7 @@ fi
 ariaPlot.py -v -f "products/*.nc" -plotbperpcoh  --figwidth=wide -nt 1
 
 # Prepare ARIA products for time series processing.
+#ariaTSsetup.py -f 'products/*.nc' --bbox '40.3480000000 40.4490000000 -119.4600000000 -119.3750000000' --mask Download --layers all -v -nt 1
 ariaTSsetup.py -f "products/*.nc" --bbox "${BBOX}" --mask Download --layers all -v -nt 1
 
 ## get back to where you started from

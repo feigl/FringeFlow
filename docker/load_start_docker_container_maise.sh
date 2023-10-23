@@ -111,6 +111,7 @@ fi
 #dockertag="docker.io/feigl/maise:20230905"
 #dockertag="docker.io/feigl/maise:20230910"
 dockertag="docker.io/feigl/maise:20231010"
+dockertag="docker.io/feigl/maise:20231023"
 
 # pull container from DockerHub
 #docker pull docker.io/nbearson/isce_chtc2

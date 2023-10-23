@@ -55,15 +55,21 @@ RUN mkdir -p /tools \
 # but I have a copy here
 # RUN cp /Users/feigl/FringeFlow/ssara /tools/SSARA
 #RUN wget -nd -r https://github.com/feigl/FringeFlow/tree/main/ssara /tools/SSARA
+RUN rm -rf /tools/FringeFlow
 RUN git clone https://github.com/feigl/FringeFlow.git /tools/FringeFlow
 RUN mkdir /tools/SSARA 
 RUN mv /tools/FringeFlow/ssara/* /tools/SSARA
-RUN rm -rf /tools/FringeFlow
 
 # TODO work around error with small num_loop
-RUN diff /tools/MintPy/src/mintpy/unwrap_error_phase_closure.py /tools/FringeFlow/mintpy/unwrap_error_phase_closure.py 
-RUN mv -vf /tools/MintPy/src/mintpy/unwrap_error_phase_closure.py /tools/MintPy/src/mintpy/unwrap_error_phase_closure.py.save
-RUN cp -vf /tools/FringeFlow/mintpy/unwrap_error_phase_closure.py /tools/MintPy/src/mintpy/unwrap_error_phase_closure.py 
+# RUN find / -name unwrap_error_phase_closure.py
+# RUN ls -l /tools
+# RUN ls -l /opt/conda/envs/maise/lib/python3.11/site-packages/mintpy/unwrap_error_phase_closure.py
+# RUN ls -l /tools/FringeFlow/mintpy/unwrap_error_phase_closure.py 
+#RUN sdiff -s /opt/conda/envs/maise/lib/python3.11/site-packages/mintpy/unwrap_error_phase_closure.py /tools/FringeFlow/mintpy/unwrap_error_phase_closure.py 
+RUN mv -vf /opt/conda/envs/maise/lib/python3.11/site-packages/mintpy/unwrap_error_phase_closure.py /opt/conda/envs/maise/lib/python3.11/site-packages/mintpy/unwrap_error_phase_closure.py.save
+RUN cp -vf /tools/FringeFlow/mintpy/unwrap_error_phase_closure.py /opt/conda/envs/maise/lib/python3.11/site-packages/mintpy/unwrap_error_phase_closure.py
+
+#RUN rm -rf /tools/FringeFlow
 
 
 RUN chmod +x /tools/SSARA/ssara_federated_query.py
@@ -101,3 +107,5 @@ RUN /tools/SSARA/ssara_federated_query.py --help
 RUN echo "export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}" >> $HOME/.bashrc
 RUN echo "export PATH=${PATH}:${ISCE_STACK}/topsStack" >> $HOME/.bashrc
 RUN stackSentinel.py --help
+
+

@@ -18,7 +18,10 @@ DATETAG=$(date +"%Y%m%d")
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile20230615 $SCRIPT_DIR
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:latest -f Dockerfile20230815 $SCRIPT_DIR
 #docker build -t docker.io/$DOCKERHUB_USERNAME/maise:20230905 -f Dockerfile20230905 $SCRIPT_DIR
-docker build -t docker.io/$DOCKERHUB_USERNAME/maise:${DATETAG} -f Dockerfile${DATETAG} $SCRIPT_DIR
+# show more output
+# https://stackoverflow.com/questions/64804749/why-is-docker-build-not-showing-any-output-from-commands
+# https://makeoptim.com/en/tool/docker-build-not-output/
+DOCKER_BUILDKIT=0 docker build -t docker.io/$DOCKERHUB_USERNAME/maise:${DATETAG} --progress=plain -f Dockerfile${DATETAG} $SCRIPT_DIR
 echo "docker.io/$DOCKERHUB_USERNAME/maise:latest was built successfully."
 
 echo "The following commands are only being printed for your convenience:"

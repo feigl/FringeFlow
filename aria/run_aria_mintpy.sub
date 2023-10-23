@@ -7,12 +7,12 @@
 # 2022/10/12 Kurt Feigl
 # 2022/10/16 Kurt Feigl - adapt from earlier
 # 2023/10/09 Kurt Feigl - 
-
+# 2023/10/23 Kurt Feigl - 
 
 universe = docker
 
 # Docker image
- docker_image = docker.io/feigl/maise:20230910
+ docker_image = docker.io/feigl/maise:20231023
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 

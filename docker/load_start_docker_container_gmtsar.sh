@@ -1,4 +1,4 @@
-#!/bin/bash -vex
+#!/bin/bash 
 
 # Load a docker container and then start it
 # 2021/07/05 Kurt Feigl
@@ -32,7 +32,10 @@ echo runname is $runname
 
 # get important files
 cp $HOME/PAIRSmake.txt $dirname
-cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt $dirname
+if [[ -f /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt ]]; then
+  cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt $dirname
+fi
+
 cp -r $HOME/siteinfo $dirname
 
 echo '  '
@@ -72,7 +75,9 @@ pushd $dirname
 echo "Once container starts, try: "
 #echo "cp -rv siteinfo /root"
 echo "source /root/FringeFlow/docker/setup_inside_container_gmtsar.sh"
+echo "cp /opt/gmtsar/6.0/share/gmtsar/csh/config.tsx.txt ."
 echo "Starting container...."
+
 
 # run script in container
 #docker run --name $runname -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy ./bin/run_pair.sh 20190110  20190122

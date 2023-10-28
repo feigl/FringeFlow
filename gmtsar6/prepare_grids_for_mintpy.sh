@@ -30,7 +30,19 @@ export INDIR=$1
 
 # loop over pairs
 for pairdir in $INDIR ; do
+    echo pairdir is $pairdir
+
+    # handle older directory structure 
+    if [[ -f $pairdir/../../topo/dem_ll.grd ]]; then
+        cp -v $pairdir/../../topo/dem_ll.grd $pairdir
+    fi
+
     if [[ -f $pairdir/unwrap_ll.grd ]] && [[ -f $pairdir/corr_ll.grd ]] && [[ -f $pairdir/dem_ll.grd ]]; then
+
+        if [[ -f $pairdir/../topo/dem_ll.grd ]]; then
+            cp -v $pairdir/../topo/dem_ll.grd $pairdir
+        fi
+
         echo $pairdir
         basename $pairdir
 

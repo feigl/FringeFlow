@@ -16,7 +16,7 @@ Help()
     exit -1
   }
 
-if [[  ( "$#" -eq 5)  || ( "$#" -eq 6) ]]; then
+if [[  ( "$#" -ge 5)  || ( "$#" -le 7) ]]; then
     SITELC=`echo $1 | awk '{ print tolower($1) }'`         
     SITEUC=`echo $1 | awk '{ print toupper($1) }'`
     MISSION=$2
@@ -29,8 +29,16 @@ if [[  ( "$#" -eq 5)  || ( "$#" -eq 6) ]]; then
     date_first=`echo $YYYYMMDD1 | awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
     date_last=`echo $YYYYMMDD2 |  awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`
 
-   if [[  ( "$#" -eq 6) ]]; then
+   if [[  ( "$#" -ge 6) ]]; then
       SLCDIR=$6
+   else
+      mkdir -p ./SLC
+      SLCDIR=./SLC
+   fi
+   if [[  ( "$#" -ge 7) ]]; then
+      NPROC=$7
+   else
+      NPROC=$(nproc)
    fi
 else
    Help
@@ -141,14 +149,14 @@ fi
 #     --useGPU
 
 # # Eventually we will want to do ionospheric corrections
-# if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
-#    cp $HOME/FringeFlow/isce/ion_param.txt .
-# elseif [[ -f /root/FringeFlow/isce/ion_param.txt  ]]; then
-#    cp /root/FringeFlow/isce/ion_param.txt  .
-# else
-#    echo error cannot find ion_param.txt
-#    exit -1
-# fi
+if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
+   cp $HOME/FringeFlow/isce/ion_param.txt .
+elseif [[ -f /root/FringeFlow/isce/ion_param.txt  ]]; then
+   cp /root/FringeFlow/isce/ion_param.txt  .
+else
+   echo error cannot find ion_param.txt
+   exit -1
+fi
 
 stackSentinel.py -w ./ \
     -d ${demfile} \
@@ -165,6 +173,7 @@ stackSentinel.py -w ./ \
     -b "${bbox}" \
     --start "${date_first}" \
     --stop  "${date_last}" \
+    --param_ion ./ion_param.txt \
     -W interferogram
 
 # ionospheric correction not available yet

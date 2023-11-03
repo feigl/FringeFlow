@@ -399,7 +399,9 @@ def asf_dl(d, opt_dict):
     filename = os.path.basename(url)
     print("ASF Download:",filename)
     start = time.time()
-    cmd = 'wget -nv -c --user=%s --password=%s %s' % (password_config.asfuser,password_config.asfpass,url)
+    #cmd = 'wget -nv -c --user=%s --password=%s %s' % (password_config.asfuser,password_config.asfpass,url)
+    # 2023/11/03
+    cmd = 'wget -nv --show-progress-c --user=%s --password=%s %s' % (password_config.asfuser,password_config.asfpass,url)
     pipe = sub.Popen(cmd, shell=True, stdout=sub.PIPE, stderr=sub.STDOUT).stdout
     pipe.read()
     total_time = time.time() - start

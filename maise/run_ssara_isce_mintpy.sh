@@ -22,11 +22,12 @@ Help()
     echo '   -c number of connections in stack'
     echo '   -m mission e.g., S1 for Sentinel-1'
     echo '   -n name of site e.g., SANEM for San Emidio or FORGE'
+    echo '   -p number of processors for parallel [default 1, nproc]'
     echo '   -t number of track'
     echo "example:"
     echo "    $bname  -n SANEM -m S1 -1 20210331 -2 20210506 -c 1 -t 42"
     echo "    $bname  -n FORGE -m S1 -1 20200101 -2 20200130 -c 2"
-    echo "    $bname  -n SANEM -m S1 -1 20220331 -2 20220506 -c 3 -t 42"
+    echo "    $bname  -n SANEM -m S1 -1 20220106 -2 20220623 -c 3 -t 144 "
     exit -1
   }
 
@@ -43,7 +44,7 @@ fi
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":1:2:c:h:n:m:t:" option; do
+while getopts ":1:2:c:h:n:m:t:p:" option; do
     case $option in
         1) # start date YYYYMMDD
             export YYYYMMDD1=$OPTARG
@@ -62,7 +63,11 @@ while getopts ":1:2:c:h:n:m:t:" option; do
             export SITEUC=`echo ${SITELC} | awk '{ print toupper($1) }'`
             ;;
         m) # Enter a satellite mission
-            export MISSION=$OPTARG;;
+            export MISSION=$OPTARG
+            ;;
+        p) # number of processors
+            export NPROC=$OPTARG
+            ;;
         t) # Enter a track
             TRACK=$OPTARG
             ;;
@@ -200,6 +205,8 @@ plot_interferograms.sh $SITEUC filt_fine.unw  | tee -a ../isce.log
 # geocode and plot pairs in geographic geometry 
 geocode_interferograms.sh $SITEUC filt_fine.int | tee -a ../isce.log
 geocode_interferograms.sh $SITEUC filt_fine.unw | tee -a ../isce.log
+geocode_interferograms.sh $SITEUC filt_fine.cor
+geocode_interferograms.sh $SITEUC filt_fine.unw.conncomp
 
 ### STORE RESULTS
 echo "Storing results...."

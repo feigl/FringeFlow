@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -veux
 
 # Set up keys for ISCE, GMTSAR, MINTPY, and SSARA
 # 2021/07/05 Kurt Feigl
@@ -72,22 +72,16 @@ else
             exit -1
         fi
 
-       # copy authentification files for SSARA
-       # For memory: after the first execution of password_config.py, we get a .pyc file that is compiled.
+        # copy authentification files for SSARA
+        # For memory: after the first execution of password_config.py, we get a .pyc file that is compiled.
         if [[ -f $HOME/magic/password_config.py ]]; then
             echo "File named $HOME/magic/password_config.py exists."
-            if [ -d $HOME/ssara_client ]; then
-                #export SSARA_HOME=$HOME/ssara_ops
-                cp -rvf $HOME/ssara_client $PWD
+            #if [ -d $HOME/ssara_client ]; then
+            if [ -d $HOME/FringeFlow/ssara ]; then
+                cp -rvf $HOME/FringeFlow/ssara $PWD
                 cp -vf $HOME/magic/password_config.py ${PWD}/password_config.py
-                export SSARA_HOME=$PWD/ssara_client
-                echo "Checking for file named password_config.py in ${SSARA_HOME}"
-                if [[ -f ${SSARA_HOME}/password_config.py ]]; then
-                    ls -l ${SSARA_HOME}/password_config.py
-                else
-                    echo "ERROR: could not find file named password_config.py in ${SSARA_HOME}"
-                    exit -1
-                fi
+                export SSARA_HOME=$PWD/ssara
+
             elif [[ -d /tools/SSARA/ ]]; then
                 cp -vf $HOME/magic/password_config.py /tools/SSARA/password_config.py
                 export SSARA_HOME=/tools/SSARA
@@ -97,6 +91,12 @@ else
             fi
         else
             echo "ERROR: Could not find magic SSARA password file named $HOME/magic/password_config.py"
+            exit -1
+        fi
+        if [[ -f ${SSARA_HOME}/password_config.py ]]; then
+            ls -l ${SSARA_HOME}/password_config.py
+        else
+            echo "ERROR: could not find file named password_config.py in ${SSARA_HOME}"
             exit -1
         fi
     else

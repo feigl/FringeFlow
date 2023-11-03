@@ -132,7 +132,7 @@ if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/docker
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/isce
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy
-    export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/ssara
+    #export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/ssara
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/aria
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/maise    
 elif [[ -d ${HOME}/FringeFlow ]]; then
@@ -140,7 +140,7 @@ elif [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/docker
     export PATH=${PATH}:${HOME}/FringeFlow/isce
     export PATH=${PATH}:${HOME}/FringeFlow/mintpy
-    export PATH=${PATH}:${HOME}/FringeFlow/ssara
+    #export PATH=${PATH}:${HOME}/FringeFlow/ssara
     export PATH=${PATH}:${HOME}/FringeFlow/aria
     export PATH=${PATH}:${HOME}/FringeFlow/maise
 else
@@ -152,19 +152,24 @@ if [[ -d ${HOME}/gipht/csh ]]; then
     export PATH=${PATH}:${HOME}/gipht/csh
 fi
 
-# set up for SSARA
-if [[ -d /tools/SSARA ]]; then
-    export SSARA_HOME=/tools/SSARA
-    export PATH=${PATH}:${SSARA_HOME}
-    if [[ -n ${PYTHONPATH+set} ]]; then
-        export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
-    else
-        export PYTHONPATH=${SSARA_HOME}
-    fi
-else
-    echo "WARNING cannot find a path to SSARA ." Finding ...
-    find / -type d -name SSARA
-fi 
+# # set up for SSARA
+# if [[ -d /tools/SSARA ]]; then
+#     export SSARA_HOME=/tools/SSARA
+# elif [[ -d $HOME/tools/SSARA ]]; then
+#     export SSARA_HOME=$HOME/tools/SSARA
+# elif [[ -d $HOME/FringeFlow/ssara ]]; then
+#     export SSARA_HOME=$HOME/Fringeflow/ssara
+#  else
+#     echo "WARNING cannot find a path to SSARA ." Finding ...
+#     #find / -type d -name SSARA
+# fi 
+# export PATH=${PATH}:${SSARA_HOME}
+# if [[ -n ${PYTHONPATH+set} ]]; then
+#     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
+# else
+#     export PYTHONPATH=${SSARA_HOME}
+# fi
+
 
 # set up for siteinfo
 if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then

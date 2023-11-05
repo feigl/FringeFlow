@@ -26,7 +26,10 @@ Command line client
 EXAMPLE = """Usage Examples:
   
 """
-    
+def start_session():
+    session = asf.ASFSession() 
+
+  
 def download_from_asf(site_name, output_dir, track, start_date, end_date):
     
     if site_name.lower() == 'sanem':
@@ -100,7 +103,7 @@ def main():
     parser.add_argument('-o', '--output_dir', type=str, help='working directory for output')
     parser.add_argument('-t', '--track', type=str, help='track, i.e. relative orbit number. e.g., 144')
     # Define optional arguments with nargs='?'
-    parser.add_argument('-s', '--start_date', nargs='?', type=str, help='start_date, e.g.20220101 ',default='2016-01-01')
+    parser.add_argument('-s', '--start_date', nargs='?', type=str, help='start_date, e.g.20220101 ',default='20160101')
     #parser.add_argument('-e', '--end_date', nargs='?',type=str, help='end_date, e.g.20220601',default=formatted_date)
     parser.add_argument('-e', '--end_date', nargs='?',type=str, help='end_date, e.g.20220601',default='20250101')
 
@@ -118,6 +121,7 @@ def main():
     end_date=yyyy + "-" + mm + "-" + dd
     print(f'end_date is {end_date}')
     
+    start_session()
     download_from_asf(args.site_name, args.output_dir, args.track, start_date, end_date)
 
 

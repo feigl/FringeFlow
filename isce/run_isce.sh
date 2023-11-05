@@ -16,7 +16,7 @@ Help()
     exit -1
   }
 
-if [[  ( "$#" -ge 5)  || ( "$#" -le 7) ]]; then
+if [[  ( "$#" -ge 5)  && ( "$#" -le 7) ]]; then
     SITELC=`echo $1 | awk '{ print tolower($1) }'`         
     SITEUC=`echo $1 | awk '{ print toupper($1) }'`
     MISSION=$2
@@ -32,8 +32,8 @@ if [[  ( "$#" -ge 5)  || ( "$#" -le 7) ]]; then
    if [[  ( "$#" -ge 6) ]]; then
       SLCDIR=$6
    else
-      mkdir -p ./SLC
-      SLCDIR=./SLC
+      mkdir -p ../SLC
+      SLCDIR=../SLC
    fi
    if [[  ( "$#" -ge 7) ]]; then
       NPROC=$7
@@ -51,7 +51,7 @@ echo YYYYMMDD2 is ${YYYYMMDD2}  date_last  is ${date_last}
 if [[ -n ${STACK_SENTINEL_NUM_CONNECTIONS+set} ]]; then
    echo STACK_SENTINEL_NUM_CONNECTIONS  is $STACK_SENTINEL_NUM_CONNECTIONS
 else
-   export STACK_SENTINEL_NUM_CONNECTIONS=1
+   export STACK_SENTINEL_NUM_CONNECTIONS=5
 fi
 echo STACK_SENTINEL_NUM_CONNECTIONS is ${STACK_SENTINEL_NUM_CONNECTIONS}
 
@@ -151,7 +151,7 @@ fi
 # # Eventually we will want to do ionospheric corrections
 if [[ -f $HOME/FringeFlow/isce/ion_param.txt ]]; then
    cp $HOME/FringeFlow/isce/ion_param.txt .
-elseif [[ -f /root/FringeFlow/isce/ion_param.txt  ]]; then
+elif [[ -f /root/FringeFlow/isce/ion_param.txt  ]]; then
    cp /root/FringeFlow/isce/ion_param.txt  .
 else
    echo error cannot find ion_param.txt
@@ -167,7 +167,7 @@ stackSentinel.py -w ./ \
     --filter_strength 0 \
     --azimuth_looks 5 \
     --range_looks 20 \
-    --num_proc 1 \
+    --num_proc $NPROC \
     --num_process4topo 1 \
     -C geometry \
     -b "${bbox}" \

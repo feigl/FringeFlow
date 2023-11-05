@@ -35,7 +35,18 @@ else
             exit -1
         fi
 
-        # Add your Open Topo API key to `~/.topoapi`.Refer to ARIAtools installation instructions.
+        # add key for NASA Earthdata
+        if [[ -f $HOME/magic/.urs_cookies ]]; then
+            echo "File named $HOME/magic/.urs_cookies exists"
+            cp -vf $HOME/magic/.urs_cookiies $HOME/
+        elif [[ -f $HOME/.urs_cookies]]; then
+            echo "File named $HOME/.topoapi exists"
+        else
+            echo "ERROR: could not find named .topapi"
+            exit -1
+        fi
+
+       # Add your Open Topo API key to `~/.topoapi`.Refer to ARIAtools installation instructions.
         if [[ -f $HOME/magic/.topoapi ]]; then
             echo "File named $HOME/magic/.topoapi exists"
             cp -vf $HOME/magic/.topoapi $HOME/.topoapi

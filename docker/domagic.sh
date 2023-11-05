@@ -38,9 +38,9 @@ else
         # add key for NASA Earthdata
         if [[ -f $HOME/magic/.urs_cookies ]]; then
             echo "File named $HOME/magic/.urs_cookies exists"
-            cp -vf $HOME/magic/.urs_cookiies $HOME/
+            cp -vf $HOME/magic/.urs_cookies $HOME/
         elif [[ -f $HOME/.urs_cookies]]; then
-            echo "File named $HOME/.topoapi exists"
+            echo "File named $HOME/.urs_cookies exists"
         else
             echo "ERROR: could not find named .topapi"
             exit -1

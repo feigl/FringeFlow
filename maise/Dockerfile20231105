@@ -97,7 +97,7 @@ RUN echo "export PATH=${ISCE_HOME}/bin:${ISCE_HOME}/applications:${PATH}" >> $HO
 RUN topsApp.py --help --steps
 RUN ariaDownload.py --help
 RUN smallbaselineApp.py --help
-RUN /tools/SSARA/ssara_federated_query.py --help
+#RUN /tools/SSARA/ssara_federated_query.py --help
 
 # additional stack setup
 # https://github.com/isce-framework/isce2/blob/main/contrib/stack/README.md

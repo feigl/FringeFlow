@@ -1,22 +1,14 @@
 #! /usr/bin/env python
 
 import os
+from os import listdir
 import sys
 import datetime
-
-# import json
-# import datetime
-# import time
-# import csv
-# from xml.dom import minidom
-# import itertools
-# import operator
-# import re
 import argparse
-
+import getpass
 import requests
-from os import listdir
-
+from requests.auth import HTTPBasicAuth
+import netrc
 import asf_search as asf
 
 DESCRIPTION = """
@@ -26,8 +18,8 @@ Command line client
 EXAMPLE = """Usage Examples:
   
 """
-    
-def download_from_asf(site_name, output_dir, track, start_date, end_date):
+   
+def download_from_asf(site_name, output_dir, track, start_date, end_date, action):
     
     if site_name.lower() == 'sanem':
         polygon='POLYGON((-119.4600000000 40.3480000000, -119.3750000000 40.3480000000, -119.3750000000 40.4490000000, -119.4600000000 40.4490000000, -119.4600000000 40.3480000000))'
@@ -46,34 +38,55 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date):
         maxResults=250)
 
     nFiles=len(results)
-    print(f'Found nFiles {nFiles}')
-    
-    listFilePath = './search.csv'
+    print(f'Found nFiles {nFiles}')  
+    listFilePath = 'search.csv'
+    for i in range(nFiles):
+        print(f'\n i is {i}')
+        url     = results[i].properties["url"]
+        print(f'\turl is {url}')
+        remoteFileName = results[i].properties["fileName"]
+        print(f'\tremoteFileName is {remoteFileName}')
+        
+        localFileName = output_dir + '/' + remoteFileName  # 
+        print(f'\tlocalFileName is {localFileName}')
+        
+        with open(listFilePath, 'a') as file:
+            list1 = url + ',' + remoteFileName +  ',' + localFileName + '\n'
+            file.write(list1)  # Add a newline character to separate lines
+                       
 
-    
+    # Read the credentials from the .netrc file
+    credentials = netrc.netrc()
+
+    # Specify the machine (e.g., "example.com") for which you want to retrieve credentials
+    machine = "urs.earthdata.nasa.gov"
+
+    # Get the login and password from the .netrc file
+    username, account, password = credentials.authenticators(machine)
+ 
     for i in range(nFiles):
             url     = results[i].properties["url"]
             print(f'url is {url}')
             remoteFileName = results[i].properties["fileName"]
             print(f'remoteFileName is {remoteFileName}')
             
-            localFileName = './' + remoteFileName  # Use the current directory
-            
-            with open(listFilePath, 'w') as file:
-                    file.write(url + ',' + remoteFileName +  '\n')  # Add a newline character to separate lines
-        
+            localFileName = output_dir + '/' + remoteFileName  #             
+         
             if os.path.exists(localFileName):
                 print(f'local file named {localFileName} already exists. Not downloading again.')
             else:
                 # Send a GET request with cookies and follow redirects
-                response = requests.get(url, cookies={'urs_user': 'feigl'}, allow_redirects=True, stream=True)
+                #response = requests.get(url, cookies={'urs_user': 'feigl'}, allow_redirects=True, stream=True)
+                response = requests.get(url, auth=HTTPBasicAuth(username, password), allow_redirects=True, stream=True)
 
                 # Check if the request was successful
                 if response.status_code == 200:
-                    
                     total_size = int(response.headers.get('content-length', 0))
                     block_size = 100*1024*1024  # You can adjust this value for larger or smaller updates
-
+                    print(f'Starting download with block_size of {block_size} bytes')
+                    formattedString2 = " {:.0f} Mbyte".format(100*total_size/block_size)
+                    print(formattedString2)
+                      
                     bytes=0;
                     with open(localFileName, 'wb') as file:
                         for data in response.iter_content(block_size):
@@ -81,8 +94,7 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date):
                             bytes=bytes+block_size
                             #progress_bar.update(len(data))
                             formattedString1 = "Downloaded {:.0f}".format(100*bytes/block_size)
-                            formattedString2 = " of {:.0f} Mbyte".format(100*total_size/block_size)
-                            print(formattedString1+formattedString2)
+                            print(formattedString1 + ' of ' + formattedString2)
                     
                 else:
                     print(f'Failed to download the file. Status code: {response.status_code}')
@@ -97,11 +109,11 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--site_name', type=str, help='5-digit code for site, e.g. SANEM')
-    parser.add_argument('-o', '--output_dir', type=str, help='working directory for output')
+    parser.add_argument('-o', '--output_dir', type=str, help='working directory for output',default='.')
     parser.add_argument('-t', '--track', type=str, help='track, i.e. relative orbit number. e.g., 144')
+    parser.add_argument('-a', '--action', type=str, help='action, e.g. search or download',default='search')
     # Define optional arguments with nargs='?'
-    parser.add_argument('-s', '--start_date', nargs='?', type=str, help='start_date, e.g.20220101 ',default='2016-01-01')
-    #parser.add_argument('-e', '--end_date', nargs='?',type=str, help='end_date, e.g.20220601',default=formatted_date)
+    parser.add_argument('-s', '--start_date', nargs='?', type=str, help='start_date, e.g.20220101 ',default='20160101')
     parser.add_argument('-e', '--end_date', nargs='?',type=str, help='end_date, e.g.20220601',default='20250101')
 
     args = parser.parse_args()
@@ -116,10 +128,9 @@ def main():
     mm=args.end_date[4:6]
     dd=args.end_date[6:8]
     end_date=yyyy + "-" + mm + "-" + dd
-    print(f'end_date is {end_date}')
+    print(f'end_date is   {end_date}')
     
-    download_from_asf(args.site_name, args.output_dir, args.track, start_date, end_date)
-
+    download_from_asf(args.site_name, args.output_dir, args.track, start_date, end_date, args.action)
 
 if (__name__ == '__main__'):
     main()

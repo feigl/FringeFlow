@@ -28,8 +28,10 @@ else
         if [[ -f $HOME/magic/.netrc ]]; then
             echo "File named $HOME/magic/.netrc exists"
             cp -vf $HOME/magic/.netrc $HOME/.netrc
+            chmod 400 $HOME/.netrc
         elif [[ -f $HOME/.netrc ]]; then
             echo "File named $HOME/.netrc exists"
+            chmod 400 $HOME/.netrc
         else
             echo "ERROR: could not find named .netrc"
             exit -1

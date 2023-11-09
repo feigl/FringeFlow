@@ -21,20 +21,36 @@ EXAMPLE = """Usage Examples:
    
 def download_from_asf(site_name, output_dir, track, start_date, end_date, action):
     
+    # set polygon based on site
     if site_name.lower() == 'sanem':
         polygon='POLYGON((-119.4600000000 40.3480000000, -119.3750000000 40.3480000000, -119.3750000000 40.4490000000, -119.4600000000 40.4490000000, -119.4600000000 40.3480000000))'
-        relOrb=144
+    elif site_name.lower() == 'forge':
+        polygon='POLYGON((-112.9852300489 38.4450885264, -112.7536042430 38.4450885264, -112.7536042430 38.5924406708, -112.9852300489 38.5924406708, -112.9852300489 38.4450885264))'
     else:
         print(f,'unknown site_name {site_name}')
-        
-        
+    
+    # https://gis.stackexchange.com/questions/237116/sentinel-1-relative-orbit
+    # set default track based on site
+    if track is None :
+        if  site_name.lower() == 'sanem': 
+            relOrb=144
+        elif site_name.lower() == 'forge':
+            relOrb=20
+        else:
+            # set to all allowable values
+            relOrb=(0,176)
+            print(f,'Setting relorb to {relOrb}')
+            
+            
+      
+    # https://docs.asf.alaska.edu/api/keywords/  
     results = asf.geo_search(
         intersectsWith=polygon,
         platform=asf.PLATFORM.SENTINEL1,
         relativeOrbit=relOrb,
         start=start_date,
         end=end_date,
-        processingLevel=asf.constants.PRODUCT_TYPE.GRD_HD,
+        processingLevel=asf.constants.PRODUCT_TYPE.SLC,
         maxResults=250)
 
     nFiles=len(results)
@@ -53,54 +69,61 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date, action
         with open(listFilePath, 'a') as file:
             list1 = url + ',' + remoteFileName +  ',' + localFileName + '\n'
             file.write(list1)  # Add a newline character to separate lines
-                       
+        
+    if action.lower() == 'download':           
 
-    # Read the credentials from the .netrc file
-    credentials = netrc.netrc()
+        # Read the credentials from the .netrc file
+        credentials = netrc.netrc()
 
-    # Specify the machine (e.g., "example.com") for which you want to retrieve credentials
-    machine = "urs.earthdata.nasa.gov"
+        # Specify the machine (e.g., "example.com") for which you want to retrieve credentials
+        machine = "urs.earthdata.nasa.gov"
 
-    # Get the login and password from the .netrc file
-    username, account, password = credentials.authenticators(machine)
- 
-    for i in range(nFiles):
-            url     = results[i].properties["url"]
-            print(f'url is {url}')
-            remoteFileName = results[i].properties["fileName"]
-            print(f'remoteFileName is {remoteFileName}')
+        # Get the login and password from the .netrc file
+        try:
+            username, account, password = credentials.authenticators(machine)
+        except ValueError as e:
+            print(f'Exception {e}')
+        else:
+            print(f'Successfully logged in as {username}')
             
-            localFileName = output_dir + '/' + remoteFileName  #             
-         
-            if os.path.exists(localFileName):
-                print(f'local file named {localFileName} already exists. Not downloading again.')
-            else:
-                # Send a GET request with cookies and follow redirects
-                #response = requests.get(url, cookies={'urs_user': 'feigl'}, allow_redirects=True, stream=True)
-                response = requests.get(url, auth=HTTPBasicAuth(username, password), allow_redirects=True, stream=True)
-
-                # Check if the request was successful
-                if response.status_code == 200:
-                    total_size = int(response.headers.get('content-length', 0))
-                    block_size = 100*1024*1024  # You can adjust this value for larger or smaller updates
-                    print(f'Starting download with block_size of {block_size} bytes')
-                    formattedString2 = " {:.0f} Mbyte".format(100*total_size/block_size)
-                    print(formattedString2)
-                      
-                    bytes=0;
-                    with open(localFileName, 'wb') as file:
-                        for data in response.iter_content(block_size):
-                            file.write(data)
-                            bytes=bytes+block_size
-                            #progress_bar.update(len(data))
-                            formattedString1 = "Downloaded {:.0f}".format(100*bytes/block_size)
-                            print(formattedString1 + ' of ' + formattedString2)
+ 
+            for i in range(nFiles):
+                    url     = results[i].properties["url"]
+                    print(f'url is {url}')
+                    remoteFileName = results[i].properties["fileName"]
+                    print(f'remoteFileName is {remoteFileName}')
                     
-                else:
-                    print(f'Failed to download the file. Status code: {response.status_code}')
+                    localFileName = output_dir + '/' + remoteFileName  #             
+                
+                    if os.path.exists(localFileName):
+                        print(f'local file named {localFileName} already exists. Not downloading again.')
+                    else:
+                        # Send a GET request with cookies and follow redirects
+                        #response = requests.get(url, cookies={'urs_user': 'feigl'}, allow_redirects=True, stream=True)
+                        response = requests.get(url, auth=HTTPBasicAuth(username, password), allow_redirects=True, stream=True)
 
-                # Close the session
-                response.close()   
+                        # Check if the request was successful
+                        if response.status_code == 200:
+                            total_size = int(response.headers.get('content-length', 0))
+                            block_size = 100*1024*1024  # You can adjust this value for larger or smaller updates
+                            print(f'Starting download with block_size of {block_size} bytes')
+                            formattedString2 = " {:.0f} Mbyte".format(100*total_size/block_size)
+                            print(formattedString2)
+                            
+                            bytes=0;
+                            with open(localFileName, 'wb') as file:
+                                for data in response.iter_content(block_size):
+                                    file.write(data)
+                                    bytes=bytes+block_size
+                                    #progress_bar.update(len(data))
+                                    formattedString1 = "Downloaded {:.0f}".format(100*bytes/block_size)
+                                    print(formattedString1 + ' of ' + formattedString2)
+                            
+                        else:
+                            print(f'Failed to download the file. Status code: {response.status_code}')
+
+                        # Close the session
+                        response.close()   
 def main():
     #today = datetime.now()
 
@@ -110,7 +133,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--site_name', type=str, help='5-digit code for site, e.g. SANEM')
     parser.add_argument('-o', '--output_dir', type=str, help='working directory for output',default='.')
-    parser.add_argument('-t', '--track', type=str, help='track, i.e. relative orbit number. e.g., 144')
+    parser.add_argument('-t', '--track', type=str, help='track, i.e. relative orbit number. e.g., 144',default=None)
     parser.add_argument('-a', '--action', type=str, help='action, e.g. search or download',default='search')
     # Define optional arguments with nargs='?'
     parser.add_argument('-s', '--start_date', nargs='?', type=str, help='start_date, e.g.20220101 ',default='20160101')

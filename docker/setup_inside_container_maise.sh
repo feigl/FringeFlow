@@ -32,32 +32,45 @@ else
 fi
 echo ISCONDOR is $ISCONDOR
 
-
-if [[ -n ${PYTHONPATH+set} ]]; then
-    echo inheriting PYTHONPATH as ${PYTHONPATH}   
+if [[ -d /opt/conda ]]; then
+    export CONDA_HOME="/opt/conda"
+elif [[ -d /scratch/feigl/conda ]]; then
+    export CONDA_HOME="/scratch/feigl/conda" 
 else
-    export  PYTHONPATH="/opt/conda/pkgs"
-fi 
-
-if [[ -d /opt/conda/envs/maise/bin ]]; then
-    export PATH=$PATH:/opt/conda/envs/maise/bin
+    echo "ERROR: cannot find a place to define CONDA_HOME"
+    exit -1
 fi
-if [[ -d /opt/conda/envs/maise/sbin ]]; then
-    export PATH=$PATH:/opt/conda/envs/maise/sbin
+    
+
+if [[ -d ${CONDA_HOME}/pkgs ]]; then
+    export  PYTHONPATH=$PYTHONPATH:${CONDA_HOME}/pkgs
+fi
+
+if [[ -d $CONDA_HOME/envs/maise/bin ]]; then
+    export PATH=$PATH:$CONDA_HOME/envs/maise/bin 
+fi
+
+if [[ -d $CONDA_HOME/envs/maise/bsin ]]; then
+    export PATH=$PATH:$CONDA_HOME/envs/maise/sbin 
 fi
 
 # 2023/09/11 with Nick.
 # Here are results from a working container
 # echo $ISCE_HOME
 # /opt/conda/envs/maise/lib/python3.11/site-packages/isce
-export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+#export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+path1=`find $CONDA_HOME -name stackSentinel.py`
+path2=`dirname $path1`
+export ISCE_HOME=$path2
+export PATH=$PATH:$ISCE_HOME
+export PYTHONPATH=$PYTHONPATH:$path2
 
 # (maise) root@63015c028655:/home/nickb/FringeFlow# echo $PYTHONPATH
 # :/opt/conda/envs/maise/share/isce2
 #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
 
 # set PATH 
-if [[ -d /opt/conda/envs/maise ]]; then
+if [[ -d $CONDA_HOME/envs/maise ]]; then
     # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
     # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
     # to avoid the naming conflicts.
@@ -65,13 +78,13 @@ if [[ -d /opt/conda/envs/maise ]]; then
     # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
     # For Sentinel-1 TOPS data
-    export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
-
+    #export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
+    export PATH=$PATH:$CONDA_HOME/envs/maise/share/isce2/topsStack
 fi
 
 # set PYTHONPATH
-if [[ -d /opt/conda/envs/maise ]]; then
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
+if [[ -d $CONDA_HOME/envs/maise ]]; then
+    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2
      # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
     # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
     # to avoid the naming conflicts.
@@ -79,27 +92,50 @@ if [[ -d /opt/conda/envs/maise ]]; then
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
     #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/
-    export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/topsStack
+    # export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/
+    # export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/topsStack
+    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2/
+    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2/topsStack
  fi
+
+# look for isce (not isce2)
+path1=`find $CONDA_HOME/envs/maise -name isce | head -1`
+if [[ -d $path1 ]]; then
+    #export PATH=$PATH:$path1
+    export PYTHONPATH=$PYTHONPATH:$path1
+fi
 
 # look for more for more paths - dem.py
 # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
-path1=`find /opt/conda/envs/maise -name dem.py | head -1`
+# /scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/applications/
+#path1=`find /opt/conda/envs/maise -name dem.py | head -1`
+path1=`find $CONDA_HOME/envs/maise -name dem.py | head -1`
 path2=`dirname $path1`
 if [[ -d $path2 ]]; then
     export PATH=$PATH:$path2
     export PYTHONPATH=$PYTHONPATH:$path2
 fi
 
+
 # look for ISCE extras - mdx 
 # # mdx executable lives here
 #export PATH=$PATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/bin
-pathfound=`find /opt/conda/envs/maise -name mdx | head -1`
-pathaddon=`dirname $pathfound`
-if [[ -d $pathaddon ]]; then
-   export PATH=$PATH:$pathaddon
+#pathfound=`find /opt/conda/envs/maise -name mdx | head -1`
+path1=`find $CONDA_HOME/envs/maise -name mdx | head -1`
+path2=`dirname $path1`
+if [[ -d $path2 ]]; then
+    export PATH=$PATH:$path2
+    export PYTHONPATH=$PYTHONPATH:$path2
 fi
+
+
+# 1029  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/share/isce2
+#  1056  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce
+#  1058  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages
+#  1060  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components
+#  1062  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesys/
+#  1063  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesobj
+#  1067  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesys/ImageApi
 
 # sed -i 's/import isce/import isce2 as isce/' /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 
@@ -107,13 +143,17 @@ fi
 # view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
 # ERROR 1: PROJ: proj_create_from_database: Open of /opt/conda/envs/maise/share/proj failed
 #https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error
-if [[ -d /opt/conda/envs/maise/share/proj ]]; then
-   export PROJ_LIB='/opt/conda/envs/maise/share/proj'
+# if [[ -d /opt/conda/envs/maise/share/proj ]]; then
+#    export PROJ_LIB='/opt/conda/envs/maise/share/proj'
+if [[ -d $CONDA_HOME/maise/share/proj ]]; then
+   export PROJ_LIB=$CONDA_HOME/maise/share/proj
 else
    echo 'WARNING: Cannot find proj library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi
-if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
-   export GDAL_DATA='/opt/conda/envs/maise/lib/cmake/proj'
+# if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
+#    export GDAL_DATA='/opt/conda/envs/maise/lib/cmake/proj'
+if [[ -d $CONDA_HOME/envs/maise/lib/cmake/proj ]]; then
+   export GDAL_DATA=$CONDA_HOME/envs/maise/lib/cmake/proj
 else
    echo 'WARNING: Cannot find GDAL data library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi

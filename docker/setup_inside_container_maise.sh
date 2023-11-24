@@ -3,14 +3,15 @@
 # 2021/12/07 Kurt and Nick
 # 2022/08/15 Kurt handle only environment variables here
 # 2023/09/16 adapt to smarter docker container which includes environment
+# 2023/11/24 adapt to CHTC HPC
 
 # set up paths and environment variables inside container
 # source this file
 
 set -v # verbose
 set -x # for debugging "eXamine"
-# set -e # exit on error "Exit"
-# set -u # error on unset variables
+set -e # exit on error "Exit"
+set -u # error on unset variables
 
 # are we running under CONDOR, with the need for staging?
 if [[ -d /staging/groups/geoscience/ ]]; then
@@ -54,16 +55,35 @@ if [[ -d $CONDA_HOME/envs/maise/bsin ]]; then
     export PATH=$PATH:$CONDA_HOME/envs/maise/sbin 
 fi
 
+# look for isce (not isce2)
 # 2023/09/11 with Nick.
 # Here are results from a working container
 # echo $ISCE_HOME
 # /opt/conda/envs/maise/lib/python3.11/site-packages/isce
 #export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+path1=`find $CONDA_HOME -name isce`
+if [[ -d $path1 ]]; then
+    echo path1 is $path1
+    path2=`dirname $path1`
+    if [[ -d $path2 ]]; then 
+        export PATH=$PATH:$path2
+        export PYTHONPATH=$PYTHONPATH:$path2
+    fi
+fi
+
+# look for stack processors for ISCE
 path1=`find $CONDA_HOME -name stackSentinel.py`
+echo path1 is $path1
 path2=`dirname $path1`
-export ISCE_HOME=$path2
-export PATH=$PATH:$ISCE_HOME
-export PYTHONPATH=$PYTHONPATH:$path2
+if [[ -d $path2 ]]; then 
+        export PATH=$PATH:$path2
+        export PYTHONPATH=$PYTHONPATH:$path2
+        path3=`dirname $path2`
+        if [[ -d $path3 ]]; then
+            export PATH=$PATH:$path3
+            export PYTHONPATH=$PYTHONPATH:$path3
+        fi
+fi
 
 # (maise) root@63015c028655:/home/nickb/FringeFlow# echo $PYTHONPATH
 # :/opt/conda/envs/maise/share/isce2
@@ -98,30 +118,27 @@ if [[ -d $CONDA_HOME/envs/maise ]]; then
     export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2/topsStack
  fi
 
-# look for isce (not isce2)
-path1=`find $CONDA_HOME/envs/maise -name isce | head -1`
-if [[ -d $path1 ]]; then
-    #export PATH=$PATH:$path1
-    export PYTHONPATH=$PYTHONPATH:$path1
-fi
 
 # look for more for more paths - dem.py
 # /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
 # /scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/applications/
-#path1=`find /opt/conda/envs/maise -name dem.py | head -1`
-path1=`find $CONDA_HOME/envs/maise -name dem.py | head -1`
-path2=`dirname $path1`
-if [[ -d $path2 ]]; then
-    export PATH=$PATH:$path2
-    export PYTHONPATH=$PYTHONPATH:$path2
+# path1=`find /opt/conda/envs/maise -name dem.py | head -1`
+path1=`find $CONDA_HOME -name dem.py | head -1`
+echo path1 is $path1
+if [[ -d $path1 ]]; then   
+    path2=`dirname $path1`
+    if [[ -d $path2 ]]; then
+        export PATH=$PATH:$path2
+        export PYTHONPATH=$PYTHONPATH:$path2
+    fi
 fi
-
 
 # look for ISCE extras - mdx 
 # # mdx executable lives here
 #export PATH=$PATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/bin
 #pathfound=`find /opt/conda/envs/maise -name mdx | head -1`
-path1=`find $CONDA_HOME/envs/maise -name mdx | head -1`
+path1=`find $CONDA_HOME -name mdx | head -1`
+echo path1 is $path1
 path2=`dirname $path1`
 if [[ -d $path2 ]]; then
     export PATH=$PATH:$path2
@@ -150,6 +167,7 @@ if [[ -d $CONDA_HOME/maise/share/proj ]]; then
 else
    echo 'WARNING: Cannot find proj library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
 fi
+
 # if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
 #    export GDAL_DATA='/opt/conda/envs/maise/lib/cmake/proj'
 if [[ -d $CONDA_HOME/envs/maise/lib/cmake/proj ]]; then

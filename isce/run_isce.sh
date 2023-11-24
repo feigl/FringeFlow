@@ -13,6 +13,8 @@ Help()
     echo "$bname runs ISCE"
     echo "usage:   $bname SITE MISSION TRACK YYYYMMDD1 YYYYMMDD2"
     echo "example: $bname SANEM     S1   144  20220331 20220506"
+    echo "example: $bname SANEM     S1   144  20220331 20220506 ../SLC "
+    echo "example: $bname SANEM     S1   144  20220331 20220506 ../SLC 4"
     exit -1
   }
 
@@ -100,7 +102,6 @@ export CPL_ZIP_ENCODING=UTF-8
 # clean start
 \rm -rfv isce.log baselines configs merged stack run_files interferograms coreg_secondarys secondarys geom_reference reference
 
-
 # get bounding box
 bbox="$(get_site_dims.sh ${SITELC} S) $(get_site_dims.sh ${SITELC} N) $(get_site_dims.sh ${SITELC} W) $(get_site_dims.sh ${SITELC} E)"
 echo "Bounding box bbox is $bbox"
@@ -182,7 +183,7 @@ stackSentinel.py -w ./ \
 
 
 # set up a script to run all the scripts
-ls -1 run_files/* | grep -v job | awk '{print "bash",$1}' > run_isce_jobs.sh
+ls -1 run_files/* | grep -v job | awk '{print "bash",$1, "2>&1 | tee "$1".log"}' > run_isce_jobs.sh
 chmod a+x run_isce_jobs.sh
 
 #run the script

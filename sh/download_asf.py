@@ -40,8 +40,9 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date, action
             # set to all allowable values
             relOrb=(0,176)
             print(f,'Setting relorb to {relOrb}')
-            
-            
+    else:
+        relOrb=track
+                
       
     # https://docs.asf.alaska.edu/api/keywords/  
     results = asf.geo_search(

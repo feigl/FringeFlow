@@ -10,8 +10,8 @@
 
 set -v # verbose
 set -x # for debugging "eXamine"
-set -e # exit on error "Exit"
-set -u # error on unset variables
+#set -e # exit on error "Exit"
+#set -u # error on unset variables
 
 # are we running under CONDOR, with the need for staging?
 if [[ -d /staging/groups/geoscience/ ]]; then
@@ -35,6 +35,8 @@ echo ISCONDOR is $ISCONDOR
 
 if [[ -d /opt/conda ]]; then
     export CONDA_HOME="/opt/conda"
+elif [[ -d $HOME/miniforge-pypy3 ]]; then
+    export CONDA_HOME="$HOME/miniforge-pypy3"
 elif [[ -d /scratch/feigl/conda ]]; then
     export CONDA_HOME="/scratch/feigl/conda" 
 else

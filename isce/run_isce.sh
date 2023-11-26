@@ -1,4 +1,4 @@
-#!/bin/bash -veux
+#!/bin/bash -ve
 # run ISCE inside container
 # 20210809 update SLCdir
 # 20211006 fix SLCdir
@@ -25,7 +25,8 @@ if [[  ( "$#" -ge 5)  && ( "$#" -le 7) ]]; then
     TRACK=$3
     YYYYMMDD1=$4
     # add one day https://stackoverflow.com/questions/18706823/how-to-increment-a-date-in-a-bash-script
-    YYYYMMDD2=`date +%Y%m%d -d "$5 UTC + 1 day"`
+    #YYYYMMDD2=`date +%Y%m%d -d "$5 UTC + 1 day"`
+    YYYYMMDD2=$5
    
     #write dates as YYYY-MM-DD
     date_first=`echo $YYYYMMDD1 | awk '{ printf("%4d-%02d-%02d\n",substr($1,1,4),substr($1,5,2),substr($1,7,2)) }'`

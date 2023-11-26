@@ -64,7 +64,7 @@ else
 fi
 
 if [[  -d /staging/groups/geoscience ]]; then
-    if [[  ! -d /staging/groups/geoscience/ ]]; then
+    if [[  ! -d $TARGETDIR ]]; then
         mkdir -p $TARGETDIR
     fi
     mv -fv $SOURCEDIR.tgz $TARGETDIR

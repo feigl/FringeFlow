@@ -189,8 +189,11 @@ echo "Downloading SLC files...."
 mkdir -p ${SLCDIR}
 pushd ${SLCDIR}
 echo PWD is now ${PWD}
-run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
+#run_ssara.sh ${SITEUC} ${MISSION} ${TRACK} ${YYYYMMDD1} ${YYYYMMDD2} download | tee -a ../slc.log
+download_asf.py -n ${SITEUC}  -t ${TRACK} -s ${YYYYMMDD1} -e ${YYYYMMDD2} -a download | tee -a ../slc.log
 ls -ltr | tee -a ../slc.log
+
+
 
 ### now start ISCE
 echo "Running ISCE...."

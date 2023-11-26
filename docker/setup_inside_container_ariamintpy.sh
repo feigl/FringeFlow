@@ -4,6 +4,7 @@
 # 2022/08/15 Kurt handle only environment variables here
 # 2023/09/16 adapt to smarter docker container which includes environment
 # 2023/11/24 adapt to CHTC HPC
+# 2023/1126
 
 # set up paths and environment variables inside container
 # source this file
@@ -20,7 +21,7 @@ if [[ -d /staging/groups/geoscience/ ]]; then
     set +u
     source /etc/profile.d/conda.sh
     # Next line will deactivate conda environment if necessary
-    conda activate maise
+    conda activate ariamintpy
     
     # Matplotlib created a temporary cache directory at /tmp/matplotlib-a8hsjr85
     # because the default path (/.config/matplotlib) is not a writable directory; it
@@ -51,20 +52,20 @@ if [[ -d ${CONDA_HOME}/pkgs ]]; then
     export  PYTHONPATH=$PYTHONPATH:${CONDA_HOME}/pkgs
 fi
 
-if [[ -d $CONDA_HOME/envs/maise/bin ]]; then
-    export PATH=$PATH:$CONDA_HOME/envs/maise/bin 
+if [[ -d $CONDA_HOME/envs/ariamintpy/bin ]]; then
+    export PATH=$PATH:$CONDA_HOME/envs/ariamintpy/bin 
 fi
 
-if [[ -d $CONDA_HOME/envs/maise/bsin ]]; then
-    export PATH=$PATH:$CONDA_HOME/envs/maise/sbin 
+if [[ -d $CONDA_HOME/envs/ariamintpy/bsin ]]; then
+    export PATH=$PATH:$CONDA_HOME/envs/ariamintpy/sbin 
 fi
 
 # look for isce (not isce2)
 # 2023/09/11 with Nick.
 # Here are results from a working container
 # echo $ISCE_HOME
-# /opt/conda/envs/maise/lib/python3.11/site-packages/isce
-#export ISCE_HOME=/opt/conda/envs/maise/lib/python3.11/site-packages/isce
+# /opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce
+#export ISCE_HOME=/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce
 path1=`find $CONDA_HOME -name isce`
 if [[ -d $path1 ]]; then
     echo path1 is $path1
@@ -75,58 +76,11 @@ if [[ -d $path1 ]]; then
     fi
 fi
 
-# look for stack processors for ISCE
-path1=`find $CONDA_HOME -name stackSentinel.py`
-echo path1 is $path1
-path2=`dirname $path1`
-if [[ -d $path2 ]]; then 
-        export PATH=$PATH:$path2
-        export PYTHONPATH=$PYTHONPATH:$path2
-        path3=`dirname $path2`
-        if [[ -d $path3 ]]; then
-            export PATH=$PATH:$path3
-            export PYTHONPATH=$PYTHONPATH:$path3
-        fi
-fi
-
-# (maise) root@63015c028655:/home/nickb/FringeFlow# echo $PYTHONPATH
-# :/opt/conda/envs/maise/share/isce2
-#export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2
-
-# set PATH 
-if [[ -d $CONDA_HOME/envs/maise ]]; then
-    # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
-    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
-    # to avoid the naming conflicts.
-    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/alosStack
-    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    # export PATH=$PATH:/opt/conda/envs/maise/share/isce2/stripmapStack
-    # For Sentinel-1 TOPS data
-    #export PATH=$PATH:/opt/conda/envs/maise/share/isce2/topsStack
-    export PATH=$PATH:$CONDA_HOME/envs/maise/share/isce2/topsStack
-fi
-
-# set PYTHONPATH
-if [[ -d $CONDA_HOME/envs/maise ]]; then
-    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2
-     # Important Note: There are naming conflicts between topsStack and stripmapStack scripts. 
-    # Therefore users MUST have the path of ONLY ONE stack processor in their $PATH at a time, 
-    # to avoid the naming conflicts.
-    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/prepStackToStaMPS
-    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/stripmapStack
-    #export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/alosStack
-    # export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/
-    # export PYTHONPATH=$PYTHONPATH:/opt/conda/envs/maise/share/isce2/topsStack
-    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2/
-    export PYTHONPATH=$PYTHONPATH:$CONDA_HOME/envs/maise/share/isce2/topsStack
- fi
-
 
 # look for more for more paths - dem.py
-# /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
+# /opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce/applications/dem.py
 # /scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/applications/
-# path1=`find /opt/conda/envs/maise -name dem.py | head -1`
+# path1=`find /opt/conda/envs/ariamintpy -name dem.py | head -1`
 path1=`find $CONDA_HOME -name dem.py | head -1`
 echo path1 is $path1
 if [[ -d $path1 ]]; then   
@@ -137,56 +91,7 @@ if [[ -d $path1 ]]; then
     fi
 fi
 
-# look for ISCE extras - mdx 
-# # mdx executable lives here
-#export PATH=$PATH:/opt/conda/envs/maise/lib/python3.11/site-packages/isce/bin
-#pathfound=`find /opt/conda/envs/maise -name mdx | head -1`
-path1=`find $CONDA_HOME -name mdx | head -1`
-echo path1 is $path1
-path2=`dirname $path1`
-if [[ -d $path2 ]]; then
-    export PATH=$PATH:$path2
-    export PYTHONPATH=$PYTHONPATH:$path2
-fi
 
-
-# 1029  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/share/isce2
-#  1056  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce
-#  1058  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages
-#  1060  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components
-#  1062  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesys/
-#  1063  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesobj
-#  1067  export PYTHONPATH=$PYTHONPATH:/scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/components/iscesys/ImageApi
-
-# sed -i 's/import isce/import isce2 as isce/' /opt/conda/envs/maise/lib/python3.11/site-packages/isce/applications/dem.py
-
-# look for MINTPY extras that include "proj" package
-# view.py --dpi 150 --noverbose --nodisplay --update geo/geo_temporalCoherence.h5 -c gray
-# ERROR 1: PROJ: proj_create_from_database: Open of /opt/conda/envs/maise/share/proj failed
-#https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error
-# if [[ -d /opt/conda/envs/maise/share/proj ]]; then
-#    export PROJ_LIB='/opt/conda/envs/maise/share/proj'
-if [[ -d $CONDA_HOME/maise/share/proj ]]; then
-   export PROJ_LIB=$CONDA_HOME/maise/share/proj
-else
-   echo 'WARNING: Cannot find proj library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
-fi
-
-# if [[ -d /opt/conda/envs/maise/lib/cmake/proj ]]; then
-#    export GDAL_DATA='/opt/conda/envs/maise/lib/cmake/proj'
-if [[ -d $CONDA_HOME/envs/maise/lib/cmake/proj ]]; then
-   export GDAL_DATA=$CONDA_HOME/envs/maise/lib/cmake/proj
-else
-   echo 'WARNING: Cannot find GDAL data library. See https://stackoverflow.com/questions/56764046/gdal-ogr2ogr-cannot-find-proj-db-error'
-fi
-
-## GDAL for Mac from http://www.kyngchaos.com/software/frameworks/
-if [[ -d /Library/Frameworks/GDAL.framework/Programs ]]; then
-    export PATH=/Library/Frameworks/GDAL.framework/Programs:$PATH
-else
-    echo "WARNING cannot find a path to gdal . Consider following command:"
-    echo 'find / -type d -name gdal'
-fi
 
 # set up for Fringe Flow
 if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
@@ -196,7 +101,7 @@ if [[ -n  ${_CONDOR_SCRATCH_DIR+set} ]]; then
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/mintpy
     #export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/ssara
     export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/aria
-    export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/maise    
+    export PATH=${PATH}:${_CONDOR_SCRATCH_DIR}/FringeFlow/ariamintpy    
 elif [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/sh
     export PATH=${PATH}:${HOME}/FringeFlow/docker
@@ -204,7 +109,7 @@ elif [[ -d ${HOME}/FringeFlow ]]; then
     export PATH=${PATH}:${HOME}/FringeFlow/mintpy
     #export PATH=${PATH}:${HOME}/FringeFlow/ssara
     export PATH=${PATH}:${HOME}/FringeFlow/aria
-    export PATH=${PATH}:${HOME}/FringeFlow/maise
+    export PATH=${PATH}:${HOME}/FringeFlow/ariamintpy
 else
     echo "WARNING cannot find a path to FringeFlow ." Finding ...
     find / -type d -name FringeFlow
@@ -213,24 +118,6 @@ fi
 if [[ -d ${HOME}/gipht/csh ]]; then
     export PATH=${PATH}:${HOME}/gipht/csh
 fi
-
-# # set up for SSARA
-# if [[ -d /tools/SSARA ]]; then
-#     export SSARA_HOME=/tools/SSARA
-# elif [[ -d $HOME/tools/SSARA ]]; then
-#     export SSARA_HOME=$HOME/tools/SSARA
-# elif [[ -d $HOME/FringeFlow/ssara ]]; then
-#     export SSARA_HOME=$HOME/Fringeflow/ssara
-#  else
-#     echo "WARNING cannot find a path to SSARA ." Finding ...
-#     #find / -type d -name SSARA
-# fi 
-# export PATH=${PATH}:${SSARA_HOME}
-# if [[ -n ${PYTHONPATH+set} ]]; then
-#     export PYTHONPATH=${PYTHONPATH}:${SSARA_HOME}
-# else
-#     export PYTHONPATH=${SSARA_HOME}
-# fi
 
 
 # set up for siteinfo

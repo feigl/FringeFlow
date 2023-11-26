@@ -16,6 +16,7 @@ Command line client
 """
 
 EXAMPLE = """Usage Examples:
+download_asf.py -n sanem -t 144 -s 20220331 -e 20220506 -a download
   
 """
    

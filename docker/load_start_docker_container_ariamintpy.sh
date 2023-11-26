@@ -106,25 +106,10 @@ else
    exit -1
 fi
 
-#dockertag="docker.io/feigl/maise:20221218"
-#dockertag="docker.io/nbearson/maise:condaforge"
-#dockertag="docker.io/feigl/maise:20230905"
-#dockertag="docker.io/feigl/maise:20230910"
-#dockertag="docker.io/feigl/maise:20231010"
-#dockertag="docker.io/feigl/maise:20231023"
-dockertag="docker.io/feigl/maise:20231105"
+dockertag="docker.io/feigl/ariamintpy:20231126"
 
 # pull container from DockerHub
-#docker pull docker.io/nbearson/isce_chtc2
-#docker pull docker.io/nbearson/isce_mintpy:20211110
-#docker pull docker.io/nbearson/isce_mintpy:20211110
-#docker pull docker.io/nbearson/isce_chtc:20220204
-#docker pull docker.io/nbearson/isce_chtc:latest
-#docker pull docker.io/feigl/maise:20221218
 docker pull $dockertag
-
-# get the short (base) name of the current working directory
-#export MYDIR=`basename $PWD`
 
 echo '  '
 echo "Starting Docker image in container..."
@@ -137,7 +122,7 @@ else
    echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'tar -C $HOME -xzf siteinfo.tgz '
-echo 'source $HOME/FringeFlow/docker/setup_inside_container_maise.sh'
+echo 'source $HOME/FringeFlow/docker/setup_inside_container_ariamintpy.sh'
 echo 'domagic.sh magic.tgz'
 # echo 'get_siteinfo.sh .'
 echo '  '

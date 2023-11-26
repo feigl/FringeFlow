@@ -1,0 +1,66 @@
+# using this guide & mambaforge:
+# https://github.com/yunjunz/conda_envs
+
+# aria and mintpy only - not isce
+
+FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest as ariamintpy
+
+# create new environment & initialize it (adds conda environment stuff to .bashrc)
+RUN mamba create --name ariamintpy --yes \
+ && mamba init --system bash
+
+# https://pythonspeed.com/articles/activate-conda-dockerfile/
+# because "each RUN in a Dockerfile is a separate run of bash"
+
+# switch shell sh (default in Linux) to bash
+# https://github.com/containers/podman/issues/8477
+# https://stackoverflow.com/questions/55123637/activate-conda-environment-in-docker
+# also make it a login shell so it adds .bashrc before each RUN command
+SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
+RUN echo "mamba activate ariamintpy" >> $HOME/.bashrc
+
+# install stuff that's available directory from conda-forge (isce2, mintpy)
+RUN mamba install --name ariamintpy --channel conda-forge mintpy vim ipykernel --yes
+
+
+# get new version of pip
+RUN mamba install pip --yes
+
+# install ARIA-tools
+RUN mkdir -p /tools \
+ && cd /tools \
+ && git clone https://github.com/aria-tools/ARIA-tools.git \
+ && mamba install --name ariamintpy --channel conda-forge --file /tools/ARIA-tools/requirements.txt --yes \
+ && cd /tools/ARIA-tools \
+ && pip install -e  .
+
+
+# install PyAPS
+RUN pip install git+https://github.com/insarlab/PyAPS.git
+
+# make everything under /tools/ writable
+RUN chmod -R a+w /tools
+
+# still getting this error
+# '/var/lib/condor/execute/slot1/dir_752360/magic/model.cfg' -> '/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/pyaps3/model.cfg'
+# cp: cannot remove '/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/pyaps3/model.cfg': Permission denied
+RUN chmod -R a+w /opt/conda/envs/ariamintpy
+
+# run some tests
+
+# debug: check environment
+#RUN env
+
+RUN echo "export PATH=${ISCE_HOME}/bin:${ISCE_HOME}/applications:${PATH}" >> $HOME/.bashrc
+
+RUN ariaDownload.py --help
+RUN smallbaselineApp.py --help
+
+# test downloading ERA5 meterological data from ECMWF (required for MINTPY + PYAPS)
+#RUN cat $HOME/.cdsapirc
+# RUN cd /tools \ 
+#   && git clone https://github.com/insarlab/PyAPS.git \
+#   && cd PyAPS/tests \
+#   && python test_dload.py
+
+

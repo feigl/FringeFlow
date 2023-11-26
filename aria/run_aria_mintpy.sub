@@ -12,7 +12,7 @@
 universe = docker
 
 # Docker image
- docker_image = docker.io/feigl/maise:20231023
+ docker_image = docker.io/feigl/maise:20231105
 
 # files
 log    = run_ssara_isce_mintpy.$(Cluster).$(Process).log 
@@ -64,9 +64,9 @@ manifest = true
 # try multiple inputs
 # https://research.cs.wisc.edu/htcondor/manual/v8.3.6/2_5Submitting_Job.html
 queue arguments from (
-"-n SANEM -m S1 -t 42 -1 20210101 -2 20210501"  
-"-n SANEM -m S1 -t 42 -1 20220101 -2 20220501"  
-"-n SANEM -m S1 -t 42 -1 20230101 -2 20230901"  
+"-s SANEM -m S1 -t 42 -1 20210101 -2 20210501"  
+"-s SANEM -m S1 -t 42 -1 20220101 -2 20220501"  
+"-s SANEM -m S1 -t 42 -1 20230101 -2 20230901"  
 )
 
 

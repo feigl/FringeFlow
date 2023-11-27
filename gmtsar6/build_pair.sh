@@ -42,7 +42,9 @@
 # 2022/06/15 Sam commented out line 156
 # 2023/01/10 Kurt and Sam - reduce number of remote commands requiring MFA
 # 2023/06/15 Kurt add user name to /staging folder
+# 2023/11/27 Kurt and Sam add prepare_grids_for_mintpy.sh
 # TODO make ruser environment variable upper case throughout 
+
 
 
 if [[ ! $# -eq 16 ]] ; then

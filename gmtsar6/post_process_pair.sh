@@ -5,6 +5,7 @@
 # 2023/01/31 Kurt and Sam use tar instead of tgz
 # 2023/03/24 Kurt do not remove executables
 # 2023/06/15 Kurt add user name to /staging folder
+# 2023/11/27 Kurt and Sam add prepare_grids_for_mintpy.sh
 
 timetag=`date +"%Y%m%dT%H%M%S"`
 echo timetag is ${timetag}
@@ -112,6 +113,9 @@ if [[ ! $# -eq 9 ]] ; then
  
     # prepare cut grd files for gipht 
     prepare_grids_for_gipht6.sh $site
+
+    # 2023/11/27 Kurt and Sam add prepare_grids_for_mintpy.sh
+    prepare_grids_for_mintpy.sh In${ref}_${sec}
 
     # make plots (depends on having makefile)
     # make -f plotting.make plot_pha_utm

@@ -60,36 +60,7 @@ if [[ -d $CONDA_HOME/envs/ariamintpy/bsin ]]; then
     export PATH=$PATH:$CONDA_HOME/envs/ariamintpy/sbin 
 fi
 
-# look for isce (not isce2)
-# 2023/09/11 with Nick.
-# Here are results from a working container
-# echo $ISCE_HOME
-# /opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce
-#export ISCE_HOME=/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce
-path1=`find $CONDA_HOME -name isce`
-if [[ -d $path1 ]]; then
-    echo path1 is $path1
-    path2=`dirname $path1`
-    if [[ -d $path2 ]]; then 
-        export PATH=$PATH:$path2
-        export PYTHONPATH=$PYTHONPATH:$path2
-    fi
-fi
 
-
-# look for more for more paths - dem.py
-# /opt/conda/envs/ariamintpy/lib/python3.11/site-packages/isce/applications/dem.py
-# /scratch/feigl/conda/pkgs/isce2-2.6.3-py311h1e919c0_0/lib/python3.11/site-packages/isce/applications/
-# path1=`find /opt/conda/envs/ariamintpy -name dem.py | head -1`
-path1=`find $CONDA_HOME -name dem.py | head -1`
-echo path1 is $path1
-if [[ -d $path1 ]]; then   
-    path2=`dirname $path1`
-    if [[ -d $path2 ]]; then
-        export PATH=$PATH:$path2
-        export PYTHONPATH=$PYTHONPATH:$path2
-    fi
-fi
 
 
 
@@ -137,70 +108,83 @@ echo SITE_TABLE is $SITE_TABLE
 
 
 # # set up for MintPy
-# if [[ -d /tools/MintPy ]]; then
-#     export MINTPY_HOME=/tools/MintPy
-#     export PATH=${PATH}:${MINTPY_HOME}/mintpy
-#     export PATH=${PATH}:${MINTPY_HOME}/sh
-#     export PATH=${PATH}:${MINTPY_HOME}/simulation
-#     export PATH=${PATH}:${MINTPY_HOME}/utils
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/mintpy
-#     else
-#         export PYTHONPATH=${MINTPY_HOME}/mintpy
-#     fi
-#     export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/PyAPS
-# else
-#     echo "WARNING cannot find a path to MintPy ." Finding ...
-#     find / -type d -name MintPy
-# fi
+if [[ -d /tools/MintPy ]]; then
+    export MINTPY_HOME=/tools/MintPy
+    export PATH=${PATH}:${MINTPY_HOME}/mintpy
+    export PATH=${PATH}:${MINTPY_HOME}/sh
+    export PATH=${PATH}:${MINTPY_HOME}/simulation
+    export PATH=${PATH}:${MINTPY_HOME}/utils
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/mintpy
+    else
+        export PYTHONPATH=${MINTPY_HOME}/mintpy
+    fi
+    export PYTHONPATH=${PYTHONPATH}:${MINTPY_HOME}/PyAPS
+else
+    echo "WARNING cannot find a path to MintPy ." Finding ...
+    find / -type d -name MintPy
+fi
 
-# # set up for PyAps
-# if [[ -d /tools/PyAPS ]]; then
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS
-#     else
-#         export PYTHONPATH=/tools/PyAPS
-#     fi
-#     export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS/pyaps3
-# elif [[ -d /opt/conda/lib/python3.8/site-packages/pyaps3 ]]; then
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export PYTHONPATH=${PYTHONPATH}:/opt/conda/lib/python3.8/site-packages/pyaps3
-#     else
-#         export PYTHONPATH=/tools/PyAPS
-#     fi
-#     export PYTHONPATH=${PYTHONPATH}:/opt/conda/lib/python3.8/site-packages/pyaps3
-# else
-#     echo "WARNING cannot find a path to PyAps ." Finding ...
-#     find / -type d -name PyAps
-# fi
+# set up for PyAps
+if [[ -d /tools/PyAPS ]]; then
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS
+    else
+        export PYTHONPATH=/tools/PyAPS
+    fi
+    export PYTHONPATH=${PYTHONPATH}:/tools/PyAPS/pyaps3
+elif [[ -d /opt/conda/lib/python3.8/site-packages/pyaps3 ]]; then
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:/opt/conda/lib/python3.8/site-packages/pyaps3
+    else
+        export PYTHONPATH=/tools/PyAPS
+    fi
+    export PYTHONPATH=${PYTHONPATH}:/opt/conda/lib/python3.8/site-packages/pyaps3
+else
+    echo "WARNING cannot find a path to PyAps ." Finding ...
+    find / -type d -name PyAps
+fi
 
-# if [[ -d $HOME/ARIA-tools ]]; then
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
-#     else
-#         export PYTHONPATH=${HOME}/ARIA-tools/tools/ARIAtools
-#     fi
-#     export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
-#     export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
-# elif [[ -d /tools/ARIA-tools ]]; then
-#     if [[ -n ${PYTHONPATH+set} ]]; then
-#         export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools/tools/ARIAtools
-#     else
-#         export PYTHONPATH=/tools/ARIA-tools/tools/ARIAtools
-#     fi
-#     export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools
-#     export PATH=${PATH}:/tools/ARIA-tools/tools/bin
-# else
-#     echo "WARNING cannot find a path to ARIA-tools ." Finding ...
-#     find / -type d -name ARIA-tools
-# fi
+if [[ -d $HOME/ARIA-tools ]]; then
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools/tools/ARIAtools
+    else
+        export PYTHONPATH=${HOME}/ARIA-tools/tools/ARIAtools
+    fi
+    export PYTHONPATH=${PYTHONPATH}:${HOME}/ARIA-tools
+    export PATH=${PATH}:${HOME}/ARIA-tools/tools/bin
+elif [[ -d /tools/ARIA-tools ]]; then
+    if [[ -n ${PYTHONPATH+set} ]]; then
+        export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools/tools/ARIAtools
+    else
+        export PYTHONPATH=/tools/ARIA-tools/tools/ARIAtools
+    fi
+    export PYTHONPATH=${PYTHONPATH}:/tools/ARIA-tools
+    export PATH=${PATH}:/tools/ARIA-tools/tools/bin
+else
+    echo "WARNING cannot find a path to ARIA-tools ." Finding ...
+    find / -type d -name ARIA-tools
+fi
 
-# if [[ -d /opt/conda/share/proj ]]; then
-#     export PROJ_LIB=/opt/conda/share/proj
-# else
-#     echo "WARNING cannot find a path to proj ." Finding ...
-#     find / -type d -name proj
-# fi
+# look for asf_search
+path1=`find $CONDA_HOME -name asf_search | head -1`
+if [[ -d $path1 ]]; then
+    echo path1 is $path1
+    # export PATH=$PATH:$path1
+    # export PYTHONPATH=$PYTHONPATH:$path1
+    path2=`dirname $path1`
+    if [[ -d $path2 ]]; then 
+        export PATH=$PATH:$path2
+        export PYTHONPATH=$PYTHONPATH:$path2
+    fi
+fi
+
+if [[ -d /opt/conda/share/proj ]]; then
+    export PROJ_LIB=/opt/conda/share/proj
+else
+    echo "WARNING cannot find a path to proj ." Finding ...
+    find / -type d -name proj
+fi
 
 
 

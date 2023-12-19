@@ -1,12 +1,12 @@
 # using this guide & mambaforge:
 # https://github.com/yunjunz/conda_envs
 
-# aria and mintpy only - not isce
+# aria only
 
-FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest as ariamintpy
+FROM --platform=linux/amd64 docker.io/condaforge/mambaforge:latest as aria
 
 # create new environment & initialize it (adds conda environment stuff to .bashrc)
-RUN mamba create --name ariamintpy --yes \
+RUN mamba create --name aria --yes \
  && mamba init --system bash
 
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
@@ -17,37 +17,37 @@ RUN mamba create --name ariamintpy --yes \
 # https://stackoverflow.com/questions/55123637/activate-conda-environment-in-docker
 # also make it a login shell so it adds .bashrc before each RUN command
 SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
-RUN echo "mamba activate ariamintpy" >> $HOME/.bashrc
-
-# install stuff that's available directory from conda-forge 
-RUN mamba install --name ariamintpy --channel conda-forge mintpy pyaps3 asf_search shapely vim  --yes
+RUN echo "mamba activate aria" >> $HOME/.bashrc
 
 # install ARIA-tools
 RUN mkdir -p /tools \
  && cd /tools \
  && git clone https://github.com/aria-tools/ARIA-tools.git \
- && mamba install --name ariamintpy --channel conda-forge --file /tools/ARIA-tools/requirements.txt --yes \
- && cd /tools/ARIA-tools \
- && pip install -e  .
+ && mamba install --name aria --channel conda-forge --file /tools/ARIA-tools/requirements.txt --yes 
 
- 
+#  && cd /tools/ARIA-tools \
+#  && pip install -e  .
+
+# install PyAPS
+RUN pip install git+https://github.com/insarlab/PyAPS.git
+
 # make everything under /tools/ writable
 RUN chmod -R a+w /tools
 
 # still getting this error
-# '/var/lib/condor/execute/slot1/dir_752360/magic/model.cfg' -> '/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/pyaps3/model.cfg'
-# cp: cannot remove '/opt/conda/envs/ariamintpy/lib/python3.11/site-packages/pyaps3/model.cfg': Permission denied
-RUN chmod -R a+w /opt/conda/envs/ariamintpy
+# '/var/lib/condor/execute/slot1/dir_752360/magic/model.cfg' -> '/opt/conda/envs/aria/lib/python3.11/site-packages/pyaps3/model.cfg'
+# cp: cannot remove '/opt/conda/envs/aria/lib/python3.11/site-packages/pyaps3/model.cfg': Permission denied
+RUN chmod -R a+w /opt/conda/envs/aria
 
 # run some tests
 
 # debug: check environment
+#RUN env
 
-RUN mamba activate ariamintpy
-RUN env
-RUN smallbaselineApp.py --help
+RUN echo "export PATH=${ISCE_HOME}/bin:${ISCE_HOME}/applications:${PATH}" >> $HOME/.bashrc
+
 RUN ariaDownload.py --help
-
+RUN smallbaselineApp.py --help
 
 # test downloading ERA5 meterological data from ECMWF (required for MINTPY + PYAPS)
 #RUN cat $HOME/.cdsapirc

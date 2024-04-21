@@ -1,6 +1,6 @@
 #!/bin/bash 
-# set -v # verbose
-# set -x # for debugging
+ set -v # verbose
+ set -x # for debugging
 # set -e # exit on error
 # set -u # error on unset variables
 
@@ -41,7 +41,7 @@ sublon="-119.46 -119.350" #includes GARL
 #cp ../../wells.namelalo .
 cat $SITE_DIR/sanem/well_specs_wUTMandLatLon.csv | awk -F, 'NR> 1{print $2,$9,$10}' | grep -v '"' > wells.namelalo
 
-#tsview.py --lalo 40.364713 -119.405194 --nodisplay --figext .pdf --unit mm --ylim -25 25 --figtitle Well45-21 geo_timeseries_ERA5_ramp_demErr.h5
+#tsview.py --lalo 40.364713 -119.405194 --nodisplay --figext .pdf --unit mm --ylim -25 25 --figtitle Well45-21 geo_timeseries_ERA5_ramp_demErr.h5 
 
 echo ftse is $ftse
 
@@ -63,7 +63,7 @@ for wellname in `cat wells.namelalo | grep -e '25A-21' -e '65C-16' | awk '{print
      # to clip add this switch --ylim -25 25
      # --show-gps --ref-gps GARL  \
      # --ref-lalo ${reflalo}
-     tsview.py --outfile ${pdfname1} --lalo ${welllalo} --dpi 600  --ylim -50  10 --nodisplay --figext .pdf --zf  --unit mm ${ftse}.h5
+     tsview.py --outfile ${pdfname1} -save --show-gps --ref-gps GARL  --lalo ${welllalo} --gps-redo --dpi 600  --ylim -50  10 --nodisplay --figext .pdf --zf  --unit mm --title $figtitle ${ftse}.h5
 
      txtname1=`echo $ftse  $wellname | awk '{print $1"_Well"$2"_ts.txt"}'`
      echo txtname1 is ${txtname1}
@@ -79,10 +79,12 @@ for wellname in `cat wells.namelalo | grep -e '25A-21' -e '65C-16' | awk '{print
      # convert -list font  
      # -gravity northeast -annotate +60+350 "$intercept" \
      # -gravity northeast -annotate +60+450 "$velocity" \
-     convert -density 600 $pdfname2 \
-          -fill black -undercolor white \
-          -font Ubuntu-Mono -pointsize 9 \
-          -gravity northwest -annotate +60+100 $figtitle $pdfname3
+     # convert -density 600 $pdfname2 \
+     #      -fill black -undercolor white \
+     #      -font Ubuntu-Mono -pointsize 9 \
+     #      -gravity northwest -annotate +60+100 $figtitle $pdfname3
+     
+     
      done
 
 

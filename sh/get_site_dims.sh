@@ -127,16 +127,21 @@ if [[ `wc -l t1.tmp | awk '{print $1}' ` -gt 0 ]]; then
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f %20.10f\n",$3+0.5*($4-$3), $1+0.5*($2-$1))}' 
             exit 0
             ;;
+        p) 
+            # output (lat, lon) center in POINT format 'POINT (-112.886647	 38.501553)'
+            grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("POINT(%.10f %.10f)\n",$3+0.5*($4-$3), $1+0.5*($2-$1))}' 
+            exit 0
+            ;;
         k) 
             # output (lat, lon) corner 10% inward from SW corner
             grep -i $site $SITE_TABLE -A1 | tail -1 | sed 's/-R//' | awk -F'/' '{printf("%20.10f %20.10f\n",$3+0.1*($4-$3), $1+0.1*($2-$1))}' 
             exit 0
             ;;
-        -2 )
+        2 )
             grep -i $site $SITE_TABLE -A2 | tail -1 | sed 's/-R//' | awk -F'/' '{printf(" W = %12.3f\n E = %12.3f\n S = %12.3f\n N = %12.3f\n",$1,$2,$3,$4)}' 
             exit 0
             ;;
-        -wkt ) 
+        w ) 
             # Well Known Text WTK format 
             # polygon, a line segment (“linestring”), or a point defined in 2-D
             # Well-Known Text (WKT). Each polygon must be explicitly closed,

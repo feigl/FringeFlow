@@ -22,7 +22,7 @@
 # 20211217 Sam added 'export SITE_TABLE=${PWD}/siteinfo/site_dims.txt' to run.sh file
 # 20220303 Sam added variables received from build_pair.sh to add to post_process_pair.sh in the run.sh file written here 
 # 20230606 Kurt permute order: make plots before deleting files
-
+# 2023/11/27 Kurt and Sam add prepare_grids_for_mintpy.sh
 if [ ! "$#" -eq 16 ]; then
 	echo "$0 needs 16 arguments. Found only $#"
    	exit 1

@@ -1,10 +1,6 @@
 #!/bin/bash 
 # 2024/04/27 Kurt Feigl set dimensions to match ONE DEM
-
- set -v # verbose
- set -x # for debugging
-# set -e # exit on error
-# set -u # error on unset variables
+# 2024/07/27 make work for different sites
 
 bname=`basename $0`
 
@@ -13,8 +9,9 @@ Help()
    # Display Help
     echo "$bname cut grids made by GMTSAR to prepare them for use in mintpy"
     echo "usage:   $bname [options]"
-    echo "$bname   'dem.grd ../In*'"
-     exit -1
+    echo "         $bname dem_ll.grd '../PAIRS/In*'"
+    echo "         NB: single quotes around second argument are required"
+    exit -1
   }
 
 ############################################################
@@ -22,9 +19,17 @@ Help()
 # Main program                                             #
 ############################################################
 ############################################################
+
+
 if [[  ( "$#" -ne 2)  ]]; then
     Help
 fi
+
+set -v # verbose
+set -x # for debugging
+# set -e # exit on error
+# set -u # error on unset variables
+
 
 export DEM=$1
 export INDIR=$2
@@ -42,13 +47,12 @@ numlat=`gmt grdinfo --FORMAT_FLOAT_OUT="%.12lg" -C $DEM | awk '{print $11}'`
 numlat=`gmt grdinfo --FORMAT_FLOAT_OUT="%.12lg" -C $DEM | awk '{print $11}'`
 
 
-#ranges="$minlon/$maxlon/$minlat/$maxlat"
+ranges="$minlon/$maxlon/$minlat/$maxlat"
 
 # for FORGE
 # surface [WARNING]: Your grid dimensions are mutually prime.  Convergence is very unlikely.
 # surface [INFORMATION]: Hint: Choosing -R-112.99/-112.75/38.44/38.59 [n_columns = 2560, n_rows = 1600] might cut run time by a factor of 910.88468
-
-ranges="-112.99/-112.75/38.44/38.60"
+# ranges="-112.99/-112.75/38.44/38.60"
 
 echo ranges is $ranges
 

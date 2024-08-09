@@ -27,6 +27,8 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date, action
         polygon='POLYGON((-119.4600000000 40.3480000000, -119.3750000000 40.3480000000, -119.3750000000 40.4490000000, -119.4600000000 40.4490000000, -119.4600000000 40.3480000000))'
     elif site_name.lower() == 'forge':
         polygon='POLYGON((-112.9852300489 38.4450885264, -112.7536042430 38.4450885264, -112.7536042430 38.5924406708, -112.9852300489 38.5924406708, -112.9852300489 38.4450885264))'
+    elif site_name.lower() == 'mcgin':
+        polygon='POLYGON((-116.9505358645377 39.54986687495545, -116.8500501384442 39.54993172719434, -116.8494884150711 39.62923290986418, -116.9500887617826 39.62916863967577, -116.9505358645377 39.54986687495545 ))'
     else:
         print(f,'unknown site_name {site_name}')
     
@@ -37,6 +39,8 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date, action
             relOrb=144
         elif site_name.lower() == 'forge':
             relOrb=20
+        elif site_name.lower() == 'mcgin':
+            relOrb=71
         else:
             # set to all allowable values
             relOrb=(0,176)
@@ -48,7 +52,7 @@ def download_from_asf(site_name, output_dir, track, start_date, end_date, action
     # https://docs.asf.alaska.edu/api/keywords/  
     results = asf.geo_search(
         intersectsWith=polygon,
-        platform=asf.PLATFORM.SENTINEL1,
+        dataset=asf.PLATFORM.SENTINEL1,
         relativeOrbit=relOrb,
         start=start_date,
         end=end_date,

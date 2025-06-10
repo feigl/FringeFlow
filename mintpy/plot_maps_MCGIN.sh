@@ -103,10 +103,11 @@ for vfile in `ls velocity.h5` ; do
   
 
     # map of average velocity - study area only
+    # --pts-file wells.lalo 
      view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
      --unit mm/year --scalebar 0.3 0.2 0.05 --cbar-label LOS_displacement_[mm/year] \
      --sub-lat 4377799.94366287  4386617.82529112 --sub-lon 504283.365083719 512916.842351834 \
-     --pts-file wells.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
+    --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
 done
 
 exit

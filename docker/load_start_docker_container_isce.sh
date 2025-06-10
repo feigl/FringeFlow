@@ -4,6 +4,9 @@
 # 2021/07/05 Kurt Feigl
 # 2021/11/29 Kurt Feigl 
 # 2022/08/04 Kurt Feigl
+# 2022/09/12 Kurt Feigl and Nick Bearson
+# 2023/09/10 Kurt Feigl - when on askja, do not mount
+# 2024/08/09
 
 if [[ (( "$#" -ne 1 ) && ( "$#" -ne 5 ) && ("$#" -ne 3)) ]]; then
     bname=`basename $0`
@@ -39,6 +42,8 @@ pushd $dirname
 # pull scripts and make a tar file
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
   echo NOT tarring FringeFlow
+elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
+  echo NOT tarring FringeFlow
 else
   if [[ -d $HOME/FringeFlow ]]; then
     pushd $HOME/FringeFlow
@@ -46,7 +51,7 @@ else
     popd 
 
     pushd $HOME
-    tar --exclude FringeFlow/.git -cvzf $HOME/FringeFlow.tgz FringeFlow
+    tar --exclude FringeFlow/.git -czf $HOME/FringeFlow.tgz FringeFlow
     popd
   else
     echo Could not find $HOME/FringeFlow 
@@ -74,17 +79,24 @@ else
   \cp -rfv $HOME/FringeFlow.tgz .
 fi
 
-# copy aux files
-if [[ -f $HOME/aux.tgz ]]; then
-   \cp -rfv $HOME/aux.tgz .
-else
-   echo error could not find $HOME/aux.tgz 
-   echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
-   echo consider wget https://qc.sentinel1.groupcls.com/product/S1A/AUX_CAL/2014/09/08/S1A_AUX_CAL_V20140908T000000_G20190626T100201.SAFE.TGZ
-fi
+# # copy aux files
+# if [[ -f $HOME/aux.tgz ]]; then
+#    \cp -rfv $HOME/aux.tgz .
+# else
+#    echo error could not find $HOME/aux.tgz 
+#    echo see https://github.com/isce-framework/isce2/blob/main/contrib/stack/topsStack/README.md
+#    echo consider wget https://qc.sentinel1.groupcls.com/product/S1A/AUX_CAL/2014/09/08/S1A_AUX_CAL_V20140908T000000_G20190626T100201.SAFE.TGZ
+# fi
 
 # 2021/01/10 siteinfo is no longer in repo
-if [[ -f $HOME/siteinfo.tgz ]]; then
+if [[ -d $HOME/siteinfo ]]; then
+   #tar -C $HOME -czvf siteinfo.tgz siteinfo
+   # exclude extra attributes on mac https://stackoverflow.com/questions/51655657/tar-ignoring-unknown-extended-header-keyword-libarchive-xattr-security-selinux
+   tar -C $HOME --no-xattrs --exclude=".*" -czf siteinfo.tgz siteinfo
+   # 2022/01/24 copy into run folder
+   echo Copying $HOME/siteinfo.tgz to $PWD
+   cp -rf $HOME/siteinfo.tgz $PWD
+elif [[ -f $HOME/siteinfo.tgz ]]; then
    #cp -rfv $HOME/siteinfo .
    # 2022/01/24 copy into run folder
    echo Copying $HOME/siteinfo.tgz to $PWD
@@ -95,23 +107,20 @@ else
    exit -1
 fi
 
-# pull container from DockerHub
-#docker pull docker.io/nbearson/isce_chtc2
-#docker pull docker.io/nbearson/isce_mintpy:20211110
-#docker pull docker.io/nbearson/isce_mintpy:20211110
-#docker pull docker.io/nbearson/isce_chtc:20220204
-#docker pull docker.io/nbearson/isce_chtc:latest
+dockertag="docker.io/isce/isce2:latest"
 
-# get the short (base) name of the current working directory
-#export MYDIR=`basename $PWD`
+# pull container from DockerHub
+docker pull $dockertag
 
 echo '  '
 echo "Starting Docker image in container..."
 echo "Once container starts, consider the following commands"
 if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
    echo Using personal FringeFlow
+# elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then 
+#    echo Using personal FringeFlow
 else
-    echo 'tar -C $HOME -xzf FringeFlow.tgz '
+   echo 'tar -C $HOME -xzf FringeFlow.tgz '
 fi
 echo 'tar -C $HOME -xzf siteinfo.tgz '
 echo 'source $HOME/FringeFlow/docker/setup_inside_container_isce.sh'
@@ -124,43 +133,29 @@ echo '  '
 # go directory above container
 cd $dirname
 if [[ $(hostname) == "askja.ssec.wisc.edu" || $(hostname) == "maule.ssec.wisc.edu" ]]; then
-  #echo "unsharing"
+  echo "unsharing"
   podman unshare chown -R 1000:1000 $runname
 else
   echo "not unsharing"
 fi
+
 # go into container
 cd $runname
 
 # run script in container
 #docker run --name $runname -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -w $PWD nbearson/isce_mintpy ./bin/run_pair.sh 20190110  20190122
 
-# start interactive shell in container 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/.." -v "$PWD/../..":"$PWD/../.."  -w $PWD nbearson/isce_mintpy 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/../ISCE":"$PWD/../ISCE" -w $PWD nbearson/isce_mintpy 
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD nbearson/isce_mintpy:latest 
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD isce/isce2:latest
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD benjym/insar  # does not include icse
-#docker run -it --rm -v "$PWD":"$PWD" -v "$PWD/..":"$PWD/../" -w $PWD docker.io/nbearson/isce_chtc2
-#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD docker.io/nbearson/isce_chtc2
-# inherit ssh keys with proper permissions
-#https://nickjanetakis.com/blog/docker-tip-56-volume-mounting-ssh-keys-into-a-docker-container
-#docker run --rm -it -v ~/.ssh:/root/.ssh:ro
-#docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -v "${HOME}/.ssh":"/home/ops/.ssh:ro" -w $PWD docker.io/nbearson/isce_chtc2
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:20211110
-#docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_mintpy:latest
-# mount FringeFlow instead of copying it
-if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then 
-   docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/home/ops/FringeFlow -w $PWD docker.io/nbearson/isce_chtc:20220204 
+
+if [[ $(hostname) == "brady.geology.wisc.edu" ]]; then
+    # mount FringeFlow instead of copying it 
+    docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
+# elif [[ $(hostname) == "askja.ssec.wisc.edu" ]]; then
+#     # mount FringeFlow instead of copying it 
+#     docker run -it --rm -v "$PWD":"$PWD" -v "${HOME}/FringeFlow":/root/FringeFlow -w $PWD $dockertag
 elif [[ $(hostname) == "porotomo.geology.wisc.edu" ]]; then 
-   #https://github.com/containers/podman/blob/main/troubleshooting.md#34-passed-in-devices-or-files-cant-be-accessed-in-rootless-container-uidgid-mapping-problem
-  #uid=`id -u`
-  #gid=`id -g`
-  #--uidmap "$uid":1000 --gidmap "$gid":1000 
-  # above does not work
-  docker run -it --rm -v "$PWD":"$PWD" --user 1000:1000 -w $PWD docker.io/nbearson/isce_chtc:20220204 
+    docker run -it --rm -v "$PWD":"$PWD" -w $PWD --network=host $dockertag
 else 
-  docker run -it --rm -v "$PWD":"$PWD" -w $PWD docker.io/nbearson/isce_chtc:20220204
+  docker run -it --rm -v "$PWD":"$PWD" -w $PWD $dockertag
 fi
 
 

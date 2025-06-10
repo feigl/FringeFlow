@@ -71,7 +71,8 @@ echo sublon is $sublon
 #cat /insar/SANEM/Maps/SanEmidioWells2/San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat ../San_Emidio_Wells_2019WithLatLon.csv | awk -F, 'NR> 1{print $17,$18}' | grep -v '"' > wells.lalo
 #cat $SITE_DIR/sanem/sanem_wells.txt | awk '{print $2,$1}' > wells.lalo
-cat $SITE_DIR/mcgin/corners.csv | awk -F, 'NR>1{print $5,$4}' > wells.lalo
+#cat $SITE_DIR/mcgin/corners.csv | awk -F, 'NR>1{print $5,$4}' > wells.lalo
+cat $SITE_DIR/mcgin/MGH_Wellhead_Coordinates.csv | awk -F, 'NR>1 && $2 ~ "tion" {print $5,$4}' > wells.lalo
 #cp ../../wells.lalo .
 #touch wells.lalo
 
@@ -89,24 +90,36 @@ for vfile in `ls velocity.h5` ; do
     echo fvel is $fvel
     ls -l ${fvel}.h5
 
-    figtitle=`echo $PWD ${fvel} | awk '{print $1"_"$2"_wrtNEcorner"}'` # must be one word 
+    figtitle=`echo $PWD ${fvel} | awk '{print $1"_"$2"_ref_pixel"}'` # must be one word 
     echo figtitle is $figtitle
 
     # make KMZ file for Google Earth
     #save_kmz.py   --mask ${fmask}.h5 ${fvel}.h5
 
     # # # map of average velocity over whole area
-    # view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay  \
-    # --lalo-max-num 4 --fontsize 10   --unit mm \
-    # --pts-file wells.lalo --pts-marker '>w' --pts-ms 3 \
-    # --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
+    view.py -o ${fvel}.pdf --figtitle ${figtitle} --nodisplay  \
+    --lalo-max-num 4 --fontsize 10   --unit mm \
+    --pts-file wells.lalo --pts-marker '>w' --pts-ms 1 \
+    --cbar-label 'LOS_velocity_[mm/year]' ${fvel}.h5 velocity
   
 
     # map of average velocity - study area only
-     view.py -o ${fvel}_sub.pdf --nodisplay --ref-lalo ${reflalo}  --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
-     --unit mm/year --scalebar 0.3 0.2 0.05 --cbar-label LOS_displacement_[mm/year] \
-     --sub-lat 4377799.94366287  4386617.82529112 --sub-lon 504283.365083719 512916.842351834 \
-     --pts-file wells.lalo --pts-marker '>w' --pts-ms 3 --figtitle ${figtitle} ${fvel}.h5  velocity
+    #--scalebar 0.3 0.2 0.05
+    #  --ref-lalo ${reflalo} 
+
+    # ValueError: ERROR: input index is out of data range!
+    #     data   range in (x0,y0,x1,y1): (0, 0, 3613, 2823)
+    #     subset range in (x0,y0,x1,y1): (504283, 4377799, 512916, 4386617)
+    #     data   range in (W, N, E, S): (395720.0, 4500760.0, 684760.0, 4274920.0)
+    #     subset range in (W, N, E, S): (40738360.0, -345723160.0, 41429000.0, -346428600.0)
+ 
+#  # x0=echo 40738360.0 3613 | awk '{print }
+#      view.py -o ${fvel}_sub.pdf --figtitle ${figtitle}--nodisplay \
+#      --lalo-max-num 4 --fontsize 10 --figext .pdf --lalo-label \
+#      --unit mm/year  --cbar-label LOS_displacement_[mm/year] \
+#      --sub-y 4377799 4386617 --sub-x 504283 512916 \
+#      --pts-file wells.lalo --pts-marker '>w' --pts-ms 1 ${fvel}.h5  velocity
+
 done
 
 exit

@@ -279,13 +279,6 @@ def warp_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: Li
     return
 
 
-
-
-
-
-
-
-
 # %%
 def plot_utm(dateStr0,dateStr1,AOIlola,UTMzone,work_dir):
 
@@ -378,14 +371,30 @@ def main():
 # Main logic here
 #
 ## set main controlling parameters here
-project_name = 'mintpy61'
+project_name = 'mintpy62'  # short test case
 burstORslc='BURST'
 site = 'BRADY'
 aord = asf.FLIGHT_DIRECTION.ASCENDING
 burstORslc == 'BURST'
-dateStr0='2017-01-01'
-dateStr1='2024-12-31'
+dateStr0='2021-01-01'
+dateStr1='2021-12-31'
 debug=True
+minTemporalBaseline = 5      # days
+maxTemporalBaseline = 12    # days # must be greater than excluded season
+maxPerpendicularBaseline = 10 # meters
+
+## consider season - causes problems
+# take whole year
+doy1=1
+doy2=366
+# exclude January and February
+#doy1 = day_of_year(parse_date('2023-03-01'))
+#doy2 = day_of_year(parse_date('2023-12-31'))
+# take Summer only
+# doy1 = day_of_year(parse_date('2023-06-01'))
+# doy2 = day_of_year(parse_date('2023-08-31'))
+season = [doy1,doy2]
+# print(f"season is {season}")
 
 # set up directories
 if os.path.isdir('/Volumes/feigl/insar'):
@@ -541,226 +550,208 @@ ProductsFound = asf.geo_search(
 nProducts=len(ProductsFound)
 print(f'nProducts = {nProducts}')
 
-    # %%
-    # make sure scene or burst overlapUnions with all 4 corners of the AOI
-    point= shapely.wkt.loads(centerAOIWKT)
 
-    # Plot the AOI rectangle in lon, lat
-    #print(f'{AOIlola}')
-    #print(f'{coordinates}')
-    # plt.figure()
-    # plt.plot([point[0] for point in AOIlola], [point[1] for point in AOIlola], marker='o', linestyle='-')
-    # plt.fill([point[0] for point in AOIlola], [point[1] for point in AOIlola], alpha=0.2, color='blue')
-    # plt.plot(lonCenter,latCenter,marker='*',color='magenta',markersize=12)
+# make sure scene or burst overlapUnions with all 4 corners of the AOI
+point= shapely.wkt.loads(centerAOIWKT)
 
-    for product in ProductsFound: 
-        coordsLOLA=product.geometry['coordinates']
-        polygon = shapely.Polygon(coordsLOLA[0])
-        for corner in AOIlola:
-            point = shapely.Point(corner)
-        
-        # plot the coordinates for this scene
-        #plt.plot([point[0] for point in coordsLOLA[0]], [point[1] for point in coordsLOLA[0]], marker='+', linestyle='-')
+# Plot the AOI rectangle in lon, lat
+#print(f'{AOIlola}')
+#print(f'{coordinates}')
+# plt.figure()
+# plt.plot([point[0] for point in AOIlola], [point[1] for point in AOIlola], marker='o', linestyle='-')
+# plt.fill([point[0] for point in AOIlola], [point[1] for point in AOIlola], alpha=0.2, color='blue')
+# plt.plot(lonCenter,latCenter,marker='*',color='magenta',markersize=12)
 
-    # plt.suptitle(f"{work_dir}")
-    # plt.title(f"{dateStr0} to {dateStr1}")
-    # plt.xlabel("UTM Easting [km]")
-    # plt.ylabel("UTM Northing [km]")
-    # # Format tick labels to show 3 decimal places
-    # #plt.gca().xaxis.set_major_formatter(ticker.FormatStrFormatter('%.3f'))
-    # #plt.gca().yaxis.set_major_formatter(ticker.FormatStrFormatter('%.3f'))
-    # plt.grid(False)
-    # # save the plot, then show it
-    # plt.savefig('search1utm.png',dpi=600)
-    # plt.show()
-
-    # %%
-    # map coverage in UTM
-    # Project the lat/lon coordinates into UTM
-    AOIutm = [UTMprojectionFunction(lon, lat) for lon, lat in AOIlola]
-
-    # #plt.figure()
-    # fig, ax = plt.subplots()
-
-    # plt.plot([point[0]/1000 for point in AOIutm], [point[1]/1000 for point in AOIutm], marker='o', linestyle='-')
-    # plt.fill([point[0]/1000 for point in AOIutm], [point[1]/1000 for point in AOIutm], alpha=0.2, color='blue',label='AOI')
-    # #plt.plot(ENcenter[0]/1000,ENcenter[1]/1000,marker='*',color='magenta',markersize=12,label='AOI center')
-
-    nKeep=0
-    nSkip=0
-    #granulesKept=empty_object = type(granulesFound)()
-    ProductsKept = empty_object = type(ProductsFound)()
-    for product in ProductsFound: 
-        print(f"{product.properties['sceneName']}")  
-        #print(f"{granule.geometry['coordinates'][0][0]}")
-        #polygon=shapely.wkt.loads(granule.geometry['coordinates'])
-        coordsLOLA=product.geometry['coordinates']
-        #print(f'{coordsLOLA}')
-        coordsUTM=[UTMprojectionFunction(lola[0],lola[1]) for lola in coordsLOLA[0]]
-        
-        #print(f'{coordsUTM}')
-        polygon = shapely.Polygon(coordsUTM)
-        #print(f'{polygon}')
+for product in ProductsFound: 
+    coordsLOLA=product.geometry['coordinates']
+    polygon = shapely.Polygon(coordsLOLA[0])
+    for corner in AOIlola:
+        point = shapely.Point(corner)
     
-        mKeep=0
-        mSkip=0 
-        for corner in AOIutm:
-            #print(f'{corner}')
-            point = shapely.Point(corner)
-            #print(f'point is {point}')
-            # Check for intersection
-            if point.intersects(polygon):
-                #print(f"The point intersects the polygon.")
-                mKeep=mKeep+1
-            else:
-                #print(f"The point does not intersect the polygon.")
-                mSkip=mSkip+1
-                
-        #print(f"mKeep = {mKeep} mSkip = {mSkip}")       
-        if mKeep >=2:
-            nKeep=nKeep+1
-            ProductsKept.append(product)
+    # plot the coordinates for this scene
+    #plt.plot([point[0] for point in coordsLOLA[0]], [point[1] for point in coordsLOLA[0]], marker='+', linestyle='-')
+
+# plt.suptitle(f"{work_dir}")
+# plt.title(f"{dateStr0} to {dateStr1}")
+# plt.xlabel("UTM Easting [km]")
+# plt.ylabel("UTM Northing [km]")
+# # Format tick labels to show 3 decimal places
+# #plt.gca().xaxis.set_major_formatter(ticker.FormatStrFormatter('%.3f'))
+# #plt.gca().yaxis.set_major_formatter(ticker.FormatStrFormatter('%.3f'))
+# plt.grid(False)
+# # save the plot, then show it
+# plt.savefig('search1utm.png',dpi=600)
+# plt.show()
+
+# %%
+# map coverage in UTM
+# Project the lat/lon coordinates into UTM
+AOIutm = [UTMprojectionFunction(lon, lat) for lon, lat in AOIlola]
+
+# #plt.figure()
+# fig, ax = plt.subplots()
+
+# plt.plot([point[0]/1000 for point in AOIutm], [point[1]/1000 for point in AOIutm], marker='o', linestyle='-')
+# plt.fill([point[0]/1000 for point in AOIutm], [point[1]/1000 for point in AOIutm], alpha=0.2, color='blue',label='AOI')
+# #plt.plot(ENcenter[0]/1000,ENcenter[1]/1000,marker='*',color='magenta',markersize=12,label='AOI center')
+
+nKeep=0
+nSkip=0
+#granulesKept=empty_object = type(granulesFound)()
+ProductsKept = empty_object = type(ProductsFound)()
+for product in ProductsFound: 
+    print(f"{product.properties['sceneName']}")  
+    #print(f"{granule.geometry['coordinates'][0][0]}")
+    #polygon=shapely.wkt.loads(granule.geometry['coordinates'])
+    coordsLOLA=product.geometry['coordinates']
+    #print(f'{coordsLOLA}')
+    coordsUTM=[UTMprojectionFunction(lola[0],lola[1]) for lola in coordsLOLA[0]]
+    
+    #print(f'{coordsUTM}')
+    polygon = shapely.Polygon(coordsUTM)
+    #print(f'{polygon}')
+
+    mKeep=0
+    mSkip=0 
+    for corner in AOIutm:
+        #print(f'{corner}')
+        point = shapely.Point(corner)
+        #print(f'point is {point}')
+        # Check for intersection
+        if point.intersects(polygon):
+            #print(f"The point intersects the polygon.")
+            mKeep=mKeep+1
         else:
-            nSkip=nSkip+1
-        
-        # plot the coordinates for this scene
-        #plt.plot([point[0]/1000 for point in coordsUTM], [point[1]/1000 for point in coordsUTM], marker='+', linestyle='-')
-        #ax.set_aspect('equal', 'box')
-
-    # #plt.title(f"{granule.properties['sceneName']}")
-    # plt.suptitle(f"{work_dir}")
-    # plt.title(f"{dateStr0} to {dateStr1} nKeep = {nKeep} nSkip = {nSkip}")
-    # plt.xlabel("UTM Easting [km]")
-    # plt.ylabel("UTM Northing [km]")
-    # plt.grid(True)
-    # plt.savefig('search2.png')
-    # # Display the plot
-    # plt.show()
-
-    print(f"Number of products found is {len(ProductsFound)}")
-    print(f"Number of products kept  is {len(ProductsKept)}")
-    print(f"nKeep  is                   {nKeep}")
-    #print(f"{granulesKept[0]}")
-    # for product in ProductsKept:
-    #     #print(f"{granule.properties['sceneName']}")  
-    #     # OK  print(f"{product.properties}")  
-    #     # OK  print(f"{product.properties['burst']}")
-    #     prop1=product.properties['burst']
-    #     #print(f"{prop1}")
-    #     print(f"{prop1['burstIndex']}") 
-
-    # %%
-    print(f'asf.constants.INTERNAL.CMR_TIMEOUT is {asf.constants.INTERNAL.CMR_TIMEOUT} seconds')
-    asf.constants.INTERNAL.CMR_TIMEOUT=120
-    print(f'asf.constants.INTERNAL.CMR_TIMEOUT is {asf.constants.INTERNAL.CMR_TIMEOUT} seconds')
-
-    # make a stack of epochs
-    print(f"number of products is {len(ProductsKept)}")
-    # This will make a stack of ALL possible pairs that use last epoch as reference
-    EpochsAll = asf.baseline_search.stack_from_product(ProductsKept[-1])
-    # print(f"{StackAll.Properties.values}")
-                                                                
-    nStackAll = len(EpochsAll)
-    print(f"nStackAll is {nStackAll}")
-
-
-    # trim list of epochs
-    t0 = parse_date(dateStr0 + ' 00:00:00Z')
-    t1 = parse_date(dateStr1 + ' 23:59:59Z')
- 
-    EpochsSub=empty_object=type(EpochsAll)()
-    for Epoch0 in EpochsAll:
-        #print(f"baseline is {baseline}")
-        if ((parse_date(Epoch0.properties['startTime']) >= t0) 
-            and (parse_date(Epoch0.properties['stopTime']) <= t1) 
-            and Epoch0.properties['perpendicularBaseline'] != None):
-            EpochsSub.append(Epoch0)
-        
-    nStackSub=len(EpochsSub)
-    print(f"nStackSub is {nStackSub}")
-
-    # for Epoch0 in EpochsSub:
-    #     #print(f"{Epoch0.properties}") 
-    #     print(f"{Epoch0.properties['startTime']} {Epoch0.properties['temporalBaseline']:5d}days {Epoch0.properties['perpendicularBaseline']:10.1f}m {Epoch0.properties['burst']['fullBurstID']}")
-
-
-
-
-    # %%
-    # start building set of pairs
-
-    minTemporalBaseline = 5      # days
-    maxTemporalBaseline = 100    # days # must be greater than excluded season
-    maxPerpendicularBaseline = 100 # meters
-    
-    ## consider season - causes problems
-    # take whole year
-    doy1=1
-    doy2=366
-    # exclude January and February
-    #doy1 = day_of_year(parse_date('2023-03-01'))
-    #doy2 = day_of_year(parse_date('2023-12-31'))
-    # take Summer only
-    # doy1 = day_of_year(parse_date('2023-06-01'))
-    # doy2 = day_of_year(parse_date('2023-08-31'))
-    season = [doy1,doy2]
-    # print(f"season is {season}")
-
-
-    Pairs = set()
-    # make a set adding to the end
-    for Epoch0 in EpochsSub:
-        #print(f"{Epoch0.properties}") 
-
-        rN=Epoch0.properties['sceneName']             # long name of burst granule
-        rt=Epoch0.properties['temporalBaseline']      # days from first epoch for reference
-        rB=Epoch0.properties['perpendicularBaseline'] # meters from first epoch for reference
-        rd=day_of_year(parse_date(Epoch0.properties['startTime'])) # day of year 
-        rS=Epoch0.properties['burst']['subswath']
-        ri=Epoch0.properties['burst']['burstIndex']           # 5, 6, 7
-        rF=Epoch0.properties['burst']['fullBurstID']
-        
-        for Epoch1 in EpochsSub:
-            sN=Epoch1.properties['sceneName']             # long name of burst granule
-            st=Epoch1.properties['temporalBaseline']      # days from first epoch for reference
-            sB=Epoch1.properties['perpendicularBaseline'] # meters from first epoch for reference
-            sd=day_of_year(parse_date(Epoch1.properties['startTime'])) # day of year 
-            sS=Epoch1.properties['burst']['subswath']   # 'IW1' 'IW2' or 'IW3'
-            si=Epoch1.properties['burst']['burstIndex']           # 5, 6, 7
-            sF=Epoch1.properties['burst']['fullBurstID']
+            #print(f"The point does not intersect the polygon.")
+            mSkip=mSkip+1
             
-        
-            if ((sN != rN) and (si == ri) and (sS == rS) and (sF == rF)
-                and (abs(sB - rB) < maxPerpendicularBaseline)
-                and (st - rt <= maxTemporalBaseline)
-                and (st - rt >  minTemporalBaseline)
-                and (rd >= season[0])
-                and (rd <= season[1])
-                ):
-                print(f"{rN}, {sN}, {abs(sB - rB):10.1f}m, {(st-rt):5d}days {ri}, {rS}, {rF}")
-                Pairs.add((rN,sN) )
-                
+    #print(f"mKeep = {mKeep} mSkip = {mSkip}")       
+    if mKeep >=2:
+        nKeep=nKeep+1
+        ProductsKept.append(product)
+    else:
+        nSkip=nSkip+1
     
+    # plot the coordinates for this scene
+    #plt.plot([point[0]/1000 for point in coordsUTM], [point[1]/1000 for point in coordsUTM], marker='+', linestyle='-')
+    #ax.set_aspect('equal', 'box')
+
+# #plt.title(f"{granule.properties['sceneName']}")
+# plt.suptitle(f"{work_dir}")
+# plt.title(f"{dateStr0} to {dateStr1} nKeep = {nKeep} nSkip = {nSkip}")
+# plt.xlabel("UTM Easting [km]")
+# plt.ylabel("UTM Northing [km]")
+# plt.grid(True)
+# plt.savefig('search2.png')
+# # Display the plot
+# plt.show()
+
+print(f"Number of products found is {len(ProductsFound)}")
+print(f"Number of products kept  is {len(ProductsKept)}")
+print(f"nKeep  is                   {nKeep}")
+#print(f"{granulesKept[0]}")
+# for product in ProductsKept:
+#     #print(f"{granule.properties['sceneName']}")  
+#     # OK  print(f"{product.properties}")  
+#     # OK  print(f"{product.properties['burst']}")
+#     prop1=product.properties['burst']
+#     #print(f"{prop1}")
+#     print(f"{prop1['burstIndex']}") 
+
+# %%
+print(f'asf.constants.INTERNAL.CMR_TIMEOUT is {asf.constants.INTERNAL.CMR_TIMEOUT} seconds')
+asf.constants.INTERNAL.CMR_TIMEOUT=120
+print(f'asf.constants.INTERNAL.CMR_TIMEOUT is {asf.constants.INTERNAL.CMR_TIMEOUT} seconds')
+
+# make a stack of epochs
+print(f"number of products is {len(ProductsKept)}")
+# This will make a stack of ALL possible pairs that use last epoch as reference
+EpochsAll = asf.baseline_search.stack_from_product(ProductsKept[-1])
+# print(f"{StackAll.Properties.values}")
+                                                            
+nStackAll = len(EpochsAll)
+print(f"nStackAll is {nStackAll}")
+
+
+# trim list of epochs
+t0 = parse_date(dateStr0 + ' 00:00:00Z')
+t1 = parse_date(dateStr1 + ' 23:59:59Z')
+
+EpochsSub=empty_object=type(EpochsAll)()
+for Epoch0 in EpochsAll:
+    #print(f"baseline is {baseline}")
+    if ((parse_date(Epoch0.properties['startTime']) >= t0) 
+        and (parse_date(Epoch0.properties['stopTime']) <= t1) 
+        and Epoch0.properties['perpendicularBaseline'] != None):
+        EpochsSub.append(Epoch0)
+    
+nStackSub=len(EpochsSub)
+print(f"nStackSub is {nStackSub}")
+
+# for Epoch0 in EpochsSub:
+#     #print(f"{Epoch0.properties}") 
+#     print(f"{Epoch0.properties['startTime']} {Epoch0.properties['temporalBaseline']:5d}days {Epoch0.properties['perpendicularBaseline']:10.1f}m {Epoch0.properties['burst']['fullBurstID']}")
+
+
+
+
+# %%
+# start building set of pairs
+
+Pairs = set()
+# make a set adding to the end
+for Epoch0 in EpochsSub:
+    #print(f"{Epoch0.properties}") 
+
+    rN=Epoch0.properties['sceneName']             # long name of burst granule
+    rt=Epoch0.properties['temporalBaseline']      # days from first epoch for reference
+    rB=Epoch0.properties['perpendicularBaseline'] # meters from first epoch for reference
+    rd=day_of_year(parse_date(Epoch0.properties['startTime'])) # day of year 
+    rS=Epoch0.properties['burst']['subswath']
+    ri=Epoch0.properties['burst']['burstIndex']           # 5, 6, 7
+    rF=Epoch0.properties['burst']['fullBurstID']
+    
+    for Epoch1 in EpochsSub:
+        sN=Epoch1.properties['sceneName']             # long name of burst granule
+        st=Epoch1.properties['temporalBaseline']      # days from first epoch for reference
+        sB=Epoch1.properties['perpendicularBaseline'] # meters from first epoch for reference
+        sd=day_of_year(parse_date(Epoch1.properties['startTime'])) # day of year 
+        sS=Epoch1.properties['burst']['subswath']   # 'IW1' 'IW2' or 'IW3'
+        si=Epoch1.properties['burst']['burstIndex']           # 5, 6, 7
+        sF=Epoch1.properties['burst']['fullBurstID']
         
-    nPairs=len(Pairs)
-    print(f'number of pairs nPairs = {nPairs}')
-
-
-
-
-
-    # %%
-    costs=hyp3.costs()
-    print(f"costs is of type {type(costs)}")
-    print(f"{costs}")
-    for cost in costs:
-        print(f"{cost}")
-    #     for p in cost:
-    #         print(p,end="\n")
-    #     print()
-        
+    
+        if ((sN != rN) and (si == ri) and (sS == rS) and (sF == rF)
+            and (abs(sB - rB) < maxPerpendicularBaseline)
+            and (st - rt <= maxTemporalBaseline)
+            and (st - rt >  minTemporalBaseline)
+            and (rd >= season[0])
+            and (rd <= season[1])
+            ):
+            print(f"{rN}, {sN}, {abs(sB - rB):10.1f}m, {(st-rt):5d}days {ri}, {rS}, {rF}")
+            Pairs.add((rN,sN) )
+            
 
     
+nPairs=len(Pairs)
+print(f'number of pairs nPairs = {nPairs}')
+
+
+
+
+
+# %%
+costs=hyp3.costs()
+print(f"costs is of type {type(costs)}")
+print(f"{costs}")
+for cost in costs:
+    print(f"{cost}")
+#     for p in cost:
+#         print(p,end="\n")
+#     print()
+    
+
+
 
 
 # %% [markdown]
@@ -774,69 +765,69 @@ print(f'nProducts = {nProducts}')
 #     # 
 
 
-    # %%
-    #help(sdk.Batch)
-    jobName=project_name
-    print(f'Preparing insar burst jobs with name {project_name}')
-    nCredits0 = hyp3.check_credits()
-    print(f'nCredits0 = {nCredits0}')
-    #looks='20x4'
-    looks='10x2'
-    jobs = sdk.Batch()
-    nJobs=0
-    for Epoch0, Epoch1 in Pairs:
-        nJobs=nJobs+1
-        
-        #jobName="%s_job%02d" % (project_name, nJobs)
-        # new in hyp3_sdk v7.4.0 API Reference
-        #https://hyp3-docs.asf.alaska.edu/using/sdk_api/#hyp3_sdk.HyP3.prepare_insar_isce_multi_burst_job
-        print(f"{nJobs:5d} : {Epoch0} to {Epoch1}")
-        if burstORslc == 'BURST':
-            job=hyp3.prepare_insar_isce_burst_job(Epoch0, Epoch1, 
-                name=jobName, 
-                apply_water_mask=True,
-                looks=looks)
-            # jobs+=hyp3.submit_insar_isce_burst_job(Epoch0, Epoch1, 
-            #     name=jobName, 
-            #     apply_water_mask=True,
-            #     looks=looks)
-            costFor1Job=1
-        elif burstORslc == 'MULTIBURST':     
-                #     prepare_insar_isce_multi_burst_job(reference, secondary, name=None, apply_water_mask=False, looks='20x4') classmethod ¶
-                # Prepare an InSAR ISCE multi burst job.
+# %%
+#help(sdk.Batch)
+jobName=project_name
+print(f'Preparing insar burst jobs with name {project_name}')
+nCredits0 = hyp3.check_credits()
+print(f'nCredits0 = {nCredits0}')
+#looks='20x4'
+looks='10x2'
+jobs = sdk.Batch()
+nJobs=0
+for Epoch0, Epoch1 in Pairs:
+    nJobs=nJobs+1
+    
+    #jobName="%s_job%02d" % (project_name, nJobs)
+    # new in hyp3_sdk v7.4.0 API Reference
+    #https://hyp3-docs.asf.alaska.edu/using/sdk_api/#hyp3_sdk.HyP3.prepare_insar_isce_multi_burst_job
+    print(f"{nJobs:5d} : {Epoch0} to {Epoch1}")
+    if burstORslc == 'BURST':
+        job=hyp3.prepare_insar_isce_burst_job(Epoch0, Epoch1, 
+            name=jobName, 
+            apply_water_mask=True,
+            looks=looks)
+        # jobs+=hyp3.submit_insar_isce_burst_job(Epoch0, Epoch1, 
+        #     name=jobName, 
+        #     apply_water_mask=True,
+        #     looks=looks)
+        costFor1Job=1
+    elif burstORslc == 'MULTIBURST':     
+            #     prepare_insar_isce_multi_burst_job(reference, secondary, name=None, apply_water_mask=False, looks='20x4') classmethod ¶
+            # Prepare an InSAR ISCE multi burst job.
 
-                # Parameters:
+            # Parameters:
 
-                # Name	Type	Description	Default
-                # reference	list[str]	A list of reference granules (scenes) to use	required
-                # secondary	list[str]	A list of secondary granules (scenes) to use	required
-                # name	str | None	A name for the job	None
-                # apply_water_mask	bool	Sets pixels over coastal waters and large inland waterbodies as invalid for phase unwrapping	False
-                # looks	Literal['20x4', '10x2', '5x1']	Number of looks to take in range and azimuth
-            job=prepare_insar_isce_multi_burst_job(Epoch0, Epoch1, 
-                name=jobName, 
-                looks=looks)
-            costFor1Job=1
-        elif burstORslc == 'SLC':
-            job=hyp3.prepare_insar_job(Epoch0, Epoch1, 
-                                    name=jobName, 
-                                    looks=looks, 
-                                    include_look_vectors=True, 
-                                    include_inc_map=True, 
-                                    include_dem=True, 
-                                    include_wrapped_phase=True, 
-                                    apply_water_mask=False,
-                                    include_displacement_maps=True, 
-                                    phase_filter_parameter=0.6) 
-            costFor1Job=15
-        else:
-            assert False # throw error
+            # Name	Type	Description	Default
+            # reference	list[str]	A list of reference granules (scenes) to use	required
+            # secondary	list[str]	A list of secondary granules (scenes) to use	required
+            # name	str | None	A name for the job	None
+            # apply_water_mask	bool	Sets pixels over coastal waters and large inland waterbodies as invalid for phase unwrapping	False
+            # looks	Literal['20x4', '10x2', '5x1']	Number of looks to take in range and azimuth
+        job=prepare_insar_isce_multi_burst_job(Epoch0, Epoch1, 
+            name=jobName, 
+            looks=looks)
+        costFor1Job=1
+    elif burstORslc == 'SLC':
+        job=hyp3.prepare_insar_job(Epoch0, Epoch1, 
+                                name=jobName, 
+                                looks=looks, 
+                                include_look_vectors=True, 
+                                include_inc_map=True, 
+                                include_dem=True, 
+                                include_wrapped_phase=True, 
+                                apply_water_mask=False,
+                                include_displacement_maps=True, 
+                                phase_filter_parameter=0.6) 
+        costFor1Job=15
+    else:
+        assert False # throw error
+    
+    jobs+=hyp3.submit_prepared_jobs(job)
         
-        jobs+=hyp3.submit_prepared_jobs(job)
-            
-    print(f'nJobs is {nJobs}')
-    costEstimate=nJobs*costFor1Job # TODO use cost value from table, type of job and possibly number of looks
-    print(f'costEstimate is {costEstimate}')
+print(f'nJobs is {nJobs}')
+costEstimate=nJobs*costFor1Job # TODO use cost value from table, type of job and possibly number of looks
+print(f'costEstimate is {costEstimate}')
 
 
 # %%

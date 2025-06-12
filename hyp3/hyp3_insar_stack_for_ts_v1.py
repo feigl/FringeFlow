@@ -401,6 +401,10 @@ if os.path.isdir('/Volumes/feigl/insar'):
     topPath='/Volumes/feigl/insar'
 elif os.path.isdir('/data/insar'):
     topPath='/data/insar'
+elif os.path.isdir('/t31/insar'):
+    topPath='/t31/insar'
+else:
+    topPath='~/insar'
 
 # working directory
 work_dir = Path(topPath) / site / 'SDK' / aord / project_name

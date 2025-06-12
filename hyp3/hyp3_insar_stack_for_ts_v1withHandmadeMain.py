@@ -4,21 +4,19 @@
 # cut pairs to area of interest, not overlapIntersect
 # do not omit seasons
 # short time spans only
-#
+# 
 # 2025/05/21 make small test case to debug pyaps
 # 2025/06/06 use UTM zones consistently
 # 2025/06/09 try to generalize
 
 # %% [markdown]
 #  #### 0. Initial Setup
-#
+# 
 # To run this notebook, you'll need a conda environment with the required dependencies. You can set up a new environment (recommended) and run the jupyter server like:
 # ```shell
 # mamba create --name hyp3-mintpy "python>=3.10" "asf_search>=7.0.0" hyp3_sdk "mintpy>=1.5.2" pandas jupyter ipympl jupytext gdal proj  --channel conda-forge --yes
 # ```
-#
-# mamba run -n hyp3kf jupytext --to py hyp3_insar_stack_for_ts_v1.ipynb
-#
+# 
 # To run in VS Code, then use command palette to do the following:
 #     Clear Workspace Interpreter Setting
 #     Select interpreter
@@ -188,7 +186,7 @@ def get_epsg(file_path):
 
 
 
-# %%
+#%%
 def clip_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: List[float]) -> None:
     """Clip all GeoTIFF files to their common overlap
     
@@ -219,20 +217,6 @@ def clip_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: Li
             dst_file = file.parent / f'{file.stem}_clipped{file.suffix}'
 
             gdal.Translate(destName=str(dst_file), srcDS=str(file), projWin=overlap)
-# %%
-def find_zip_files(directory):
-    # Compile the regex pattern to match .zip files
-    pattern = re.compile(r'.*\.zip$')
-
-    # List all files in the directory
-    all_files = os.listdir(directory)
-
-    # Filter and return files that match the pattern
-    zip_files = [f for f in all_files if pattern.match(f)]
-    return zip_files
-
-
-
 # %%
 def warp_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: List[float],epsgAOI) -> None:
     """Warp all GeoTIFF files to their common overlap
@@ -279,14 +263,20 @@ def warp_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: Li
     return
 
 
+def find_zip_files(directory):
+    # Compile the regex pattern to match .zip files
+    pattern = re.compile(r'.*\.zip$')
+
+    # List all files in the directory
+    all_files = os.listdir(directory)
+
+    # Filter and return files that match the pattern
+    zip_files = [f for f in all_files if pattern.match(f)]
+    return zip_files
 
 
 
 
-
-
-
-# %%
 def plot_utm(dateStr0,dateStr1,AOIlola,UTMzone,work_dir):
 
     # Create a projection object for UTM zone (you need to specify the zone)
@@ -346,9 +336,10 @@ def plot_utm(dateStr0,dateStr1,AOIlola,UTMzone,work_dir):
     
     return [AOIutm,bBoxAOI,epsgAOI,UTMprojectionFunction]
 
-
-# %%
 def main():
+    
+    # %%
+
     parser = argparse.ArgumentParser(description="Script with debug/--no-debug switch.")
     parser.add_argument("--site", dest="site",     default="BRADY", help="name of site as 5-character upper-case word")
     parser.add_argument("--name", dest="project_name", default="mintpy60", help="label for solution")
@@ -367,179 +358,173 @@ def main():
         print(f"Debug is on")
     else:
         print("Debug mode is OFF")
+
+    # Main logic here
+    #
+    ## set main controlling parameters here
+    #project_name = 'mintpy60'
+    project_name=args.project_name
+    #burstORslc='MULTIBURST'
+    burstORslc='BURST'
+    #site = 'BRADY'
+    site=args.site
+    #aord = asf.FLIGHT_DIRECTION.ASCENDING
+    aord=args.aord
+    burstORslc == 'BURST'
+    # start and end dates
+    # dateStr0='2020-01-01'
+    # dateStr1='2020-12-31'
+    dateStr0=args.dateStr0
+    dateStr1=args.dateStr1
+  
+    
+    
+    if os.path.isdir('/Volumes/feigl/insar'):
+        topPath='/Volumes/feigl/insar'
+    elif os.path.isdir('/data/insar'):
+        topPath='/data/insar'
+
+    
+    work_dir = Path(topPath) / site / 'SDK' / aord / project_name
+    work_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Changing working directory to {work_dir}")  
+    os.chdir(work_dir)
+    
+    
+    data_dir = work_dir / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    print(f"data_dir is {data_dir}")
+    
+    # Use your [NASA Earthdata login](https://urs.earthdata.nasa.gov/) 
+    # to connect to [ASF HyP3](https://hyp3-docs.asf.alaska.edu/).
+    #hyp3 = sdk.HyP3(prompt=True)
+    hyp3 = sdk.HyP3(prompt=False)
+    #hyp3 =  sdk.HyP3.get_authenticated_session('feigl@wisc.edu')
+    nCredits0=hyp3.check_credits()
+    print(f'Number of credits before starting jobs is {nCredits0}')
+    
+    
+    
+    #%% get coordinates
+    LIMITS=get_site_dims(site)
+    print(f"{LIMITS}")
+    print(f"{LIMITS['lonMin']:12.8f}")
+    print(f"{LIMITS['UTMzone']}")
+
+    if site == 'DCAMP':
+        # The DAC is expanded to encompass GVR (78 km2) 
+        # -118.3591409949927,38.81917034951293,0 -118.2245378112751,38.82065893511532,0 -118.2251891413302,38.88085324203438,0 -118.3605156707135,38.87935480699949,0 -118.3591409949927,38.81917034951293,0 
+        # corner	lon	lat	ground
+        # SW	-118.35914099	38.81917035	0
+        # B	    -118.22453781	38.82065894	0
+        # NE	-118.22518914	38.88085324	0
+        # D	    -118.36051567	38.87935481	0
+        # mean	-118.29234590	38.85000933	0
+        latMin=38.81917035
+        latMax=38.88085324
+        lonMin=-118.36051567
+        lonMax=-118.22453781
+        UTMzone=11 # 11 S verified by Google Earth
+    elif site == 'SANEM':
+        # original AOI
+        #  grep -A3 sanem ~/siteinfo/site_dims.txt  
+        # sanem:
+        # -R-119.46/-119.375/40.348/40.449
+        # -R291074.48226/298595.53221/4469090.38971/4480500.18609
+        # 11
+        # latMin=40.348
+        # latMax=40.449
+        # lonMin=-119.46
+        # lonMax=-119.375 
         
-    return
+        # larger AOI from /Users/feigl/siteinfo/sanem/AOIforSANEM2025.kml  
+        # -119.5086551479411,40.3051742449493,0
+        # -119.3250213982107,40.30569311996287,0
+        # -119.3270788642407,40.50172708513533,0
+        # -119.5083119649335,40.5004502253031,0
+        # -119.5086551479411,40.3051742449493,0
+        latMin=40.30517424494930
+        latMax=40.50172708513533
+        lonMin=-119.5086551479411
+        lonMax=-119.3250213982107
+        UTMzone=11      # 2025/06/05  verified by Google Earth
+    elif site == 'MCGIN':
+        UTMzone=11 # 11 S verified by Google Earth
+        assert False
+    elif site == 'BRADY':
+        UTMzone=LIMITS['UTMzone']
+        LIMITS=get_site_dims(site)
+        lonMin=LIMITS['lonMin']
+        lonMax=LIMITS['lonMax']
+        latMin=LIMITS['latMin']
+        latMax=LIMITS['latMax']
+        #print(f"{LIMITS['lonMin']:12.8f}")
+        
+    else:
+        print(f"WARNING unknown site {site}")
+        UTMzone=LIMITS['UTMzone']
+        LIMITS=get_site_dims(site)
+        lonMin=LIMITS['lonMin']
+        lonMax=LIMITS['lonMax']
+        latMin=LIMITS['latMin']
+        latMax=LIMITS['latMax']
+   
+    print(f"UTMzone is {UTMzone}")   
+    lonCenter=(lonMin + lonMax)/2
+    latCenter=(latMin + latMax)/2
+    # format is intersectsWith='POINT(-119.543 37.925)'
+    centerAOIWKT=f'POINT({lonCenter} {latCenter})'
+    print(f"centerAOIWKT is {centerAOIWKT}")
 
-# %%
+    # Define the four corners
+    AOIlola = [
+        [lonMin, latMin],  # Bottom-left corner
+        [lonMax, latMin],  # Bottom-right corner
+        [lonMax, latMax],  # Top-right corner
+        [lonMin, latMax],  # Top-left corner
+        [lonMin, latMin]   # Close the loop by returning to bottom-left
+    ]
 
-
-
-
-# Main logic here
-#
-## set main controlling parameters here
-project_name = 'mintpy61'
-burstORslc='BURST'
-site = 'BRADY'
-aord = asf.FLIGHT_DIRECTION.ASCENDING
-burstORslc == 'BURST'
-dateStr0='2017-01-01'
-dateStr1='2024-12-31'
-debug=True
-
-# set up directories
-if os.path.isdir('/Volumes/feigl/insar'):
-    topPath='/Volumes/feigl/insar'
-elif os.path.isdir('/data/insar'):
-    topPath='/data/insar'
-
-# working directory
-work_dir = Path(topPath) / site / 'SDK' / aord / project_name
-work_dir.mkdir(parents=True, exist_ok=True)
-print(f"Changing working directory to {work_dir}")  
-os.chdir(work_dir)
-
-# data directory
-data_dir = work_dir / 'data'
-data_dir.mkdir(parents=True, exist_ok=True)
-print(f"data_dir is {data_dir}")
-
-
-# %%
-# Use your [NASA Earthdata login](https://urs.earthdata.nasa.gov/) 
-# to connect to [ASF HyP3](https://hyp3-docs.asf.alaska.edu/).
-#hyp3 = sdk.HyP3(prompt=True)
-hyp3 = sdk.HyP3(prompt=False)
-#hyp3 =  sdk.HyP3.get_authenticated_session('feigl@wisc.edu')
-nCredits0=hyp3.check_credits()
-print(f'Number of credits before starting jobs is {nCredits0}')
-
-# %% get coordinates
-LIMITS=get_site_dims(site)
-print(f"{LIMITS}")
-print(f"{LIMITS['lonMin']:12.8f}")
-print(f"{LIMITS['UTMzone']}")
-
-if site == 'DCAMP':
-    # The DAC is expanded to encompass GVR (78 km2) 
-    # -118.3591409949927,38.81917034951293,0 -118.2245378112751,38.82065893511532,0 -118.2251891413302,38.88085324203438,0 -118.3605156707135,38.87935480699949,0 -118.3591409949927,38.81917034951293,0 
-    # corner	lon	lat	ground
-    # SW	-118.35914099	38.81917035	0
-    # B	    -118.22453781	38.82065894	0
-    # NE	-118.22518914	38.88085324	0
-    # D	    -118.36051567	38.87935481	0
-    # mean	-118.29234590	38.85000933	0
-    latMin=38.81917035
-    latMax=38.88085324
-    lonMin=-118.36051567
-    lonMax=-118.22453781
-    UTMzone=11 # 11 S verified by Google Earth
-elif site == 'SANEM':
-    # original AOI
-    #  grep -A3 sanem ~/siteinfo/site_dims.txt  
-    # sanem:
-    # -R-119.46/-119.375/40.348/40.449
-    # -R291074.48226/298595.53221/4469090.38971/4480500.18609
-    # 11
-    # latMin=40.348
-    # latMax=40.449
-    # lonMin=-119.46
-    # lonMax=-119.375 
+    # make plots
+    plot_lola(dateStr0,dateStr1,AOIlola,lonCenter,latCenter,work_dir)
+    AOIutm,bBoxAOI,epsgAOI,UTMprojectionFunction = plot_utm(dateStr0,dateStr1,AOIlola,UTMzone,work_dir)
     
-    # larger AOI from /Users/feigl/siteinfo/sanem/AOIforSANEM2025.kml  
-    # -119.5086551479411,40.3051742449493,0
-    # -119.3250213982107,40.30569311996287,0
-    # -119.3270788642407,40.50172708513533,0
-    # -119.5083119649335,40.5004502253031,0
-    # -119.5086551479411,40.3051742449493,0
-    latMin=40.30517424494930
-    latMax=40.50172708513533
-    lonMin=-119.5086551479411
-    lonMax=-119.3250213982107
-    UTMzone=11      # 2025/06/05  verified by Google Earth
-elif site == 'MCGIN':
-    UTMzone=11 # 11 S verified by Google Earth
-    assert False
-elif site == 'BRADY':
-    UTMzone=LIMITS['UTMzone']
-    LIMITS=get_site_dims(site)
-    # 
-    lonMin=LIMITS['lonMin'] 
-    lonMax=LIMITS['lonMax'] 
-    latMin=LIMITS['latMin'] 
-    latMax=LIMITS['latMax']
-    # # expand by 10 km - fails
-    # lonMin=LIMITS['lonMin'] - 10/111.
-    # lonMax=LIMITS['lonMax'] + 10/111.
-    # latMin=LIMITS['latMin'] - 10/111.
-    # latMax=LIMITS['latMax'] + 10/111.
-    #print(f"{LIMITS['lonMin']:12.8f}")
     
-else:
-    print(f"WARNING unknown site {site}")
-    UTMzone=LIMITS['UTMzone']
-    LIMITS=get_site_dims(site)
-    lonMin=LIMITS['lonMin']
-    lonMax=LIMITS['lonMax']
-    latMin=LIMITS['latMin']
-    latMax=LIMITS['latMax']
+    if args.debug:
+        print("Debug mode is ON. Continuing bravely onward.")
+    else:   
+        sys.exit(f"Debug mode is off. Exiting here.")
+    # %%
+    print(f"timeout is now {asf.constants.INTERNAL.CMR_TIMEOUT} seconds")
+    asf.constants.INTERNAL.CMR_TIMEOUT=120
+    print(f"timeout is now {asf.constants.INTERNAL.CMR_TIMEOUT}: seconds")
 
-print(f"UTMzone is {UTMzone}")   
-lonCenter=(lonMin + lonMax)/2
-latCenter=(latMin + latMax)/2
-# format is intersectsWith='POINT(-119.543 37.925)'
-centerAOIWKT=f'POINT({lonCenter} {latCenter})'
-print(f"centerAOIWKT is {centerAOIWKT}")
+    if burstORslc == 'BURST':
+        processingLevel=asf.PRODUCT_TYPE.BURST
+    # elif burstORslc == 'MULTIBURST':
+    #     processingLevel=asf.PRODUCT_TYPE.BURST
+    elif burstORslc == 'SLC':
+        processingLevel=asf.PRODUCT_TYPE.SLC
+    else:
+        assert False # throw an error
+        
 
-# Define the four corners
-AOIlola = [
-    [lonMin, latMin],  # Bottom-left corner
-    [lonMax, latMin],  # Bottom-right corner
-    [lonMax, latMax],  # Top-right corner
-    [lonMin, latMax],  # Top-left corner
-    [lonMin, latMin]   # Close the loop by returning to bottom-left
-]
-
-# make plots
-plot_lola(dateStr0,dateStr1,AOIlola,lonCenter,latCenter,work_dir)
-AOIutm,bBoxAOI,epsgAOI,UTMprojectionFunction = plot_utm(dateStr0,dateStr1,AOIlola,UTMzone,work_dir)
-
-
-if debug:
-    print("Debug mode is ON. Continuing bravely onward.")
-else:
-    print("Debug mode is OFF. Continuing bravely onward.")  
-    #sys.exit(f"Debug mode is off. Exiting here.")
-    
-
-# %%
-print(f"timeout is now {asf.constants.INTERNAL.CMR_TIMEOUT} seconds")
-asf.constants.INTERNAL.CMR_TIMEOUT=120
-print(f"timeout is now {asf.constants.INTERNAL.CMR_TIMEOUT}: seconds")
-
-if burstORslc == 'BURST':
-    processingLevel=asf.PRODUCT_TYPE.BURST
-# elif burstORslc == 'MULTIBURST':
-#     processingLevel=asf.PRODUCT_TYPE.BURST
-elif burstORslc == 'SLC':
-    processingLevel=asf.PRODUCT_TYPE.SLC
-else:
-    assert False # throw an error
-ProductsFound = asf.geo_search(
-        platform=asf.PLATFORM.SENTINEL1,
-        intersectsWith=centerAOIWKT,
-        start=dateStr0,
-        end  =dateStr1,        
-        processingLevel=processingLevel,
-        polarization=asf.POLARIZATION.VV, 
-        beamMode=asf.BEAMMODE.IW,
-        flightDirection=aord,
-    )
-        # season=season,
+# %% search for single-epoch products
+    ProductsFound = asf.geo_search(
+            platform=asf.PLATFORM.SENTINEL1,
+            intersectsWith=centerAOIWKT,
+            start=dateStr0,
+            end  =dateStr1,        
+            processingLevel=processingLevel,
+            polarization=asf.POLARIZATION.VV, 
+            beamMode=asf.BEAMMODE.IW,
+            flightDirection=aord,
+        )
+            # season=season,
 
 
-nProducts=len(ProductsFound)
-print(f'nProducts = {nProducts}')
+    nProducts=len(ProductsFound)
+    print(f'nProducts = {nProducts}')
 
     # %%
     # make sure scene or burst overlapUnions with all 4 corners of the AOI
@@ -679,9 +664,9 @@ print(f'nProducts = {nProducts}')
     nStackSub=len(EpochsSub)
     print(f"nStackSub is {nStackSub}")
 
-    # for Epoch0 in EpochsSub:
-    #     #print(f"{Epoch0.properties}") 
-    #     print(f"{Epoch0.properties['startTime']} {Epoch0.properties['temporalBaseline']:5d}days {Epoch0.properties['perpendicularBaseline']:10.1f}m {Epoch0.properties['burst']['fullBurstID']}")
+    for Epoch0 in EpochsSub:
+        #print(f"{Epoch0.properties}") 
+        print(f"{Epoch0.properties['startTime']} {Epoch0.properties['temporalBaseline']:5d}days {Epoch0.properties['perpendicularBaseline']:10.1f}m {Epoch0.properties['burst']['fullBurstID']}")
 
 
 
@@ -690,8 +675,8 @@ print(f'nProducts = {nProducts}')
     # start building set of pairs
 
     minTemporalBaseline = 5      # days
-    maxTemporalBaseline = 100    # days # must be greater than excluded season
-    maxPerpendicularBaseline = 100 # meters
+    maxTemporalBaseline = 20    # days # must be greater than excluded season
+    maxPerpendicularBaseline = 20 # meters
     
     ## consider season - causes problems
     # take whole year
@@ -763,15 +748,15 @@ print(f'nProducts = {nProducts}')
     
 
 
-# %% [markdown]
-#     # The number of looks drives the resolution and pixel spacing of the output products. 
-#     # Selecting 10x2 looks will yield larger products with 80 m resolution and pixel spacing of 40 m. 
-#     # Selecting 20x4 looks reduces the resolution to 160 m and reduces the size of the products (roughly 1/4 the size of 10x2 look products), with a pixel spacing of 80 m. 
-#     # The default is 20x4 looks.
-#     # 
-#     # Modifying looks does not change the cost!
-#     # 
-#     # 
+    # %% [markdown]
+    # The number of looks drives the resolution and pixel spacing of the output products. 
+    # Selecting 10x2 looks will yield larger products with 80 m resolution and pixel spacing of 40 m. 
+    # Selecting 20x4 looks reduces the resolution to 160 m and reduces the size of the products (roughly 1/4 the size of 10x2 look products), with a pixel spacing of 80 m. 
+    # The default is 20x4 looks.
+    # 
+    # Modifying looks does not change the cost!
+    # 
+    # 
 
 
     # %%
@@ -792,14 +777,14 @@ print(f'nProducts = {nProducts}')
         #https://hyp3-docs.asf.alaska.edu/using/sdk_api/#hyp3_sdk.HyP3.prepare_insar_isce_multi_burst_job
         print(f"{nJobs:5d} : {Epoch0} to {Epoch1}")
         if burstORslc == 'BURST':
-            job=hyp3.prepare_insar_isce_burst_job(Epoch0, Epoch1, 
-                name=jobName, 
-                apply_water_mask=True,
-                looks=looks)
-            # jobs+=hyp3.submit_insar_isce_burst_job(Epoch0, Epoch1, 
+            # job=hyp3.prepare_insar_isce_burst_job(Epoch0, Epoch1, 
             #     name=jobName, 
             #     apply_water_mask=True,
             #     looks=looks)
+            jobs+=hyp3.submit_insar_isce_burst_job(Epoch0, Epoch1, 
+                name=jobName, 
+                apply_water_mask=True,
+                looks=looks)
             costFor1Job=1
         elif burstORslc == 'MULTIBURST':     
                 #     prepare_insar_isce_multi_burst_job(reference, secondary, name=None, apply_water_mask=False, looks='20x4') classmethod ¶
@@ -832,190 +817,69 @@ print(f'nProducts = {nProducts}')
         else:
             assert False # throw error
         
-        jobs+=hyp3.submit_prepared_jobs(job)
+        #jobs+=hyp3.submit_prepared_jobs(job)
             
     print(f'nJobs is {nJobs}')
     costEstimate=nJobs*costFor1Job # TODO use cost value from table, type of job and possibly number of looks
     print(f'costEstimate is {costEstimate}')
 
 
-# %%
-jobs = hyp3.watch(jobs)
-nCredits1 = hyp3.check_credits()
-print(f'nCredits1 = {nCredits1}')
-nCreditsUsed=nCredits1-nCredits0
-print(f'nCreditsUsed = {nCreditsUsed}')
-#print(f'costEstimate is {costEstimate}')
+    # %%
+    jobs = hyp3.watch(jobs)
+    nCredits1 = hyp3.check_credits()
+    print(f'nCredits1 = {nCredits1}')
+    nCreditsUsed=nCredits1-nCredits0
+    print(f'nCreditsUsed = {nCreditsUsed}')
+    print(f'costEstimate is {costEstimate}')
 
-# %%
-jobs = hyp3.find_jobs(name=project_name)
+    # %%
+    jobs = hyp3.find_jobs(name=project_name)
 
-# %%
-# download 
-insar_products = jobs.download_files(data_dir)
-print(f'data_dir is {data_dir}')
-insar_products = data_dir.glob('*.zip')
-print(f'{insar_products}')
+    # %%
+
+    insar_products = jobs.download_files(data_dir)
+    print(f'data_dir is {data_dir}')
+    insar_products = data_dir.glob('*.zip')
+    print(f'{insar_products}')
 
 
 
-# %%
-insar_products = [sdk.util.extract_zipped_product(ii,delete=False) for ii in insar_products]
+    # %%
+    insar_products = [sdk.util.extract_zipped_product(ii) for ii in insar_products]
         
-    
+    # zip_files = find_zip_files(data_dir)
+    # for zip in zip_files:
+    #     product=f"{data_dir}/{zip}"
+    #     print(f"{product}")
+    #     sdk.util.extract_zipped_product(product,delete=False)
 
+    print(f'data_dir is {data_dir}')
+    file_list = data_dir.glob('*/*_dem.tif')
+
+    epsgTIFs = [get_epsg(file_path) for file_path in file_list]
+
+    print(f"{epsgTIFs}")
+
+    epsgTIF1=np.unique(epsgTIFs)
+    if len(epsgTIF1) == 1:
+        print(f"epsgTIF1 is {epsgTIF1}")
+        
+    else:
+        print(f"ERROR TIF files do not all have the same EPSG codes. {len(epsgTIF1)}") 
+        sys.exit(f"Exiting here.")  
+        raise Exception
+
+    if epsgTIF1 == epsgAOI:
+        print(f"EPSG codes in TIF files {epsgTIF1} matches EPSG code in AOI {epsgAOI}. Starting to clip TIF files...")
+        clip_hyp3_products_to_common_overlap(data_dir, bBoxAOI, epsgAOI)
+    else:
+        print(f"EPSG codes in TIF files {epsgTIF1} does NOT match EPSG code in AOI {epsgAOI}. Starting to warp TIF files slowly.... ")
+        warp_hyp3_products_to_common_overlap(data_dir, bBoxAOI, epsgAOI)
+
+if __name__ == "__main__":
+    main()
 
 
 
 
 # %%
-# from https://github.com/ASFHyP3/hyp3-docs/blob/main/docs/tutorials/hyp3_isce2_burst_stack_for_ts_analysis.ipynb
-def get_common_overlap_intersect(file_list: List[Union[str, Path]]) -> List[float]:
-    """Get the common overlap of  a list of GeoTIFF files
-
-    Arg:
-        file_list: a list of GeoTIFF files
-
-    Returns:
-         [ulx, uly, lrx, lry], the upper-left x, upper-left y, lower-right x, and lower-right y
-         corner coordinates of the common overlap
-    """
-    gdal.UseExceptions()
-    corners = [gdal.Info(str(dem), format='json')['cornerCoordinates'] for dem in file_list]
-
-    ulx = max(corner['upperLeft'][0] for corner in corners)
-    uly = min(corner['upperLeft'][1] for corner in corners)
-    lrx = min(corner['lowerRight'][0] for corner in corners)
-    lry = max(corner['lowerRight'][1] for corner in corners)
-    return [ulx, uly, lrx, lry]
-
-
-# %%
-def get_common_overlap_union(file_list: List[Union[str, Path]]) -> List[float]:
-    """Get the common overlap of  a list of GeoTIFF files
-
-    Arg:
-        file_list: a list of GeoTIFF files
-
-    Returns:
-         [ulx, uly, lrx, lry], the upper-left x, upper-left y, lower-right x, and lower-right y
-         corner coordinates of the common overlap
-         
-         from https://github.com/ASFHyP3/hyp3-docs/blob/main/docs/tutorials/hyp3_isce2_burst_stack_for_ts_analysis.ipynb
-         
-         # updated 2025/05/17
-    """
-
-    gdal.UseExceptions()
-
-    #print(f"file_list is {file_list}")
-    
-    # for dem in file_list[0]:
-    #     info = gdal.Info(str(dem), format='json') 
-    #     #print(f"dem is {dem} info is {info}")
-    #     #'coordinateSystem': {'wkt': 'PROJCRS["WGS 84 / UTM zone 10N",\n
-    #     print(f" {info['coordinateSystem']['wkt']}")
-    #     #print(f" {info['coordinateSystem']['wkt']['PROJCRS']}")
-
-    corners = [gdal.Info(str(dem), format='json')['cornerCoordinates'] for dem in file_list]
-    
-    ulx = min(corner['upperLeft'][0] for corner in corners)
-    uly = max(corner['upperLeft'][1] for corner in corners)
-    lrx = max(corner['lowerRight'][0] for corner in corners)
-    lry = min(corner['lowerRight'][1] for corner in corners)
-    
-    
-    print(f"{[ulx, uly, lrx, lry]}")
-    
-         
-    return [ulx, uly, lrx, lry]
-
-
-# %%
-gdal.UseExceptions()
-print(f'data_dir is {data_dir}')
-file_list = data_dir.glob('*/*_dem.tif')
-
-epsgTIFs = [get_epsg(file_path) for file_path in file_list]
-print(f"{epsgTIFs}")
-
-epsgTIF1=np.unique(epsgTIFs)
-print(f"{epsgTIF1}")
-
-print(f"in EPSG {epsgAOI}  bBoxAOI is     {bBoxAOI}")
-file_list = data_dir.glob('*/*_dem.tif')
-bBoxUnion = get_common_overlap_union(file_list)
-print(f"in EPSG {epsgTIF1} bBoxUnion is     {bBoxUnion}")
-file_list = data_dir.glob('*/*_dem.tif')
-bBoxIntersect = get_common_overlap_intersect(file_list)
-print(f"in EPSG {epsgTIF1} bBoxIntersect is {bBoxIntersect}")
-
-if len(epsgTIF1) == 1:
-    epsgTIF1=int(epsgTIF1[0]) # convert list to integer
-    print(f"epsgTIF1 is {epsgTIF1}")  
-    # print(f"EPSG codes in TIF files {epsgTIF1} matches EPSG code in AOI {epsgAOI}. Starting to clip TIF files to Union...")
-    # clip_hyp3_products_to_common_overlap(data_dir, bBoxUnion)
-    # take everything
-    # print(f"EPSG codes in TIF files {epsgTIF1} matches EPSG code in AOI {epsgAOI}. Starting to clip TIF files to Intersection...")
-    # clip_hyp3_products_to_common_overlap(data_dir, bBoxIntersect)
-    # leads to error downstream ::
-    # ValueError: could not broadcast input array from shape (367,287) into shape (1004,2647)
- 
-else:
-    print(f"ERROR TIF files do not all have the same EPSG codes. {len(epsgTIF1)}") 
-    sys.exit(f"Exiting here.")  
-    raise Exception
-
-print(f"epsgAOI is {epsgAOI}")
-
-if epsgTIF1 == epsgAOI:
-    print(f"EPSG codes in TIF files {epsgTIF1} matches EPSG code in AOI {epsgAOI}. Starting to clip TIF files...")
-    clip_hyp3_products_to_common_overlap(data_dir, bBoxAOI)
-else:
-    print(f"EPSG codes in TIF files {epsgTIF1} does NOT match EPSG code in AOI {epsgAOI}. Starting to warp TIF files slowly.... ")
-    warp_hyp3_products_to_common_overlap(data_dir, bBoxAOI, epsgAOI)
-    
-print(f"Done with TIF files.")
-
-# %%
-mintpy_config = work_dir / 'mintpy_config.txt'
-mintpy_config.write_text(
-f"""
-mintpy.load.processor        = hyp3
-##---------interferogram datasets:
-mintpy.load.unwFile          = {data_dir}/*/*_unw_phase_clipped.tif
-mintpy.load.corFile          = {data_dir}/*/*_corr_clipped.tif
-mintpy.load.connCompFile     = {data_dir}/*/*_conncomp_clipped.tif
-##---------geometry datasets:
-mintpy.load.demFile          = {data_dir}/*/*_dem_clipped.tif
-mintpy.load.incAngleFile     = {data_dir}/*/*_lv_theta_clipped.tif
-mintpy.load.azAngleFile      = {data_dir}/*/*_lv_phi_clipped.tif
-mintpy.load.waterMaskFile    = {data_dir}/*/*_water_mask_clipped.tif
-mintpy.troposphericDelay.method = no
-##---------misc:
-mintpy.plot = no
-mintpy.network.coherenceBased = no
-""")
-
-
-# %%
-# #!smallbaselineApp.py --dir {work_dir} {mintpy_config}
-# # !mamba run -n mintpy smallbaselineApp.py --dir {work_dir} {mintpy_config}
-# # %matplotlib widget
-# from mintpy.cli import view, tsview
-# view.main([f'{work_dir}/velocity.h5'])
-# tsview.main([f'{work_dir}/timeseries.h5'])
-
-# # rm -rf inputs pic *.h5
-# mamba run -n mintpy smallbaselineApp.py ${runname}.cfg > ${runname}.out 2> ${runname}.err &
-
-# ValueError: Invalid NaN value found in the following kept pairs for Bperp or coherence! 
-#         They likely have issues, check them and maybe exclude them in your network.
-#         ['20220910_20221016']
-# # ls data -d | grep 20220910 | grep 20221016
-# ls: -d: No such file or directory
-# S1_135553_IW2_20220910_20221016_VV_INT40_6D3B
-# S1_135553_IW2_20220910_20221016_VV_INT40_6D3B.zip
-# (base) brady:mintpy61 feigl$ mkdir data_bad
-# (base) brady:mintpy61 feigl$ mv data/S1_135553_IW2_20220910_20221016_VV_INT40_6D3B data_bad
-

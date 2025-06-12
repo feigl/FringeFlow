@@ -65,7 +65,7 @@ def get_site_dims(sitecode5):
     Equivalent to MATLAB function by Kurt Feigl (2021/10/18).
     """
     home = os.environ.get('HOME')
-    fname = os.path.join(home, 'site_dims.txt')
+    fname = os.path.join(home, 'siteinfo', 'site_dims.txt')
 
     LIMITS = {}
     try:

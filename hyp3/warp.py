@@ -64,6 +64,8 @@ def clip_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: Li
     # 2025/06/10 add _wrapped_phase.tif 
     files_for_mintpy = ['_water_mask.tif', '_corr.tif', '_unw_phase.tif', '_dem.tif', '_lv_theta.tif', '_lv_phi.tif', '_los_rdr', '_wrapped_phase.tif']
 
+    
+    NODATA_VALUE=0
     for extension in files_for_mintpy:
 
         for file in data_dir.rglob(f'*{extension}'):
@@ -77,7 +79,8 @@ def clip_hyp3_products_to_common_overlap(data_dir: Union[str, Path], overlap: Li
                       destNameOrDestDS=str(dst_file), 
                       dstSRS=f"EPSG:{epsgAOI}", 
                       outputBounds=output_bounds, 
-                      dstNodata=0, 
+                      srcNodata = NODATA_VALUE,
+                      dstNodata = NODATA_VALUE,
                       )
     
     return

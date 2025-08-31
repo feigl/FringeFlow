@@ -32,3 +32,6 @@ mamba install python=3.10 asf_search hyp3_sdk "mintpy>=1.5.2" pandas ipympl ipyt
 
 # 2025/06/10  
 mamba create --name hyp3kf "python>=3.10" "asf_search>=7.0.0" hyp3_sdk pandas jupyter ipympl jupytext gdal pyproj  --channel conda-forge --yes
+
+# 2025/06/11  
+mamba create --name hyp3_sdk  -c conda-forge hyp3_sdk --yes

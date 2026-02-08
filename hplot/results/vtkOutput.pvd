@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<VTKFile type="Collection" version="0.1">
+	<Collection>
+		<DataSet timestep="0" file="vtkOutput/000000.vtm" />
+		<DataSet timestep="0.5" file="vtkOutput/000020.vtm" />
+		<DataSet timestep="1" file="vtkOutput/000040.vtm" />
+		<DataSet timestep="1.5" file="vtkOutput/000061.vtm" />
+		<DataSet timestep="2" file="vtkOutput/000082.vtm" />
+		<DataSet timestep="2.5" file="vtkOutput/000103.vtm" />
+		<DataSet timestep="3" file="vtkOutput/000124.vtm" />
+		<DataSet timestep="3.5" file="vtkOutput/000145.vtm" />
+		<DataSet timestep="4" file="vtkOutput/000166.vtm" />
+		<DataSet timestep="4.5" file="vtkOutput/000186.vtm" />
+		<DataSet timestep="5" file="vtkOutput/000206.vtm" />
+		<DataSet timestep="5.5" file="vtkOutput/000226.vtm" />
+		<DataSet timestep="6" file="vtkOutput/000246.vtm" />
+		<DataSet timestep="6.5" file="vtkOutput/000266.vtm" />
+		<DataSet timestep="7" file="vtkOutput/000286.vtm" />
+		<DataSet timestep="7.5" file="vtkOutput/000306.vtm" />
+		<DataSet timestep="8" file="vtkOutput/000326.vtm" />
+		<DataSet timestep="8.5" file="vtkOutput/000346.vtm" />
+		<DataSet timestep="9" file="vtkOutput/000366.vtm" />
+		<DataSet timestep="9.5" file="vtkOutput/000386.vtm" />
+		<DataSet timestep="10" file="vtkOutput/000406.vtm" />
+	</Collection>
+</VTKFile>

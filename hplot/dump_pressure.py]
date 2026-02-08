@@ -1,0 +1,37 @@
+import h5py
+import csv
+import numpy as np
+
+# --- Configuration ---
+h5_path = 'results/mandel_complete.h5'
+csv_path = 'mandel_raw_data.csv'
+
+with h5py.File(h5_path, 'r') as f:
+    # 1. Get Geometry (Static across all steps)
+    # centers contains [x, y, z] for every cell
+    centers = f['geometry_cells'][()] 
+    
+    # 2. Get all time steps
+    all_steps = sorted([k for k in f.keys() if k.startswith('step_')])
+    
+    # 3. Define a time mapping (since metadata might be missing)
+    # We'll use 0 to 10 seconds spread across the number of steps
+    sim_times = np.linspace(0.0, 10.0, len(all_steps))
+
+    print(f"Exporting {len(all_steps)} steps to {csv_path}...")
+
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        # Header row
+        writer.writerow(['Time_s', 'X', 'Y', 'Z', 'Pressure_Pa'])
+
+        for i, step_name in enumerate(all_steps):
+            t = sim_times[i]
+            # Get the pressure array for this specific step
+            pressures = f[step_name]['pressure'][()]
+            
+            # Zip coordinates and pressure together and write
+            for (x, y, z), p in zip(centers, pressures):
+                writer.writerow([t, x, y, z, p])
+
+    print("Export Complete.")
